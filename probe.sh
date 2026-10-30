@@ -95,30 +95,42 @@ changed_all() {
 }
 
 LIVE_DOMAINS="com.apple.universalaccess com.apple.Accessibility com.apple.CoreBrightness com.apple.BezelServices com.apple.windowserver.displays com.apple.controlcenter NSGlobalDomain"
-PREF_SKIP='^com\.apple\.(Music|TV|iTunes|Podcasts|podcasts|AMP|amp|Photos|photo|iBooks|Books|news|stocks|Safari|mail|Mail|MobileSMS|iChat|FaceTime|AddressBook|iCal|reminders|Notes|Maps|Home)'
-prefs_snapshot() {
-  local raw="$WORK/prefs-$1.raw" p i
-  (
-    for f in "$HOME"/Library/Preferences/com.apple.*.plist "$HOME"/Library/Preferences/.GlobalPreferences*.plist \
-             "$HOME"/Library/Preferences/ByHost/com.apple.*.plist "$HOME"/Library/Preferences/ByHost/.GlobalPreferences*.plist \
-             /Library/Preferences/com.apple.*.plist /Library/Preferences/.GlobalPreferences.plist; do
-      [ -r "$f" ] || continue
-      base="${f##*/}"; [[ "$base" =~ $PREF_SKIP ]] && continue
-      echo "== $f"; plutil -p "$f" 2>/dev/null
-    done
-  ) > "$raw" &
+PREF_SKIP='^com\.apple\.(music|tv|itunes|podcasts|amp|photo|ibooks|books|news|stocks|safari|mail|mobilesms|ichat|imessage|messages|facetime|addressbook|contacts|people|ical|calendar|reminders|notes|maps|home|ids|identityservices|findmy|icloud|siri|assistant|universalaccessauthwarning)'
+
+run_limited() {
+  local secs="$1" out="$2" p i
+  shift 2
+  ( "$@" ) > "$out" 2>/dev/null &
   p=$!
-  for i in $(seq 1 150); do kill -0 "$p" 2>/dev/null || break; sleep 0.1; done
-  if kill -0 "$p" 2>/dev/null; then
-    pkill -P "$p" 2>/dev/null; kill "$p" 2>/dev/null
-    echo "   ⚠︎ $(t "读设置文件超时，这一份只有一部分" "Reading settings files timed out; this snapshot is partial")"
-  fi
-  { wait "$p"; } 2>/dev/null
+  disown "$p" 2>/dev/null
+  for i in $(seq 1 $((secs * 10))); do kill -0 "$p" 2>/dev/null || return 0; sleep 0.1; done
+  pkill -P "$p" 2>/dev/null; kill "$p" 2>/dev/null; pkill -P "$p" 2>/dev/null
+  return 1
+}
+
+pref_files() {
+  shopt -s nocasematch
+  local f base
+  for f in "$HOME"/Library/Preferences/com.apple.*.plist "$HOME"/Library/Preferences/.GlobalPreferences*.plist \
+           "$HOME"/Library/Preferences/ByHost/com.apple.*.plist "$HOME"/Library/Preferences/ByHost/.GlobalPreferences*.plist \
+           /Library/Preferences/com.apple.*.plist /Library/Preferences/.GlobalPreferences.plist; do
+    [ -r "$f" ] || continue
+    base="${f##*/}"; [[ "$base" =~ $PREF_SKIP ]] && continue
+    echo "== $f"; plutil -p "$f" 2>/dev/null
+  done
+}
+
+pref_live() {
+  local d
+  for d in $LIVE_DOMAINS; do echo "== live:$d"; defaults read "$d" 2>/dev/null; done
+}
+
+prefs_snapshot() {
+  run_limited 15 "$WORK/prefs-$1.files" pref_files || echo "   ⚠︎ $(t "读设置文件超时，这一份只有一部分" "Reading settings files timed out; this snapshot is partial")"
+  run_limited 5 "$WORK/prefs-$1.live" pref_live || echo "   ⚠︎ $(t "读系统设置超时，这一份只有一部分" "Reading live settings timed out; this snapshot is partial")"
   {
-    awk -v ind=2 -v sep=" => " -f "$WORK/flatten.awk" "$raw"
-    for d in $LIVE_DOMAINS; do
-      echo "== live:$d"; defaults read "$d" 2>/dev/null
-    done | awk -v ind=4 -v sep=" = " -f "$WORK/flatten.awk"
+    awk -v ind=2 -v sep=" => " -f "$WORK/flatten.awk" "$WORK/prefs-$1.files"
+    awk -v ind=4 -v sep=" = " -f "$WORK/flatten.awk" "$WORK/prefs-$1.live"
   } > "$WORK/prefs-$1.tsv"
 }
 
@@ -158,7 +170,11 @@ safe_prefs() {
       if (v ~ /^(-?[0-9]+(\.[0-9]+)?|<none>|YES|NO|true|false)$/) return v
       return "<changed>"
     }
-    { print $1 FS $2 FS safe($2, $3) FS safe($2, $4) }' \
+    {
+      k = $2
+      if (k ~ /^\//) k = "<path>"; else if (k ~ /\.app/) k = "<app>"
+      print $1 FS k FS safe($2, $3) FS safe($2, $4)
+    }' \
     | redact | sed -E 's/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/<email>/g'
 }
 
