@@ -26,9 +26,9 @@
       <div class="wrap prose">
         <span class="eyebrow">Lidworks Lab · Privacy notice</span>
         <h1>What the test collects, and why.</h1>
-        <p class="lead">Lidworks Lab is a 3-minute test that helps us learn how the glowing logo on the new MacBook Pro works. This page lists every kind of data in a report.</p>
-        <p class="note"><strong>The short version:</strong> nothing leaves your Mac until you've seen the whole report and pressed <strong>Send</strong>. A report describes your Mac's hardware and system software, plus your answers. It contains no serial numbers, no names, no accessories, no files, no location and no IP address. We delete it no later than 90 days after Lidlight launches, or sooner if you ask.</p>
-        <p class="small">Last updated 29 October 2026 · Report format version 2</p>
+        <p class="lead">Lidworks Lab is a 5-minute test that helps us learn how the glowing logo on the new MacBook Pro works. This page lists every kind of data in a report.</p>
+        <p class="note"><strong>The short version:</strong> nothing leaves your Mac until you've seen the whole report and pressed <strong>Send</strong>. A report describes your Mac's hardware and system software, plus your answers. It contains no serial numbers, no names, no accessories, no files, no location and no IP address. A photo is included only if you choose to add one, with its hidden details removed. We delete it no later than 90 days after Lidlight launches, or sooner if you ask.</p>
+        <p class="small">Last updated 29 October 2026 · Report format version 3 (Lidworks Lab 0.2)</p>
       </div>
     </section>
 
@@ -62,7 +62,7 @@
           <article>
             <h3>2. Your answers</h3>
             <ul>
-              <li>Whether your logo glows, and what it did at each step: brightness 100%, 0% and 50%, a slow fade, a dark picture, a pulse test, its colour, whether you can see separate dots, whether it changes with the screen angle, and which light blinked.</li>
+              <li>Whether your logo glows, and what it did at each step: brightness 100%, 0% and 50%, a slow fade, a dark picture, a pulse test, whether it lit up together with a tick sound or after it, its colour, whether it changed colour when the picture turned red, green and blue, whether you can see separate dots and how they're arranged, whether it changes with the screen angle, and which light blinked.</li>
               <li>The optional note you type on the review screen.</li>
             </ul>
             <p class="why"><b>Why:</b> software can't see the logo. Your eyes are the only sensor we have.</p>
@@ -71,11 +71,11 @@
             <h3>3. Measurements during the test</h3>
             <ul>
               <li>The brightness setting and the screen's real brightness (in nits) at each step.</li>
-              <li>Which hardware readings changed when the brightness changed, and which changed when only the picture got darker.</li>
-              <li>Timing curves: up to 24 of those readings sampled 30 to 100 times a second while brightness jumps, fades and pulses.</li>
-              <li>How much the picture was darkened during the pulse test.</li>
+              <li>Which hardware readings changed when the brightness changed, which changed when only the picture got darker, and which changed when the picture turned red, green or blue.</li>
+              <li>Timing curves: up to 40 of those readings sampled 30 to 250 times a second while brightness jumps, fades and pulses, during the tick-sound test, and during a 3-second test where brightness wobbles by about 2% up to 30 times a second (too small to notice) to see how fast the hardware can follow.</li>
+              <li>How much the picture was darkened during the pulse and tick-sound tests.</li>
             </ul>
-            <p class="why"><b>Why:</b> these show how the logo is driven and how quickly it can change. That decides whether Lidlight can dim it, make it breathe, or make it flow or <b>pulse with your music</b>.</p>
+            <p class="why"><b>Why:</b> these show how the logo is driven, how quickly it can change and how long it lags behind a command. That decides whether Lidlight can dim it, make it breathe, <b>change its colour</b>, or make it flow or <b>pulse with your music</b>.</p>
           </article>
           <article>
             <h3>4. Lights macOS controls</h3>
@@ -95,19 +95,39 @@
           <article>
             <h3>6. Hardware inventory</h3>
             <ul>
-              <li>Built-in parts related to the display, lights, touch and sensors, with their settings and readings (the same data Apple's <code>ioreg</code> tool shows).</li>
-              <li>The device tree, Apple's built-in list of parts: every part's name and type and the names of its settings; values only for display, light, touch and sensor parts.</li>
+              <li>Every built-in part in macOS's hardware registry, with its settings and readings (the same data Apple's <code>ioreg</code> tool shows). Accessories are skipped, and identifying values are removed as described below.</li>
+              <li>The device tree, Apple's built-in list of parts: every part's name, type, settings and values. This is where the model of the chip that drives the logo's LEDs would appear.</li>
               <li>How many of each type of driver are running; the Apple kernel extensions that are loaded, with versions; the built-in input devices (<code>hidutil list</code>).</li>
+              <li>For every driver that ships with macOS: which hardware it takes charge of, and the name of the interface apps use to talk to it.</li>
             </ul>
-            <p class="why"><b>Why:</b> the logo's light controller should show up here. Its layout tells us whether the logo is <b>one light or many separately controllable LEDs</b>. That's what effects like a fluid or music-reactive logo would need.</p>
+            <p class="why"><b>Why:</b> the logo's light controller should show up here. Its layout and its chip tell us whether the logo is <b>one white light or many separately controllable LEDs, and whether they can show colours</b>. That's what colour, fluid and music-reactive effects would need.</p>
           </article>
           <article>
             <h3>7. System software inventory</h3>
             <ul>
-              <li>The names of the system's private frameworks, kernel extensions and background services that ship with macOS.</li>
-              <li>The names of functions, classes and methods in the Apple components that handle brightness and displays: eight today, such as CoreBrightness and DisplayServices, plus any new component whose name mentions things like “logo” or “LED”.</li>
+              <li>The names of the system's private frameworks, kernel extensions, DriverKit drivers, background services and helper programs that ship with macOS, and which of them are new compared with the macOS version on our own Mac.</li>
+              <li>The names of functions, classes and methods in the Apple components that handle brightness and displays (such as CoreBrightness and DisplayServices), and in any new component.</li>
+              <li>Text built into those components that mentions light, brightness, the keyboard light or the logo: setting names, message names and error messages.</li>
+              <li>The permissions (entitlements) Apple grants to the system services that handle brightness and lights.</li>
+              <li>The names (not the values) of the settings in a few display-related preference files.</li>
+              <li>What macOS's brightness service reports when asked for its own settings by name: for example the ambient light level, brightness limits, and the keyboard light's settings. Night Shift's sunrise and sunset schedule is left out because it reveals roughly where you live.</li>
             </ul>
-            <p class="why"><b>Why:</b> if Apple built a control for the logo, its name appears here. These are Apple's files, identical on every Mac with the same macOS. Your own apps and drivers are not included.</p>
+            <p class="why"><b>Why:</b> if Apple built a control for the logo, its name, its settings and the permission needed to use it appear here. That tells us whether an app like Lidlight can control the logo directly. These are Apple's files and services, the same on every Mac with the same macOS. Your own apps and drivers are not included.</p>
+          </article>
+          <article>
+            <h3>8. Display settings</h3>
+            <ul>
+              <li>Whether True Tone, Night Shift and automatic brightness are on, Night Shift's strength, and the brightness setting when the test started.</li>
+            </ul>
+            <p class="why"><b>Why:</b> they change the colour and brightness of the screen, so we need them to read your answers about the logo's colour correctly.</p>
+          </article>
+          <article>
+            <h3>9. A photo of the logo (optional)</h3>
+            <ul>
+              <li>Only if you choose a photo on the review screen. The app straightens it, shrinks it to at most 1600 pixels, and saves it as a new JPEG that keeps only the picture: location, time, camera and phone details are removed. You see it before sending and can remove it.</li>
+              <li>Please photograph only the lit logo, ideally in a dark room.</li>
+            </ul>
+            <p class="why"><b>Why:</b> how many dots there are and how they're arranged decides how a flowing effect could be laid out. One photo answers that better than any question.</p>
           </article>
         </div>
       </div>
@@ -120,9 +140,10 @@
         <ul>
           <li>Serial numbers, hardware UUIDs, chip IDs, MAC addresses or any other number that identifies your particular Mac.</li>
           <li>Your name, user name, computer name, Apple Account or email. If one of them appears inside a hardware reading, the app replaces it with <code>&lt;redacted&gt;</code>.</li>
+          <li>Exact dates and times found in readings (they show when you use your Mac) are replaced with <code>&lt;time&gt;</code>; the report only says which day the test ran.</li>
           <li>Boot settings and NVRAM (where macOS keeps things like Find My data), and your purchase region.</li>
           <li>Bluetooth, USB and network accessories. Their names often include their owner's name, so they are skipped entirely.</li>
-          <li>Apps or drivers you installed, files, photos, what's on your screen, keystrokes, your location, or where you touch.</li>
+          <li>Apps or drivers you installed, files, photos (other than the one logo photo you choose to add), what's on your screen, keystrokes, your location, or where you touch.</li>
           <li>Your IP address. Like any website, our server sees it while it receives the upload, but we don't store it, and request logging is turned off.</li>
         </ul>
       </div>
@@ -155,9 +176,9 @@
         <h2>收集什么，为什么收集。</h2>
         <ul>
           <li><strong>什么时候发送：</strong>你看过完整的报告、点了「发送」才会上传，App 不会在后台联网。上传后会拿到一个提交编号，只有你自己知道哪份报告是你的。</li>
-          <li><strong>收集什么：</strong>Mac 型号、系统版本、屏幕参数；你对每一步的回答和备注；实验中屏幕、灯光硬件读数的变化和高频变化曲线；macOS 管理的灯（键盘背光等）；可选的触摸事件类型和手指数；和显示、灯光、触摸有关的内建硬件清单；和亮度有关的苹果系统组件里的函数名、类名。</li>
-          <li><strong>为什么收集这么多：</strong>新机主现在很少，每一次测试都要尽量回答更多问题：logo 能不能调暗？是一盏灯还是很多颗能单独控制的灯珠？反应有多快？这些决定了能不能做呼吸、流动、跟着音乐跳的灯效。</li>
-          <li><strong>绝不收集：</strong>序列号和各种设备编号；你的名字、电脑名、Apple 账户；NVRAM 和开机数据、购买地区；蓝牙、USB 等外接设备；你装的 App、文件、屏幕内容、按键、位置、点击位置；IP 地址（服务器收数据时能看到，但不存，也关掉了日志）。</li>
+          <li><strong>收集什么：</strong>Mac 型号、系统版本、屏幕参数；你对每一步的回答和备注（包括变色、声画同步、灯珠排列）；实验中硬件读数随亮度、画面明暗、画面颜色的变化和高频变化曲线；macOS 管理的灯（键盘背光等）；可选的触摸事件类型和手指数；整个内建硬件注册表和设备树（外接设备除外）；系统驱动接管哪种硬件；苹果系统组件里和亮度、灯光有关的函数名、类名、文字、设置项名称和权限；亮度服务报告的设置（日出日落时间表因为能推算住址，不收）；True Tone、夜览、自动亮度开没开；你自愿附上的一张 logo 照片（缩小、去掉定位等隐藏信息）。</li>
+          <li><strong>为什么收集这么多：</strong>新机主现在很少，每一次测试都要尽量回答更多问题：logo 能不能调暗？是一盏白灯还是很多颗能单独控制、能变色的灯珠？从发指令到灯亮要多久？这些决定了能不能做变色、流动、跟着音乐跳的灯效。</li>
+          <li><strong>绝不收集：</strong>序列号和各种设备编号；你的名字、电脑名、Apple 账户；具体的日期时刻（换成 &lt;time&gt;）；NVRAM 和开机数据、购买地区；蓝牙、USB 等外接设备；你装的 App、文件、照片（你自己选的那张 logo 照片除外）、屏幕内容、按键、位置、点击位置；IP 地址（服务器收数据时能看到，但不存，也关掉了日志）。</li>
           <li><strong>保存和删除：</strong>存在 Cloudflare 上，只用于开发 Lidworks 的 App，不出售、不给广告商。原始报告最晚在 Lidlight 上线后 90 天删除；如果 Lidlight 没有上线，2027 年 6 月 30 日前删除。把提交编号发到 lidworks@proton.me，14 天内删除并回复确认。</li>
           <li><strong>未满 16 岁：</strong>请先问过家长再发送。</li>
         </ul>
