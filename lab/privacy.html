@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lidworks Lab privacy notice</title>
+  <meta name="description" content="Exactly what Lidworks Lab collects, why, where it's kept, and how to have it deleted.">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../assets/lab-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../wipemode/">WipeMode</a>
+        <a href="../lidlight/">Lidlight</a>
+        <a href="./">Lab</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap prose">
+        <span class="eyebrow">Lidworks Lab · Privacy notice</span>
+        <h1>What the test collects, and why.</h1>
+        <p class="lead">Lidworks Lab is a 3-minute test that helps us learn how the glowing logo on the new MacBook Pro works. This page lists every kind of data in a report.</p>
+        <p class="note"><strong>The short version:</strong> nothing leaves your Mac until you've seen the whole report and pressed <strong>Send</strong>. A report describes your Mac's hardware and system software, plus your answers. It contains no serial numbers, no names, no accessories, no files, no location and no IP address. We delete it no later than 90 days after Lidlight launches, or sooner if you ask.</p>
+        <p class="small">Last updated 29 October 2026 · Report format version 2</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap prose">
+        <span class="eyebrow">When</span>
+        <h2>Only when you press Send.</h2>
+        <ul>
+          <li>The app makes <strong>one</strong> network request: the upload, after you've reviewed the report and pressed <strong>Send to Lidworks</strong>. It has no analytics, crash reporting, ads or tracking.</li>
+          <li>The review screen shows the complete report, byte for byte, before anything is sent. You can also <strong>save it to a file</strong> and read it first, email it to us yourself, or <strong>not send it at all</strong>.</li>
+          <li>If you send it, the server replies with a <strong>submission ID</strong> such as <code>LAB-7KQ2-M9XD</code>. That ID is the only link between you and the report: we don't know who sent which report unless you tell us your ID.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">What</span>
+        <h2>Everything in a report.</h2>
+        <p class="lead">We collect generously on purpose. Only a few people own this Mac right now, so each test needs to answer as many questions as possible: how to dim the logo, and whether it can do more.</p>
+        <div class="datalist">
+          <article>
+            <h3>1. About your Mac</h3>
+            <ul>
+              <li>Model identifier (for example Mac17,8), chip, amount of memory, macOS version and build, and the board's code name.</li>
+              <li>Built-in screen: resolution, scale, refresh rates, HDR brightness headroom, colour space, the area taken by the camera housing (Dynamic Island), and the screen maker's model number. How many external screens are connected (just the number).</li>
+              <li>App version, and the date of the test (the day only).</li>
+            </ul>
+            <p class="why"><b>Why:</b> to know which kind of machine each measurement came from, and to design features around the screen and Dynamic Island.</p>
+          </article>
+          <article>
+            <h3>2. Your answers</h3>
+            <ul>
+              <li>Whether your logo glows, and what it did at each step: brightness 100%, 0% and 50%, a slow fade, a dark picture, a pulse test, its colour, whether you can see separate dots, whether it changes with the screen angle, and which light blinked.</li>
+              <li>The optional note you type on the review screen.</li>
+            </ul>
+            <p class="why"><b>Why:</b> software can't see the logo. Your eyes are the only sensor we have.</p>
+          </article>
+          <article>
+            <h3>3. Measurements during the test</h3>
+            <ul>
+              <li>The brightness setting and the screen's real brightness (in nits) at each step.</li>
+              <li>Which hardware readings changed when the brightness changed, and which changed when only the picture got darker.</li>
+              <li>Timing curves: up to 24 of those readings sampled 30 to 100 times a second while brightness jumps, fades and pulses.</li>
+              <li>How much the picture was darkened during the pulse test.</li>
+            </ul>
+            <p class="why"><b>Why:</b> these show how the logo is driven and how quickly it can change. That decides whether Lidlight can dim it, make it breathe, or make it flow or <b>pulse with your music</b>.</p>
+          </article>
+          <article>
+            <h3>4. Lights macOS controls</h3>
+            <ul>
+              <li>The lights macOS's brightness service manages (today that's the keyboard backlight), identified by internal numbers. For each one: its brightness and auto-brightness setting before the test, a few on/off status flags, and which hardware readings changed when it blinked.</li>
+            </ul>
+            <p class="why"><b>Why:</b> if the logo is simply a second light here, this finds the switch directly.</p>
+          </article>
+          <article>
+            <h3>5. Touch test (optional)</h3>
+            <ul>
+              <li>How many events of each type macOS reported while you touched the test box, the event source (mouse, touch or pen), the most fingers down at once, whether touches were direct (on the screen) or indirect (on the trackpad), and whether swiping in from the edge opened Control Center.</li>
+              <li><strong>Never</strong> where you touched, and nothing you typed.</li>
+            </ul>
+            <p class="why"><b>Why:</b> so our free WipeMode app can block the touchscreen while you clean it, and for future touch features.</p>
+          </article>
+          <article>
+            <h3>6. Hardware inventory</h3>
+            <ul>
+              <li>Built-in parts related to the display, lights, touch and sensors, with their settings and readings (the same data Apple's <code>ioreg</code> tool shows).</li>
+              <li>The device tree, Apple's built-in list of parts: every part's name and type and the names of its settings; values only for display, light, touch and sensor parts.</li>
+              <li>How many of each type of driver are running; the Apple kernel extensions that are loaded, with versions; the built-in input devices (<code>hidutil list</code>).</li>
+            </ul>
+            <p class="why"><b>Why:</b> the logo's light controller should show up here. Its layout tells us whether the logo is <b>one light or many separately controllable LEDs</b>. That's what effects like a fluid or music-reactive logo would need.</p>
+          </article>
+          <article>
+            <h3>7. System software inventory</h3>
+            <ul>
+              <li>The names of the system's private frameworks, kernel extensions and background services that ship with macOS.</li>
+              <li>The names of functions, classes and methods in the Apple components that handle brightness and displays: eight today, such as CoreBrightness and DisplayServices, plus any new component whose name mentions things like “logo” or “LED”.</li>
+            </ul>
+            <p class="why"><b>Why:</b> if Apple built a control for the logo, its name appears here. These are Apple's files, identical on every Mac with the same macOS. Your own apps and drivers are not included.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap prose">
+        <span class="eyebrow">Never</span>
+        <h2>What we don't collect.</h2>
+        <ul>
+          <li>Serial numbers, hardware UUIDs, chip IDs, MAC addresses or any other number that identifies your particular Mac.</li>
+          <li>Your name, user name, computer name, Apple Account or email. If one of them appears inside a hardware reading, the app replaces it with <code>&lt;redacted&gt;</code>.</li>
+          <li>Boot settings and NVRAM (where macOS keeps things like Find My data), and your purchase region.</li>
+          <li>Bluetooth, USB and network accessories. Their names often include their owner's name, so they are skipped entirely.</li>
+          <li>Apps or drivers you installed, files, photos, what's on your screen, keystrokes, your location, or where you touch.</li>
+          <li>Your IP address. Like any website, our server sees it while it receives the upload, but we don't store it, and request logging is turned off.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap prose">
+        <span class="eyebrow">After you send it</span>
+        <h2>Where it goes and how long it stays.</h2>
+        <h3>Use</h3>
+        <p>Only to build and improve Lidworks apps: Lidlight first, and later features such as per-LED logo effects, Dynamic Island and touch features. We don't sell reports or share them with advertisers or data brokers. We may publish what we learn (for example, “the logo is driven by PWM channel 3”), including short excerpts of hardware readings, which contain nothing about you. We never publish your note or tie anything to your submission ID.</p>
+        <h3>Storage</h3>
+        <p>Reports are stored with Cloudflare (Workers and Workers KV), which hosts our server. Only Lidworks can read them.</p>
+        <h3>Retention</h3>
+        <p>Raw reports are deleted no later than <strong>90 days after Lidlight launches</strong>. If Lidlight doesn't launch, they're deleted by <strong>30 June 2027</strong>. Conclusions we draw from them (like the example above) may be kept.</p>
+        <h3>Deletion</h3>
+        <p>Email your submission ID to <a href="mailto:lidworks@proton.me?subject=Delete%20my%20Lab%20report">lidworks@proton.me</a> and we'll delete that report within 14 days and confirm. Because reports aren't linked to names, the ID is the only way for us to find yours. If you lose it, tell us your Mac model and the day you ran the test, and we'll do our best.</p>
+        <h3>Under 16?</h3>
+        <p>Please ask a parent or guardian before sending a report.</p>
+        <h3>Changes</h3>
+        <p>If we change what the app collects, we'll update this page and raise the report format version shown at the top. What you sent is covered by the version you agreed to.</p>
+        <h3>Contact</h3>
+        <p>Lidworks is an independent developer. Questions: <a href="mailto:lidworks@proton.me">lidworks@proton.me</a> or <a href="https://x.com/Lidworks312">@Lidworks312</a> on X.</p>
+      </div>
+    </section>
+
+    <section lang="zh-Hans">
+      <div class="wrap prose">
+        <span class="eyebrow">中文摘要</span>
+        <h2>收集什么，为什么收集。</h2>
+        <ul>
+          <li><strong>什么时候发送：</strong>你看过完整的报告、点了「发送」才会上传，App 不会在后台联网。上传后会拿到一个提交编号，只有你自己知道哪份报告是你的。</li>
+          <li><strong>收集什么：</strong>Mac 型号、系统版本、屏幕参数；你对每一步的回答和备注；实验中屏幕、灯光硬件读数的变化和高频变化曲线；macOS 管理的灯（键盘背光等）；可选的触摸事件类型和手指数；和显示、灯光、触摸有关的内建硬件清单；和亮度有关的苹果系统组件里的函数名、类名。</li>
+          <li><strong>为什么收集这么多：</strong>新机主现在很少，每一次测试都要尽量回答更多问题：logo 能不能调暗？是一盏灯还是很多颗能单独控制的灯珠？反应有多快？这些决定了能不能做呼吸、流动、跟着音乐跳的灯效。</li>
+          <li><strong>绝不收集：</strong>序列号和各种设备编号；你的名字、电脑名、Apple 账户；NVRAM 和开机数据、购买地区；蓝牙、USB 等外接设备；你装的 App、文件、屏幕内容、按键、位置、点击位置；IP 地址（服务器收数据时能看到，但不存，也关掉了日志）。</li>
+          <li><strong>保存和删除：</strong>存在 Cloudflare 上，只用于开发 Lidworks 的 App，不出售、不给广告商。原始报告最晚在 Lidlight 上线后 90 天删除；如果 Lidlight 没有上线，2027 年 6 月 30 日前删除。把提交编号发到 lidworks@proton.me，14 天内删除并回复确认。</li>
+          <li><strong>未满 16 岁：</strong>请先问过家长再发送。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lidworks is an independent developer and is not affiliated with Apple Inc. Apple, Mac and MacBook Pro are trademarks of Apple Inc.</p>
+      <p>© <span data-year>2026</span> <a href="../">Lidworks</a> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+    </div>
+  </footer>
+  <script>
+    document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
+  </script>
+</body>
+</html>

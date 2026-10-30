@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lidlight — turn off or dim the glowing logo on the new MacBook Pro</title>
+  <meta name="description" content="Lidlight lets you turn off, dim, schedule, or make the glowing logo on the new MacBook Pro breathe like the classic sleep light. Coming soon from Lidworks.">
+  <meta property="og:title" content="Lidlight — control the glowing logo on the new MacBook Pro">
+  <meta property="og:description" content="Off, dim, scheduled, or breathing. Coming soon.">
+  <meta property="og:image" content="https://lidworks.github.io/assets/lidlight-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://lidworks.github.io/assets/lidlight-card.png">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../assets/lidlight-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../wipemode/">WipeMode</a>
+        <a href="./" aria-current="page">Lidlight</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <img class="app-icon" src="../assets/lidlight-icon.png" alt="Lidlight icon" width="84" height="84">
+          <h1>It glows.<br>You decide how.</h1>
+          <p class="lead">The new MacBook Pro has a glowing logo on the lid and no setting for it. Lidlight adds the switch: off, dim, on a schedule, or breathing like the old sleep light.</p>
+          <div class="actions">
+            <a class="button" href="https://x.com/Lidworks312">Get notified on X</a>
+            <a class="button secondary" href="../test/">Own one? Help us test</a>
+            <span class="small">Coming soon · one-time purchase, under $5</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="lid" id="lid" data-mode="breathe" role="img" aria-label="Preview of a laptop lid with a glowing logo">
+            <div class="mark"></div>
+            <div class="caption" id="caption">Breathe · like the classic sleep light</div>
+          </div>
+          <div class="modes" role="group" aria-label="Try a mode">
+            <button type="button" data-mode="normal" aria-pressed="false">Normal</button>
+            <button type="button" data-mode="dim" aria-pressed="false">Dim</button>
+            <button type="button" data-mode="off" aria-pressed="false">Off</button>
+            <button type="button" data-mode="breathe" aria-pressed="true">Breathe</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">What it does</span>
+        <h2>A light switch for the back of your Mac.</h2>
+        <div class="grid">
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v9"/><path d="M6.3 7.3a8 8 0 1 0 11.4 0"/></svg></div>
+            <h3>Off or dim</h3>
+            <p>On a plane, in a dark room, in a meeting. Turn the glow down or off with one click.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <h3>On a schedule</h3>
+            <p>Lights out from 11 pm to 7 am, automatically. Set it once and forget it.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c3 0 3-6 6-6s3 12 6 12 3-6 6-6"/></svg></div>
+            <h3>Breathe</h3>
+            <p>A slow, soft pulse, timed like the sleep light Mac fans still miss.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></div>
+            <h3>Focus light</h3>
+            <p>Turn on a Focus and the logo goes dark, so people around you know not to interrupt.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><path d="M17.5 14v7M14 17.5h7"/></svg></div>
+            <h3>Shortcuts-friendly</h3>
+            <p>Every mode has a link you can trigger from Shortcuts automations, Raycast or a script.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3>Hands it back</h3>
+            <p>Quit Lidlight and the logo goes straight back to Apple's default. No leftovers.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">Status</span>
+        <h2>Built and waiting for the hardware.</h2>
+        <p class="lead">Lidlight's app is ready. The last piece is talking to the logo itself, which we can only test on a real PROLED MacBook Pro. We'll be testing on launch day, and we'll only sell it if it truly works. Already have one? <a href="../test/">Run our 3-minute test</a> and get Lidlight free.</p>
+        <p class="note"><strong>Not sure your Mac has the glowing logo?</strong> Only the MacBook Pro with PROLED XDR Display has it. Other models have a mirror-finish logo that doesn't light up, so Lidlight won't do anything there.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lidlight collects no data. Lidworks is an independent developer and is not affiliated with Apple Inc. Apple, Mac and MacBook Pro are trademarks of Apple Inc.</p>
+      <p>© <span data-year>2026</span> <a href="../">Lidworks</a> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
+
+    // 预览里的四个模式按钮
+    var lid = document.getElementById("lid");
+    var caption = document.getElementById("caption");
+    var captions = {
+      normal: "Normal · follows your screen brightness",
+      dim: "Dim · a quiet glow",
+      off: "Off · just like the old mirror logo",
+      breathe: "Breathe · like the classic sleep light"
+    };
+    document.querySelectorAll(".modes button").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var mode = button.getAttribute("data-mode");
+        lid.setAttribute("data-mode", mode);
+        caption.textContent = captions[mode];
+        document.querySelectorAll(".modes button").forEach(function (b) {
+          b.setAttribute("aria-pressed", String(b === button));
+        });
+      });
+    });
+  </script>
+</body>
+</html>

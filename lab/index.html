@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lidworks Lab — help us switch off the glow</title>
+  <meta name="description" content="A 3-minute test app for the new MacBook Pro with the glowing logo. See everything before you send it, and get Lidlight free.">
+  <meta property="og:title" content="Got the new MacBook Pro? Run a 3-minute test, get Lidlight free.">
+  <meta property="og:description" content="Lidworks Lab finds out how the glowing logo works. You see everything before it's sent.">
+  <meta property="og:image" content="https://lidworks.github.io/assets/lidlight-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://lidworks.github.io/assets/lidlight-card.png">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../assets/lab-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../wipemode/">WipeMode</a>
+        <a href="../lidlight/">Lidlight</a>
+        <a href="./" aria-current="page">Lab</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <img class="app-icon" src="../assets/lab-icon.png" alt="Lidworks Lab icon" width="84" height="84">
+        <span class="eyebrow">Testers wanted</span>
+        <h1>Three minutes with your logo.</h1>
+        <p class="lead">Lidworks Lab walks you through a short test on the new MacBook Pro: it changes the brightness, asks what the glowing logo does, and records how the hardware responds. Send us the results, and Lidlight is yours free when it ships.</p>
+        <div class="actions">
+          <a class="button" href="#install">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>
+            Get Lidworks Lab
+          </a>
+          <span class="small">macOS 13 or later · Apple silicon · free · 中文说明在页面底部</span>
+        </div>
+        <p class="note"><strong>Who we need most:</strong> the MacBook Pro with <strong>PROLED XDR Display</strong>, the one whose Apple logo lights up. Have a different Mac? Run it anyway: a “before” picture helps too.</p>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap">
+        <span class="eyebrow">Install</span>
+        <h2>The quickest way: one line.</h2>
+        <p class="lead">Open Terminal (press <kbd>⌘</kbd> <kbd>Space</kbd>, type “Terminal”, press Return), paste this line and press Return. It puts the app in Applications and opens it. No password, no security prompts.</p>
+        <div class="command">
+          <code id="cmd">curl -fsSL https://lidworks.github.io/lab/install.sh | bash</code>
+          <button type="button" id="copy">Copy</button>
+        </div>
+        <p class="small" style="margin-top: 10px">Like to see what it runs first? <a href="install.sh">Read the installer</a>: it's short, and it only downloads the app from our GitHub page, copies it to Applications and opens it.</p>
+
+        <h3 style="margin-top: 44px">Or download it the usual way</h3>
+        <ol class="steps">
+          <li><strong>Download <a href="https://github.com/lidworks/lab/releases/latest/download/LidworksLab.dmg">LidworksLab.dmg</a></strong>, open it, and drag Lidworks Lab into Applications.</li>
+          <li><strong>Double-click the app.</strong> macOS says it can't verify it, because we haven't paid Apple to sign it yet. Click <strong>Done</strong>.</li>
+          <li><strong>Open System Settings → Privacy &amp; Security</strong> and scroll down. Next to “LidworksLab was blocked”, click <strong>Open Anyway</strong> and confirm with your password or Touch ID.</li>
+          <li><strong>Click Open Anyway once more.</strong> That's it, you only do this once. On macOS 13 or 14 it's simpler: Control-click the app, choose <strong>Open</strong>, then <strong>Open</strong> again.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">The test</span>
+        <h2>Four screens, about three minutes.</h2>
+        <ol class="steps">
+          <li><strong>Get a view of the logo.</strong> You'll be asked what it's doing. Tilt the screen back, sit facing a mirror, or prop your phone behind the lid with the camera on. A dim room helps.</li>
+          <li><strong>Answer at each step.</strong> The screen gets bright, dim and dark, then pulses gently; the keyboard light blinks. Leave the brightness keys alone until it's done. “Can't tell” is a perfectly good answer.</li>
+          <li><strong>Touch test, if your screen is a touchscreen.</strong> Tap, swipe and pinch in the box, then swipe in from the edges of the screen. No touchscreen? Press Skip.</li>
+          <li><strong>Review and send.</strong> You see every byte first. You'll get an ID like <code>LAB-7KQ2-M9XD</code>: send it to <a href="https://x.com/Lidworks312">@Lidworks312</a> or <a href="mailto:lidworks@proton.me?subject=Lidworks%20Lab">lidworks@proton.me</a> to claim your free Lidlight. Then press <strong>Delete App and Quit</strong>: you don't need to keep it.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">Why it asks so much</span>
+        <h2>Not just an off switch.</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Turn it down</h3>
+            <p>Find out what the logo follows, so Lidlight can dim it, switch it off or put it on a schedule.</p>
+          </div>
+          <div class="card">
+            <h3>Make it move</h3>
+            <p>Measure how fast it responds, so it can breathe like the old sleep light, or pulse with your music.</p>
+          </div>
+          <div class="card">
+            <h3>Light each part</h3>
+            <p>Learn whether it's one light or many LEDs. If each can be controlled, the logo could flow like liquid.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">Your data</span>
+        <h2>You see it all before it's sent.</h2>
+        <ul class="checklist">
+          <li>Sent only when you press Send, after a full preview. You can save it to a file instead, or not send it.</li>
+          <li>Hardware and system details about the display, lights and touch, plus your answers. No serial numbers, names, accessories, files, location or IP address.</li>
+          <li>Deleted no later than 90 days after Lidlight launches. Email your submission ID and we'll delete it sooner.</li>
+        </ul>
+        <p class="lead" style="margin-top: 26px; font-size: 18px">The full list, with the reason for each item: <a href="privacy.html">privacy notice</a>.</p>
+      </div>
+    </section>
+
+    <section lang="zh-Hans">
+      <div class="wrap prose">
+        <span class="eyebrow">中文说明</span>
+        <h2>三分钟，帮我们弄清楚发光 logo。</h2>
+        <p>我们需要的是 logo 会发光的新款 MacBook Pro（PROLED XDR 屏）。其他 Mac 也欢迎跑一遍，当作对照数据。做完发送，Lidlight 上线后免费送你一份。</p>
+        <h3>安装（二选一）</h3>
+        <ul>
+          <li><strong>最快：</strong>打开「终端」（按 <kbd>⌘</kbd> <kbd>空格</kbd>，输入"终端"，回车），粘贴上面那行 <code>curl … | bash</code> 命令，回车。会自动装好并打开，不用输密码，也不会弹安全提示。</li>
+          <li><strong>手动：</strong>下载 dmg，把 App 拖进「应用程序」，双击。系统提示"无法验证"时点「完成」，然后打开「系统设置 → 隐私与安全性」，拉到底点「仍要打开」，输入密码或按指纹，再点一次「仍要打开」。只需要做一次。</li>
+        </ul>
+        <h3>测试时</h3>
+        <ul>
+          <li>要能看到 logo：把屏幕往后仰，或者对着镜子，或者把手机摄像头对着屏幕背面。房间暗一点更好看清。</li>
+          <li>屏幕会变亮变暗、黑几秒、轻微闪动，键盘灯会闪。<strong>测试结束前别按亮度键。</strong>看不清就选"看不清"。</li>
+          <li>最后会显示要发送的全部内容，你点「发送」才会上传。拿到编号（比如 <code>LAB-7KQ2-M9XD</code>）后，私信 X 上的 <a href="https://x.com/Lidworks312">@Lidworks312</a> 或发邮件到 <a href="mailto:lidworks@proton.me">lidworks@proton.me</a> 领 Lidlight。</li>
+          <li>测完点「删除 App 并退出」就行，不用留着。</li>
+          <li><strong>发送失败？</strong>在中国大陆可能连不上我们的服务器。开代理再试，或者点「存成文件…」把文件发邮件给我们。</li>
+        </ul>
+        <p class="small">收集哪些数据、为什么收集，见<a href="privacy.html">隐私说明</a>（末尾有中文摘要）。</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>macOS won't open the app.</summary>
+            <p>That's Gatekeeper being careful with an app that isn't signed by Apple. Use the one-line install above, or follow the “usual way” steps: System Settings → Privacy &amp; Security → Open Anyway.</p>
+          </details>
+          <details>
+            <summary>Is the one-line install safe?</summary>
+            <p>Only run Terminal commands from people you trust, and that includes us. You can <a href="install.sh">read the installer</a> first: it checks your Mac, downloads the app from our GitHub Releases page, copies it to Applications and opens it. It doesn't ask for your password or change any settings. It skips the security prompt only because files downloaded by Terminal aren't marked as coming from the internet.</p>
+          </details>
+          <details>
+            <summary>Sending failed.</summary>
+            <p>Try again in a minute. If it still fails, press <strong>Save to File</strong> and email the file to <a href="mailto:lidworks@proton.me?subject=Lidworks%20Lab%20report">lidworks@proton.me</a>. Some networks, like many in mainland China, block the service we use. A VPN fixes that, or just email the file.</p>
+          </details>
+          <details>
+            <summary>How do I remove it?</summary>
+            <p>Press <strong>Delete App and Quit</strong> on the last screen, or drag Lidworks Lab from Applications to the Trash. It leaves nothing else behind.</p>
+          </details>
+          <details>
+            <summary>Is it safe for my screen?</summary>
+            <p>It only changes the brightness setting and darkens the picture for a few seconds, the same things the brightness keys and Night Shift do. Everything is put back when the test ends, when you press Stop Test, and even if the app is force-quit or crashes: a tiny helper restores your brightness and keyboard light within a second.</p>
+          </details>
+          <details>
+            <summary>I'm sensitive to flashing light.</summary>
+            <p>The pulse step changes the brightness at most twice a second, below the three-flashes-a-second guideline, and the picture is compensated so the screen looks almost steady. You can still press <strong>Stop Test</strong> at any time and skip to the end.</p>
+          </details>
+          <details>
+            <summary>Why isn't it signed by Apple?</summary>
+            <p>Signing costs a yearly fee, and we're spending it on Lidlight first. You can check what the app does: everything it sends is shown to you first.</p>
+          </details>
+          <details>
+            <summary>I'd rather use Terminal.</summary>
+            <p>There's a script version too: one command, no app. See <a href="../test/">the Terminal test</a>. It saves its results to a zip file that you send yourself.</p>
+          </details>
+          <details>
+            <summary>I'm at an Apple Store.</summary>
+            <p>Please don't install apps on display Macs. The Terminal test runs without installing anything and cleans up after itself.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lidworks is an independent developer and is not affiliated with Apple Inc. Apple, Mac and MacBook Pro are trademarks of Apple Inc.</p>
+      <p>© <span data-year>2026</span> <a href="../">Lidworks</a> · <a href="privacy.html">Lab privacy</a> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+    </div>
+  </footer>
+  <script>
+    document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
+    // 复制命令；浏览器不让写剪贴板时，就把命令选中，提示用户自己按 ⌘C
+    var copy = document.getElementById("copy");
+    var cmd = document.getElementById("cmd");
+    function flash(label) { copy.textContent = label; setTimeout(function () { copy.textContent = "Copy"; }, 2500); }
+    function selectCommand() {
+      var range = document.createRange();
+      range.selectNodeContents(cmd);
+      var selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      flash("Press ⌘C");
+    }
+    copy.addEventListener("click", function () {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(cmd.textContent).then(function () { flash("Copied"); }, selectCommand);
+      } else {
+        selectCommand();
+      }
+    });
+  </script>
+</body>
+</html>

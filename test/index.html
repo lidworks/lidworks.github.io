@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Help test Lidlight — new MacBook Pro owners wanted</title>
+  <meta name="description" content="Own the new MacBook Pro with the glowing logo? Run a 3-minute test that helps us build a switch for it, and get Lidlight free.">
+  <meta property="og:title" content="Got the new MacBook Pro? Help us switch off the glow.">
+  <meta property="og:description" content="A 3-minute test. You get Lidlight free.">
+  <meta property="og:image" content="https://lidworks.github.io/assets/lidlight-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://lidworks.github.io/assets/lidlight-card.png">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../assets/lidlight-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../wipemode/">WipeMode</a>
+        <a href="../lidlight/">Lidlight</a>
+        <a href="../lab/">Lab</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <span class="eyebrow">Testers wanted</span>
+        <h1>Got the new MacBook Pro?<br>Help us switch off the glow.</h1>
+        <p class="lead">The glowing logo has no setting. We've built <a href="../lidlight/">Lidlight</a> to control it, but we can't finish it without the real hardware. Give us three minutes, and Lidlight is yours free when it ships.</p>
+        <p class="note"><strong>Who we need:</strong> the MacBook Pro with <strong>PROLED XDR Display</strong> — the one whose Apple logo lights up. Other models have a mirror logo that doesn't glow.</p>
+      </div>
+    </section>
+
+    <section id="lab">
+      <div class="wrap">
+        <span class="eyebrow">Easiest</span>
+        <h2>Your own Mac? Use the app.</h2>
+        <p class="lead">Lidworks Lab asks you what the logo does at each step, measures the hardware more closely than the script can, and sends the results for you after showing you everything. No video or zip file needed.</p>
+        <div class="actions" style="margin-top: 26px">
+          <a class="button" href="../lab/">Get Lidworks Lab</a>
+          <span class="small">3 minutes · <a href="../lab/privacy.html">what it collects</a></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="wrap">
+        <span class="eyebrow">No app? Use Terminal</span>
+        <h2>Three minutes, one command.</h2>
+        <p class="lead">Best for display Macs in a store: it installs nothing and cleans up after itself.</p>
+        <ol class="steps">
+          <li><strong>Open Terminal.</strong> It's in Applications → Utilities, or press <kbd>⌘</kbd> <kbd>Space</kbd> and type “Terminal”.</li>
+          <li><strong>Paste this and press Return:</strong>
+            <div class="command">
+              <code id="cmd">curl -fsSL https://lidworks.github.io/probe.sh | bash</code>
+              <button type="button" id="copy">Copy</button>
+            </div>
+          </li>
+          <li><strong>Film the logo when it asks</strong> (optional, but it's the most useful part). Point your phone at the back of the lid and record with sound. Your screen will get brighter and dimmer and go almost black for 6 seconds. Everything goes back to normal at the end.</li>
+          <li><strong>Send us the zip from your Desktop</strong> (and the video) at <a href="mailto:lidworks@proton.me?subject=Lidlight%20test">lidworks@proton.me</a>, or DM <a href="https://x.com/Lidworks312">@Lidworks312</a> on X.</li>
+        </ol>
+        <p class="note"><strong>Bonus, one more minute:</strong> when the script asks “Also test whether WipeMode blocks touches?”, type <kbd>y</kbd>. It opens our free screen-cleaning app from a temporary folder, you tap around a black screen, and it's deleted afterwards. It tells us whether the touchscreen is blocked while you wipe.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">What you get</span>
+        <h2>Lidlight, free, for good.</h2>
+        <ul class="checklist">
+          <li>A free Lidlight license when it launches (it'll be under $5 for everyone else).</li>
+          <li>A thank-you on this page, with whatever name or handle you like — or none at all.</li>
+          <li>The first look at whether the logo can be turned off. We'll post what we find.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">What the script does</span>
+        <h2>Nothing sneaky. Read it first if you like.</h2>
+        <ul class="checklist">
+          <li>Saves a list of your Mac's hardware: the same thing <code>ioreg</code> and <code>hidutil</code> show. Serial numbers, UUIDs, MAC addresses and your user name are removed.</li>
+          <li>Steps the screen brightness up and down and darkens the picture for 6 seconds, so we can see what the logo follows.</li>
+          <li>Puts your brightness back, then zips the results on your Desktop.</li>
+          <li>Installs nothing, asks for no password, and uploads nothing. Sending us the zip is up to you.</li>
+        </ul>
+        <p class="lead" style="margin-top: 26px; font-size: 18px">Prefer to read before running? Download it, look, then run it:</p>
+        <div class="command">
+          <code>curl -fsSL https://lidworks.github.io/probe.sh -o probe.sh; open -e probe.sh</code>
+        </div>
+        <p class="small" style="margin-top: 10px">Then run it with <code>bash probe.sh</code>. Or just <a href="../probe.sh">view it in your browser</a>.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>My screen is still too bright or too dim afterwards.</summary>
+            <p>The script restores your brightness at the end, and also if you stop it with Ctrl-C. If something still looks off, adjust it with the brightness keys — nothing is changed permanently. Then tell us what happened, it helps.</p>
+          </details>
+          <details>
+            <summary>The picture stayed dark.</summary>
+            <p>The darkening is undone as soon as the script's helper exits. Quitting Terminal always resets it. If you ever see this, please send us a note.</p>
+          </details>
+          <details>
+            <summary>I have the regular MacBook Pro (no glowing logo). Can I help?</summary>
+            <p>Yes, a little: run it and send the zip anyway. It gives us a “before” picture to compare against. We can't give out free licenses for these, but we really appreciate it.</p>
+          </details>
+          <details>
+            <summary>Why doesn't Lidlight just exist already?</summary>
+            <p>Apple didn't document how the logo is lit. Lidlight's app is ready; the last part, actually talking to the light, needs a real machine to figure out. That's you.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lidworks is an independent developer and is not affiliated with Apple Inc. Apple, Mac and MacBook Pro are trademarks of Apple Inc.</p>
+      <p>© <span data-year>2026</span> <a href="../">Lidworks</a> · <a href="../lab/privacy.html">Lab privacy</a> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
+    // 复制命令；浏览器不让写剪贴板时，就把命令选中，提示用户自己按 ⌘C
+    var copy = document.getElementById("copy");
+    var cmd = document.getElementById("cmd");
+    function flash(label) { copy.textContent = label; setTimeout(function () { copy.textContent = "Copy"; }, 2500); }
+    function selectCommand() {
+      var range = document.createRange();
+      range.selectNodeContents(cmd);
+      var selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      flash("Press ⌘C");
+    }
+    copy.addEventListener("click", function () {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(cmd.textContent).then(function () { flash("Copied"); }, selectCommand);
+      } else {
+        selectCommand();
+      }
+    });
+  </script>
+</body>
+</html>
