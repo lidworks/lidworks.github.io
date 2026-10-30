@@ -9,8 +9,14 @@
 #      while you film the logo with your phone.
 #   3. Restores your brightness, then zips the results on your Desktop.
 # It installs nothing, needs no password, and never uploads anything: you choose
-# whether to send us the zip. Optional: a 1-minute touch test of our free app WipeMode
-# (downloaded to a temporary folder and deleted afterwards).
+# whether to send us the zip. Optional extras, each about a minute:
+#   - If System Settings has Apple's own option to turn the logo off, you flip it off
+#     and back on, and the script notes which hardware properties and Apple settings
+#     changed. Only Apple's settings files are read, apps with personal content
+#     (Music, Photos, Mail, Messages...) are skipped, and only changed keys are kept,
+#     with values only when they're numbers or on/off.
+#   - A touch test of our free app WipeMode (downloaded to a temporary folder and
+#     deleted afterwards).
 #
 # Run:  curl -fsSL https://lidworks.github.io/probe.sh | bash
 
@@ -80,6 +86,81 @@ minus_noise() {
 }
 
 snapshot() { ioreg -l -w0 2>/dev/null | redact > "$OUT/ioreg-$1.txt"; normalize "$OUT/ioreg-$1.txt" > "$WORK/$1.tsv"; }
+
+changed_all() {
+  awk -F'\t' '
+    NR == FNR { a[$1 FS $2] = $3; next }
+    { k = $1 FS $2; seen[k] = 1; if (!(k in a)) print k FS "<none>" FS $3; else if (a[k] != $3) print k FS a[k] FS $3 }
+    END { for (k in a) if (!(k in seen)) print k FS a[k] FS "<none>" }' "$1" "$2"
+}
+
+LIVE_DOMAINS="com.apple.universalaccess com.apple.Accessibility com.apple.CoreBrightness com.apple.BezelServices com.apple.windowserver.displays com.apple.controlcenter NSGlobalDomain"
+PREF_SKIP='^com\.apple\.(Music|TV|iTunes|Podcasts|podcasts|AMP|amp|Photos|photo|iBooks|Books|news|stocks|Safari|mail|Mail|MobileSMS|iChat|FaceTime|AddressBook|iCal|reminders|Notes|Maps|Home)'
+prefs_snapshot() {
+  local raw="$WORK/prefs-$1.raw" p i
+  (
+    for f in "$HOME"/Library/Preferences/com.apple.*.plist "$HOME"/Library/Preferences/.GlobalPreferences*.plist \
+             "$HOME"/Library/Preferences/ByHost/com.apple.*.plist "$HOME"/Library/Preferences/ByHost/.GlobalPreferences*.plist \
+             /Library/Preferences/com.apple.*.plist /Library/Preferences/.GlobalPreferences.plist; do
+      [ -r "$f" ] || continue
+      base="${f##*/}"; [[ "$base" =~ $PREF_SKIP ]] && continue
+      echo "== $f"; plutil -p "$f" 2>/dev/null
+    done
+  ) > "$raw" &
+  p=$!
+  for i in $(seq 1 150); do kill -0 "$p" 2>/dev/null || break; sleep 0.1; done
+  if kill -0 "$p" 2>/dev/null; then
+    pkill -P "$p" 2>/dev/null; kill "$p" 2>/dev/null
+    echo "   ⚠︎ $(t "读设置文件超时，这一份只有一部分" "Reading settings files timed out; this snapshot is partial")"
+  fi
+  { wait "$p"; } 2>/dev/null
+  {
+    awk -v ind=2 -v sep=" => " -f "$WORK/flatten.awk" "$raw"
+    for d in $LIVE_DOMAINS; do
+      echo "== live:$d"; defaults read "$d" 2>/dev/null
+    done | awk -v ind=4 -v sep=" = " -f "$WORK/flatten.awk"
+  } > "$WORK/prefs-$1.tsv"
+}
+
+write_flatten() {
+  cat > "$WORK/flatten.awk" <<'AWK'
+BEGIN { pad = ""; for (n = 0; n < ind; n++) pad = pad " " }
+function flush() { if (key != "") print domain "\t" key "\t" substr(val, 1, 500); key = "" }
+/^== / {
+  flush(); d = substr($0, 4); scope = ""
+  if (d ~ /^live:/) { domain = d; next }
+  if (d ~ /\/ByHost\//) scope = "byhost:"; else if (d ~ /^\/Library\//) scope = "system:"
+  sub(/.*\//, "", d); sub(/\.plist$/, "", d)
+  n = split(d, part, "."); last = part[n]
+  if (length(last) == 36 && last ~ /^[0-9A-Fa-f-]+$/) d = substr(d, 1, length(d) - 37)
+  domain = scope d; next
+}
+/^[{}]/ { flush(); next }
+{
+  if (substr($0, 1, ind) == pad && substr($0, ind + 1, 1) != " ") {
+    c = substr($0, ind + 1, 1)
+    if (c == "}" || c == ")" || c == "]") { if (key != "") val = val c; flush(); next }
+    flush(); line = substr($0, ind + 1); i = index(line, sep); if (i == 0) next
+    key = substr(line, 1, i - 1); gsub(/^"|"$/, "", key)
+    val = substr(line, i + length(sep)); sub(/^ +/, "", val); next
+  }
+  if (key != "") { v = $0; sub(/^ +/, "", v); val = val " " v }
+}
+END { flush() }
+AWK
+}
+
+safe_prefs() {
+  awk -F'\t' '
+    function safe(k, v) {
+      sub(/;$/, "", v); gsub(/"/, "", v)
+      if (tolower(k) ~ /lat|lon|locat|sunrise|sunset|zone|time|date|stamp|schedule/ && v != "<none>") return "<changed>"
+      if (v ~ /^(-?[0-9]+(\.[0-9]+)?|<none>|YES|NO|true|false)$/) return v
+      return "<changed>"
+    }
+    { print $1 FS $2 FS safe($2, $3) FS safe($2, $4) }' \
+    | redact | sed -E 's/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/<email>/g'
+}
 
 write_helper() {
   cat > "$HELPER" <<'JS'
@@ -229,11 +310,70 @@ EOF
   echo "   ✓ $(t "这份 WipeMode 已关闭并删除" "This copy of WipeMode has been closed and deleted")"
 }
 
+SWITCH_TEST=0
+SWITCH_ANSWER=""
+
+switch_test() {
+  echo
+  echo "▸ $(t "[附加] 苹果自带的 logo 开关" "[Bonus] Apple's own logo switch")"
+  if [ "$PROBE_LANG" = zh ]; then cat <<'EOF'
+   1. 打开「系统设置」，在左上角的搜索框里输入 logo（据说在「辅助功能」里）
+   2. 找到能关掉发光 logo 的那个设置，先别动它
+EOF
+  else cat <<'EOF'
+   1. Open System Settings and type "logo" in the search box at the top left
+      (reportedly it's somewhere in Accessibility)
+   2. Find the setting that turns the glowing logo off. Don't change it yet.
+EOF
+  fi
+  local where
+  where="$(ask "$(t "   它在哪里？只能开关，还是能调亮度？（比如：辅助功能 > 显示，只能开关）找不到就直接回车跳过：" "   Where is it, and is it just on/off or a slider? (e.g. Accessibility > Display, on/off). Can't find it? Just press Return: ")" "(unattended)")"
+  if [ -z "$where" ]; then echo "   $(t "跳过" "Skipped")"; echo "not found" > "$OUT/apple-switch.txt"; return; fi
+
+  write_flatten
+  snapshot switch-on; prefs_snapshot on
+  step "用苹果的开关把 logo 关掉" "Turn the logo OFF with Apple's setting" "Apple's setting. Turn the logo off."
+  SWITCH_ANSWER="$(ask "$(t "   关掉之后：logo 完全灭了输入 o，只是变暗输入 d，没变化输入 n，然后回车 " "   Once it's off: type o if the logo went fully off, d if it only dimmed, n if nothing changed, then Return ")" "o")"
+  sleep 3
+  record_nits "apple switch off"; snapshot switch-off; prefs_snapshot off
+  step "再用苹果的开关把 logo 打开" "Turn the logo back ON with Apple's setting" "Now turn the logo back on."
+  ask "$(t "   打开、看到 logo 亮回来之后按回车 " "   Press Return once the logo is back on ")" >/dev/null
+  sleep 3
+  record_nits "apple switch back on"; snapshot switch-on2; prefs_snapshot on2
+  { echo "where: $where"; echo "logo when switched off: $SWITCH_ANSWER (o = fully off, d = dimmer, n = no change)"; } > "$OUT/apple-switch.txt"
+  echo "   ✓ $(t "记下了。请确认这个设置已经恢复成原来的样子" "Recorded. Please make sure the setting is back the way it was")"
+}
+
+switch_analysis() {
+  changed_all "$WORK/switch-on.tsv" "$WORK/switch-off.tsv" > "$WORK/sw.tsv"
+  changed_all "$WORK/switch-on.tsv" "$WORK/switch-on2.tsv" > "$WORK/sw-noise.tsv"
+  changed_all "$WORK/prefs-on.tsv" "$WORK/prefs-off.tsv" > "$WORK/swp.tsv"
+  changed_all "$WORK/prefs-on.tsv" "$WORK/prefs-on2.tsv" > "$WORK/swp-noise.tsv"
+  minus_noise "$WORK/sw-noise.tsv" "$WORK/sw.tsv" > "$WORK/sw-signal.tsv"
+  minus_noise "$WORK/swp-noise.tsv" "$WORK/swp.tsv" | safe_prefs > "$WORK/swp-signal.tsv"
+  {
+    echo
+    echo "# Hardware properties that changed when Apple's setting turned the logo off, and came back when it was turned on"
+    echo "# node | property | on | off   (<none> = property didn't exist)"
+    cut -c1-400 "$WORK/sw-signal.tsv"
+    echo
+    echo "# Settings that changed the same way. Only numbers and on/off values are kept; anything else shows as <changed>"
+    echo "# domain | key | on | off"
+    cat "$WORK/swp-signal.tsv"
+  } >> "$OUT/apple-switch.txt"
+  rm -f "$OUT"/ioreg-switch-on.txt "$OUT"/ioreg-switch-on2.txt
+
+  echo "   $(t "苹果开关（关掉时 logo：${SWITCH_ANSWER}）带动的硬件属性 $(grep -c . "$WORK/sw-signal.tsv") 个、设置 $(grep -c . "$WORK/swp-signal.tsv") 个：" "Apple's setting (logo when off: $SWITCH_ANSWER) changed $(grep -c . "$WORK/sw-signal.tsv") hardware properties and $(grep -c . "$WORK/swp-signal.tsv") settings:")"
+  { head -10 "$WORK/sw-signal.tsv"; head -10 "$WORK/swp-signal.tsv"; } \
+    | awk -F'\t' 'NF { printf "     %-40s %-36s %s → %s\n", substr($1,1,40), substr($2,1,36), substr($3,1,20), substr($4,1,20) }'
+}
+
 main() {
   for arg in "$@"; do
     case "$arg" in
       --yes|-y) YES=1 ;;
       --wipemode) WIPEMODE_TEST=1 ;;
+      --switch) SWITCH_TEST=1 ;;
     esac
   done
   STAMP="$(date +%Y%m%d-%H%M%S)"
@@ -371,6 +511,10 @@ EOF
   restore
   sleep 1; record_nits "after restore"
 
+  if [ "$SWITCH_TEST" = 1 ] || [ "$(ask "$(t "   系统设置里有关掉发光 logo 的选项吗？要不要拨一下，看它改了哪里？（约 1 分钟）[y/N] " "   Does System Settings have an option to turn the glowing logo off? Flip it so we can see what it changes? (~1 min) [y/N] ")" n)" = "y" ]; then
+    switch_test
+  fi
+
   if [ "$WIPEMODE_TEST" = 1 ] || [ "$(ask "$(t "   要顺便测 WipeMode 能不能挡住触摸吗？（只在触屏 Mac 上有意义，约 1 分钟）[y/N] " "   Also test whether WipeMode blocks touches? (touchscreen Macs only, ~1 min) [y/N] ")" n)" = "y" ]; then
     wipemode_touch_test
   fi
@@ -405,6 +549,7 @@ EOF
   echo "   $(t "只压暗画面时变化的属性：" "Properties that changed with the picture only: ")$(($(grep -c . "$OUT/changes-with-gamma.tsv") - 2))"
   echo "   $(t "关键词命中（前 10 个）：" "Keyword hits (first 10):")"
   sed -n '2,11p' "$OUT/keywords.txt" | sed 's/^/     /'
+  [ -f "$WORK/switch-on2.tsv" ] && switch_analysis
 
   local zip="$OUT.zip"
   (cd "$(dirname "$OUT")" && zip -qr "$zip" "$(basename "$OUT")") && rm -rf "$OUT"

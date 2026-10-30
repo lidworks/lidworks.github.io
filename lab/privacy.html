@@ -28,7 +28,7 @@
         <h1>What the test collects, and why.</h1>
         <p class="lead">Lidworks Lab is a 5-minute test that helps us learn how the glowing logo on the new MacBook Pro works. This page lists every kind of data in a report.</p>
         <p class="note"><strong>The short version:</strong> nothing leaves your Mac until you've seen the whole report and pressed <strong>Send</strong>. A report describes your Mac's hardware and system software, plus your answers. It contains no serial numbers, no names, no accessories, no files, no location and no IP address. A photo is included only if you choose to add one, with its hidden details removed. We delete it no later than 90 days after Lidlight launches, or sooner if you ask.</p>
-        <p class="small">Last updated 29 October 2026 · Report format version 3 (Lidworks Lab 0.2)</p>
+        <p class="small">Last updated 30 October 2026 · Report format version 4 (Lidworks Lab 0.2)</p>
       </div>
     </section>
 
@@ -63,6 +63,7 @@
             <h3>2. Your answers</h3>
             <ul>
               <li>Whether your logo glows, and what it did at each step: brightness 100%, 0% and 50%, a slow fade, a dark picture, a pulse test, whether it lit up together with a tick sound or after it, its colour, whether it changed colour when the picture turned red, green and blue, whether you can see separate dots and how they're arranged, whether it changes with the screen angle, and which light blinked.</li>
+              <li>Whether you found Apple's own switch for the logo in System Settings, where it was, its name if you typed it, and what the logo did when you turned it off and back on.</li>
               <li>The optional note you type on the review screen.</li>
             </ul>
             <p class="why"><b>Why:</b> software can't see the logo. Your eyes are the only sensor we have.</p>
@@ -74,6 +75,7 @@
               <li>Which hardware readings changed when the brightness changed, which changed when only the picture got darker, and which changed when the picture turned red, green or blue.</li>
               <li>Timing curves: up to 40 of those readings sampled 30 to 250 times a second while brightness jumps, fades and pulses, during the tick-sound test, and during a 3-second test where brightness wobbles by about 2% up to 30 times a second (too small to notice) to see how fast the hardware can follow.</li>
               <li>How much the picture was darkened during the pulse and tick-sound tests.</li>
+              <li>If you turn Apple's logo switch off and on (you do it by hand; the app never changes it): which hardware readings, brightness-service settings and Apple settings changed. For Apple settings we record only the setting's name and, for on/off or number settings, the old and new value. For text, lists and dates we note only that they changed, never what they say. Settings of apps from other companies are never read.</li>
             </ul>
             <p class="why"><b>Why:</b> these show how the logo is driven, how quickly it can change and how long it lags behind a command. That decides whether Lidlight can dim it, make it breathe, <b>change its colour</b>, or make it flow or <b>pulse with your music</b>.</p>
           </article>
@@ -176,7 +178,7 @@
         <h2>收集什么，为什么收集。</h2>
         <ul>
           <li><strong>什么时候发送：</strong>你看过完整的报告、点了「发送」才会上传，App 不会在后台联网。上传后会拿到一个提交编号，只有你自己知道哪份报告是你的。</li>
-          <li><strong>收集什么：</strong>Mac 型号、系统版本、屏幕参数；你对每一步的回答和备注（包括变色、声画同步、灯珠排列）；实验中硬件读数随亮度、画面明暗、画面颜色的变化和高频变化曲线；macOS 管理的灯（键盘背光等）；可选的触摸事件类型和手指数；整个内建硬件注册表和设备树（外接设备除外）；系统驱动接管哪种硬件；苹果系统组件里和亮度、灯光有关的函数名、类名、文字、设置项名称和权限；亮度服务报告的设置（日出日落时间表因为能推算住址，不收）；True Tone、夜览、自动亮度开没开；你自愿附上的一张 logo 照片（缩小、去掉定位等隐藏信息）。</li>
+          <li><strong>收集什么：</strong>Mac 型号、系统版本、屏幕参数；你对每一步的回答和备注（包括变色、声画同步、灯珠排列，以及系统设置里有没有苹果自带的 logo 开关、在哪、叫什么）；你亲手关掉、再打开这个开关时，哪些硬件读数、亮度服务设置和苹果设置项变了（设置项只记名字，开关和数字记前后的值，文字、列表、日期只记"变了"；App 自己不碰这个开关，也不读其他公司 App 的设置）；实验中硬件读数随亮度、画面明暗、画面颜色的变化和高频变化曲线；macOS 管理的灯（键盘背光等）；可选的触摸事件类型和手指数；整个内建硬件注册表和设备树（外接设备除外）；系统驱动接管哪种硬件；苹果系统组件里和亮度、灯光有关的函数名、类名、文字、设置项名称和权限；亮度服务报告的设置（日出日落时间表因为能推算住址，不收）；True Tone、夜览、自动亮度开没开；你自愿附上的一张 logo 照片（缩小、去掉定位等隐藏信息）。</li>
           <li><strong>为什么收集这么多：</strong>新机主现在很少，每一次测试都要尽量回答更多问题：logo 能不能调暗？是一盏白灯还是很多颗能单独控制、能变色的灯珠？从发指令到灯亮要多久？这些决定了能不能做变色、流动、跟着音乐跳的灯效。</li>
           <li><strong>绝不收集：</strong>序列号和各种设备编号；你的名字、电脑名、Apple 账户；具体的日期时刻（换成 &lt;time&gt;）；NVRAM 和开机数据、购买地区；蓝牙、USB 等外接设备；你装的 App、文件、照片（你自己选的那张 logo 照片除外）、屏幕内容、按键、位置、点击位置；IP 地址（服务器收数据时能看到，但不存，也关掉了日志）。</li>
           <li><strong>保存和删除：</strong>存在 Cloudflare 上，只用于开发 Lidworks 的 App，不出售、不给广告商。原始报告最晚在 Lidlight 上线后 90 天删除；如果 Lidlight 没有上线，2027 年 6 月 30 日前删除。把提交编号发到 lidworks@proton.me，14 天内删除并回复确认。</li>
