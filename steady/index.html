@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Steady — flicker-free dimming for the OLED MacBook Pro</title>
+  <meta name="description" content="Free Mac app: keeps the OLED panel bright and dims the picture in software, so low brightness doesn't mean flicker. Your brightness keys keep working.">
+  <meta property="og:title" content="Steady — dim the picture, not the panel">
+  <meta property="og:description" content="Flicker-free dimming for the new OLED MacBook Pro. Free.">
+  <meta property="og:image" content="https://lidworks.github.io/assets/steady-icon.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:image" content="https://lidworks.github.io/assets/steady-icon.png">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../assets/steady-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../wipemode/">WipeMode</a>
+        <a href="./" aria-current="page">Steady</a>
+        <a href="../lidlight/">Lidlight</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <img class="app-icon" src="../assets/steady-icon.png" alt="Steady icon" width="84" height="84">
+        <h1>Dim the picture.<br>Not the panel.</h1>
+        <p class="lead">OLED screens usually dim by flickering when the brightness is low. Steady keeps the panel bright and dims the picture in software instead, so you get the brightness you want without the flicker. Your brightness keys work exactly as before.</p>
+        <div class="actions">
+          <a class="button" href="https://github.com/lidworks/steady/releases/latest/download/Steady.dmg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>
+            Download free
+          </a>
+          <span class="small">Beta · macOS 13 or later · Apple silicon · 2 MB</span>
+        </div>
+        <p class="note"><strong>Made for the new OLED MacBook Pro.</strong> Apple's OLED iPad Pro dims by flickering (PWM) at low brightness and stops at higher brightness, and the OLED MacBook Pro very likely works the same way. We'll measure it on real hardware after it ships on November 6 and post what we find. Mini-LED MacBook Pros flicker at about 15,000 times a second at <em>every</em> brightness, so Steady can't help those.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">How it works</span>
+        <h2>A bright bulb behind sunglasses.</h2>
+        <p class="lead">Instead of turning the panel down, Steady leaves it up where it doesn't flicker and puts a pair of "sunglasses" over the picture. The screen looks as bright as you set it. Sixty times a second, Steady checks the real panel brightness and adjusts the picture to match.</p>
+
+        <div class="grid">
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></div>
+            <h3>Brightness keys just work</h3>
+            <p>Press them as usual: each press is one step, dimmer or brighter. The system brightness bar will look full; that's expected.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M3 7c3 0 3 3 6 3s3-3 6-3 3 3 6 3" opacity="0.4"/></svg></div>
+            <h3>No jump when it starts</h3>
+            <p>The panel ramps up in small steps while the picture is dimmed to match, so turning Steady on or off doesn't flash.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3>Always hands back</h3>
+            <p>Quit it and your brightness glides back. Even if it crashes or is force-quit, a tiny watchdog restores your brightness within a second.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <h3>Pauses Auto-Brightness</h3>
+            <p>Auto-Brightness would fight over the panel, so Steady pauses it while it runs and turns it back on when it stops.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6M15 2v6M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v5"/></svg></div>
+            <h3>Plugged in only, if you like</h3>
+            <p>By default it runs only on power and steps aside on battery. You can also choose how bright the panel stays.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+            <h3>Free, tiny, private</h3>
+            <p>No account, no ads, no tracking, no network access at all. It needs no special permissions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap">
+        <span class="eyebrow">Install</span>
+        <h2>Set up in a minute.</h2>
+        <ol class="steps">
+          <li><strong>Download and open Steady.dmg</strong>, then drag Steady into Applications.</li>
+          <li><strong>Open it once.</strong> If macOS says it can't check the app, click <em>Done</em>, then go to <em>System Settings → Privacy &amp; Security</em> and click <em>Open Anyway</em>.</li>
+          <li><strong>Click <em>Turn On</em></strong> in the welcome message, or click the ☀︎ in the menu bar and choose <em>Flicker-Free Dimming</em>.</li>
+          <li><strong>Use your brightness keys as usual.</strong></li>
+        </ol>
+        <p class="note"><strong>Why the extra click in step 2?</strong> Steady isn't notarized by Apple yet, so macOS asks you to confirm the first time. It's a one-time step.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Will it help on my Mac?</summary>
+            <p>Steady helps screens that flicker only when they're dim, which is how OLED screens usually work. That's the new MacBook Pro with the OLED display. Mini-LED MacBook Pros flicker at a very high rate at every brightness, so Steady can't change that and would only use more power. If your screen doesn't bother you, you don't need it.</p>
+          </details>
+          <details>
+            <summary>Does it use more battery?</summary>
+            <p>On an OLED screen, power follows how much light the pixels actually give off, so the cost should be small. We'll confirm that on real hardware. On mini-LED screens a bright backlight costs a lot, which is why Steady only runs when plugged in unless you change it.</p>
+          </details>
+          <details>
+            <summary>Anything look different?</summary>
+            <p>At very low brightness, smooth gradients may show faint steps, because the picture is being dimmed in software. HDR videos are dimmed too. Quit Steady anytime and everything is back to normal.</p>
+          </details>
+          <details>
+            <summary>Why does the system brightness bar look full?</summary>
+            <p>Because the panel really is at full brightness; Steady does the dimming. Your keys still change what you see, one step per press.</p>
+          </details>
+          <details>
+            <summary>My menu bar is full and I can't see the ☀︎.</summary>
+            <p>It's probably hidden behind the camera housing. Open Steady again from Applications and its menu pops up right where your pointer is.</p>
+          </details>
+          <details>
+            <summary>Is it really free?</summary>
+            <p>Yes, during the beta. Follow <a href="https://x.com/Lidworks312">@Lidworks312</a> for the measurements from the new MacBook Pro and what's next.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Steady collects no data and never connects to the internet. Lidworks is an independent developer and is not affiliated with Apple Inc. Apple, Mac and MacBook Pro are trademarks of Apple Inc.</p>
+      <p>© <span data-year>2026</span> <a href="../">Lidworks</a> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+    </div>
+  </footer>
+  <script>document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });</script>
+</body>
+</html>
