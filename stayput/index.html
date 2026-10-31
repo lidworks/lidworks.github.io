@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StayPut — pick your macOS, keep it</title>
+  <meta name="description" content="Free Mac app: stop the macOS upgrade nags, pause automatic updates, upgrade to exactly the version you want, or go back to an older one with step-by-step help.">
+  <meta property="og:title" content="StayPut — pick your macOS, keep it">
+  <meta property="og:description" content="Stop the upgrade nags. Upgrade or go back when you choose. Free.">
+  <meta property="og:image" content="https://lidworks.github.io/assets/stayput-icon.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:image" content="https://lidworks.github.io/assets/stayput-icon.png">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../assets/stayput-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../wipemode/">WipeMode</a>
+        <a href="../steady/">Steady</a>
+        <a href="../hop/">Hop</a>
+        <a href="./" aria-current="page">StayPut</a>
+        <a href="../newhere/">NewHere</a>
+        <a href="../lidlight/">Lidlight</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <img class="app-icon" src="../assets/stayput-icon.png" alt="StayPut icon" width="84" height="84">
+        <h1>Pick your macOS.<br>Keep it.</h1>
+        <p class="lead">Stop the upgrade nags. Upgrade to exactly the version you want, when you want. Or go back to an older one, with step-by-step help the whole way.</p>
+        <div class="actions">
+          <a class="button" href="https://github.com/lidworks/stayput/releases/latest/download/StayPut.dmg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>
+            Download free
+          </a>
+          <span class="small">Beta · macOS 26 or later · Apple silicon · 1 MB · <a href="#install">How to install</a></span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">What it does</span>
+        <h2>Your Mac, on your schedule.</h2>
+        <p class="lead">StayPut lives in the menu bar. Everything it changes, it can put back with one click.</p>
+
+        <div class="grid two">
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 3h6l-1 6 3 3H7l3-3z"/></svg></div>
+            <h3>Lock to your macOS</h3>
+            <p>Uses Apple's own deferral setting, the one companies use, so new major versions and the red badge stay out of Software Update for up to 90 days after each release. The menu shows roughly how long the lock holds, and warns you if macOS ignores it. Updates for your current version keep coming.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></div>
+            <h3>Pause Automatic Updates</h3>
+            <p>No more multi-gigabyte downloads in the background or “install tonight”. Security fixes then wait for you too, so StayPut shows them in its menu and opens Software Update with one click.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0-5 5m5-5 5 5"/></svg></div>
+            <h3>Upgrade to exactly the version you want</h3>
+            <p>Lists the newest release of every macOS Apple offers for your Mac. StayPut downloads the full installer straight from Apple, checks Apple's signature and tells you up front if you're short on space. Small updates within your version go through Software Update.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></div>
+            <h3>Go back, step by step</h3>
+            <p>Apple silicon Macs can't downgrade in place, so StayPut walks you through it: back up with Time Machine (one button sets up a new drive), make a USB startup disk for the version you pick, then follow <a href="downgrade/">illustrated restart steps</a> on your phone.</p>
+          </div>
+        </div>
+        <p class="note"><strong>Changed your mind?</strong> Choose <em>Restore All Settings and Quit…</em> from the menu. StayPut puts the automatic-update settings back and removes its lock, then you can drag it to the Trash.</p>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap">
+        <span class="eyebrow">Install</span>
+        <h2>Set up in a minute.</h2>
+        <p class="lead">The quickest way is one line in Terminal. Press <kbd>⌘</kbd> <kbd>Space</kbd>, type “Terminal” and press Return. Then paste this line and press Return. StayPut puts itself in Applications and opens, with no security prompts.</p>
+        <div class="command">
+          <code>curl -fsSL https://lidworks.github.io/install.sh | bash -s stayput</code>
+          <button type="button">Copy</button>
+        </div>
+        <p class="small" style="margin-top: 10px">Like to see what it runs first? <a href="../install.sh">Read the installer</a>. It only downloads StayPut from our GitHub page, copies it to Applications and opens it.</p>
+
+        <h3 style="margin-top: 44px">Or download the .dmg</h3>
+        <ol class="steps">
+          <li><strong>Download <a href="https://github.com/lidworks/stayput/releases/latest/download/StayPut.dmg">StayPut.dmg</a></strong>, open it and drag StayPut into Applications.</li>
+          <li><strong>Open StayPut from Applications.</strong> We haven't paid Apple to sign it yet, so the first time macOS stops it. Click <strong>Done</strong>. <span class="warn">Don't click Move to Trash.</span>
+            <img class="shot" src="../assets/install/stayput-blocked.jpg" alt="macOS says “StayPut” Not Opened. The Done button is circled." width="464" height="480" loading="lazy"></li>
+          <li><strong><a href="x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension">Open Privacy &amp; Security</a></strong> (or go to System Settings → Privacy &amp; Security), scroll to the bottom and click <strong>Open Anyway</strong>.
+            <img class="shot wide" src="../assets/install/stayput-open-anyway.jpg" alt="Privacy &amp; Security shows “StayPut” was blocked, with the Open Anyway button circled." width="760" height="296" loading="lazy"></li>
+          <li><strong>Enter your Mac password, then click Open Anyway once more.</strong> You only do this once. The button stays there for about an hour; if it's gone, open StayPut again and it comes back.</li>
+        </ol>
+        <p class="note"><strong>About the password prompts.</strong> Changing update settings needs an administrator, so StayPut uses macOS's own password window and never sees your password. Because StayPut isn't signed by Apple yet, that window says Apple can't verify the app, and when you lock your version System Settings calls the profile's author “unknown”. StayPut explains each one before it appears.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">Good to know</span>
+        <h2>The honest details</h2>
+        <div class="faq">
+          <details>
+            <summary>How long does the lock last?</summary>
+            <p>Up to 90 days after each new major version comes out. That's Apple's limit, not ours. After that the upgrade shows up again, and you can simply lock again. Some macOS versions have been reported to ignore this setting; if StayPut sees macOS offering the upgrade anyway, it tells you in its menu.</p>
+          </details>
+          <details>
+            <summary>Will I still get security fixes?</summary>
+            <p>Yes. Locking only hides the next major version. If you also pause automatic updates, security fixes wait until you click Update, and StayPut reminds you in its menu when one is available.</p>
+          </details>
+          <details>
+            <summary>How far back can I go?</summary>
+            <p>Not earlier than the macOS your Mac came with, and only to versions Apple still signs. The new MacBook Pro with the OLED display ships with macOS 27, so it can't go back to 26. Going back erases the Mac, so StayPut has you make a Time Machine backup first. You'll need a USB drive of 32 GB or more and a drive for the backup.</p>
+          </details>
+          <details>
+            <summary>Why does it open Terminal when making the USB drive?</summary>
+            <p>macOS only lets Apple's own installer tool write a startup disk from Terminal. StayPut prepares everything and shows the progress; you type your login password once. If macOS asks whether Terminal may use removable volumes, click Allow.</p>
+          </details>
+          <details>
+            <summary>Will my backup work on the older macOS?</summary>
+            <p>Migration Assistant on an older macOS may refuse a backup made on a newer one. Your files are still there: open the backup drive in Finder and drag your folders back. The <a href="downgrade/">restart steps</a> show exactly where.</p>
+          </details>
+          <details>
+            <summary>What has been tested?</summary>
+            <p>In a virtual Mac: upgrading from 26.6.2 to 27.2 while locked, locking and unlocking, pausing and resuming automatic updates, making a 26.7.2 USB startup disk on 27.2, and the one-button Time Machine backup. Starting up from the USB drive and erasing can only be tested on a real Mac, and hasn't been yet. StayPut is a free beta.</p>
+          </details>
+          <details>
+            <summary>How much space does it need?</summary>
+            <p>The app is about 1 MB. Upgrading or making a USB drive downloads Apple's 15–18 GB installer, so keep about 40 GB free. StayPut can delete the installer for you afterwards.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>StayPut collects no data. It only talks to Apple's own software-update servers. Lidworks is an independent developer and is not affiliated with Apple Inc. Apple, Mac, macOS and Time Machine are trademarks of Apple Inc.</p>
+      <p>© <span data-year>2026</span> <a href="../">Lidworks</a> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+    </div>
+  </footer>
+  <script src="../assets/site.js"></script>
+</body>
+</html>

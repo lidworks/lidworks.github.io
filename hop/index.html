@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hop — switch desktops instantly on your Mac</title>
+  <meta name="description" content="Free Mac app: switch desktops and full-screen apps instantly, without the slide. Works with the Dock, ⌃← ⌃→ and trackpad swipes you already use.">
+  <meta property="og:title" content="Hop — switch desktops, skip the slide">
+  <meta property="og:description" content="Instant desktop switching for your Mac. Free.">
+  <meta property="og:image" content="https://lidworks.github.io/assets/hop-icon.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:image" content="https://lidworks.github.io/assets/hop-icon.png">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../assets/hop-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../wipemode/">WipeMode</a>
+        <a href="../steady/">Steady</a>
+        <a href="./" aria-current="page">Hop</a>
+        <a href="../stayput/">StayPut</a>
+        <a href="../newhere/">NewHere</a>
+        <a href="../lidlight/">Lidlight</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <img class="app-icon" src="../assets/hop-icon.png" alt="Hop icon" width="84" height="84">
+        <h1>Switch desktops.<br>Skip the slide.</h1>
+        <p class="lead">Every time you change desktops or jump to a full-screen app, macOS slides for most of a second. Hop makes the switch instant. Same Dock, same shortcuts, same swipes, just without the wait.</p>
+        <div class="actions">
+          <a class="button" href="https://github.com/lidworks/hop/releases/latest/download/Hop.dmg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>
+            Download free
+          </a>
+          <span class="small">macOS 27 or later · Apple silicon · 1 MB · <a href="#install">How to install</a></span>
+        </div>
+        <p class="note"><strong>Measured on a MacBook Pro:</strong> the system's slide took 0.7 to 1 second. With Hop, the new desktop appears in one or two frames, about 1/50 of a second.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">How you use it</span>
+        <h2>Nothing new to learn.</h2>
+        <p class="lead">Hop doesn't add shortcuts or windows. It speeds up the three ways you already switch, and you can turn each one off.</p>
+
+        <div class="grid">
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="15" width="18" height="6" rx="2"/><path d="M8 18h.01M12 18h.01M16 18h.01M12 11V3m0 0-3 3m3-3 3 3"/></svg></div>
+            <h3>Click in the Dock</h3>
+            <p>Click an app whose window is on another desktop, or in full screen, and you're there at once.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M9 12H6m0 0 2-2m-2 2 2 2M15 12h3m0 0-2-2m2 2-2 2"/></svg></div>
+            <h3>⌃← and ⌃→</h3>
+            <p>The keyboard shortcuts for moving one desktop left or right. If you changed them in System Settings, Hop uses yours.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8m0 0-3-3m3 3-3 3"/></svg></div>
+            <h3>Trackpad swipe</h3>
+            <p>Swipe left or right between desktops the way you always do. Hop finishes the move instantly.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3>Stays out of the way</h3>
+            <p>Long-press Dock menus and dragging work exactly as before. If you turned off switching to an app's desktop in System Settings, Hop leaves Dock clicks alone too. Quit Hop and everything is back to normal.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></div>
+            <h3>Turn each one off</h3>
+            <p>Only want instant swipes? Switch off the Dock or the shortcuts in Hop's menu-bar menu.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+            <h3>Free, tiny, private</h3>
+            <p>No account, no ads, no network access. It never reads what you type.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap">
+        <span class="eyebrow">Install</span>
+        <h2>Set up in a minute.</h2>
+        <p class="lead">The quickest way is one line in Terminal. Press <kbd>⌘</kbd> <kbd>Space</kbd>, type “Terminal” and press Return. Then paste this line and press Return. Hop puts itself in Applications and opens, with no security prompts.</p>
+        <div class="command">
+          <code id="cmd">curl -fsSL https://lidworks.github.io/install.sh | bash -s hop</code>
+          <button type="button">Copy</button>
+        </div>
+        <p class="small" style="margin-top: 10px">Like to see what it runs first? <a href="../install.sh">Read the installer</a>. It only downloads Hop from our GitHub page, copies it to Applications and opens it.</p>
+
+        <h3 style="margin-top: 44px">Or download the .dmg</h3>
+        <ol class="steps">
+          <li><strong>Download <a href="https://github.com/lidworks/hop/releases/latest/download/Hop.dmg">Hop.dmg</a></strong>, open it and drag Hop into Applications.</li>
+          <li><strong>Open Hop from Applications.</strong> We haven't paid Apple to sign it yet, so the first time macOS stops it. Click <strong>Done</strong>. <span class="warn">Don't click Move to Trash.</span>
+            <img class="shot" src="../assets/install/hop-blocked.jpg" alt="macOS says “Hop” Not Opened. The Done button is circled." width="464" height="480" loading="lazy"></li>
+          <li><strong><a href="x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension">Open Privacy &amp; Security</a></strong> (or go to System Settings → Privacy &amp; Security), scroll to the bottom and click <strong>Open Anyway</strong>.
+            <img class="shot wide" src="../assets/install/hop-open-anyway.jpg" alt="Privacy &amp; Security shows “Hop” was blocked, with the Open Anyway button circled." width="760" height="296" loading="lazy"></li>
+          <li><strong>Enter your Mac password, then click Open Anyway once more.</strong> You only do this once. The button stays there for about an hour; if it's gone, open Hop again and it comes back.</li>
+        </ol>
+
+        <h3 style="margin-top: 44px">Then</h3>
+        <ol class="steps">
+          <li><strong>Click <em>Open System Settings</em></strong> in Hop's welcome message and turn on <strong>Hop</strong> in the Accessibility list. Hop notices right away; you don't need to restart it.</li>
+          <li><strong>Switch desktops the way you always do.</strong></li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Why does Hop need Accessibility permission?</summary>
+            <p>To notice when you click the Dock, press ⌃← or ⌃→, or swipe, so it can switch instantly instead. It only looks at those few things, never reads what you type, and has no network access.</p>
+          </details>
+          <details>
+            <summary>I updated Hop and it stopped working.</summary>
+            <p>Because Hop isn't signed by Apple yet, macOS treats each update as a new app. Open System Settings → Privacy &amp; Security → Accessibility, select Hop, click the − button, then open Hop again and allow it. Hop shows you this when it happens.</p>
+          </details>
+          <details>
+            <summary>I can't see Hop in the menu bar.</summary>
+            <p>When the menu bar is full, icons on the left get hidden. Open Hop again from Applications and its menu pops up right where your pointer is.</p>
+          </details>
+          <details>
+            <summary>Does it work with several displays?</summary>
+            <p>Hop switches the desktop on the display you're using, like macOS does. We've tested it on one display so far; if something's off with two, tell us at <a href="https://x.com/Lidworks312">@Lidworks312</a>.</p>
+          </details>
+          <details>
+            <summary>Anything that works differently?</summary>
+            <p>One thing: while Mission Control is open, ⌃← ⌃→ and trackpad swipes take you straight to the next desktop instead of moving within Mission Control. Turn off those two switches in Hop's menu if you'd rather keep the old behavior there.</p>
+          </details>
+          <details>
+            <summary>How do I remove it?</summary>
+            <p>Choose <em>Quit Hop</em> from its menu, then drag Hop from Applications to the Trash. You can also remove it from the Accessibility list in System Settings.</p>
+          </details>
+          <details>
+            <summary>Thanks</summary>
+            <p>Hop's instant switch is built on <a href="https://github.com/jurplel/InstantSpaceSwitcher">InstantSpaceSwitcher</a> by jurplel (MIT License).</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Hop collects no data and never connects to the internet. Lidworks is an independent developer and is not affiliated with Apple Inc. Apple, Mac and macOS are trademarks of Apple Inc.</p>
+      <p>© <span data-year>2026</span> <a href="../">Lidworks</a> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+    </div>
+  </footer>
+  <script src="../assets/site.js"></script>
+</body>
+</html>

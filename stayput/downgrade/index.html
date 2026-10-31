@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StayPut · 降级步骤 / Downgrade steps</title>
+<meta name="description" content="Step-by-step: reinstall an older macOS from a StayPut USB startup disk on a Mac with Apple silicon.">
+<style>
+  :root { --bg:#fbfbfd; --fg:#1d1d1f; --muted:#6e6e73; --card:#fff; --line:#e5e5ea; --accent:#0a66d8; --done:#1f9d55; --warn:#fff6e5; --warnline:#f0c36b; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#111113; --fg:#f5f5f7; --muted:#a1a1a6; --card:#1c1c1e; --line:#2c2c2e; --accent:#4c9bff; --done:#34c759; --warn:#2a2416; --warnline:#8a6d2b; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.55 -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; }
+  main { max-width:680px; margin:0 auto; padding:20px 16px 60px; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  h1 { font-size:24px; margin:8px 0 4px; }
+  .lead { color:var(--muted); margin:0 0 18px; }
+  button.lang { border:1px solid var(--line); background:var(--card); color:var(--fg); border-radius:999px; padding:6px 12px; font-size:14px; white-space:nowrap; flex-shrink:0; }
+  .note { background:var(--warn); border:1px solid var(--warnline); border-radius:12px; padding:12px 14px; margin:14px 0 20px; font-size:15px; }
+  ol.steps { list-style:none; padding:0; margin:0; counter-reset:s; }
+  ol.steps li { counter-increment:s; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 14px 14px 58px; margin:0 0 12px; position:relative; }
+  ol.steps li::before { content:counter(s); position:absolute; left:14px; top:14px; width:30px; height:30px; border-radius:50%; background:var(--accent); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  ol.steps li.done::before { content:"✓"; background:var(--done); }
+  ol.steps li.done { opacity:.6; }
+  h2 { font-size:18px; margin:0 0 4px; }
+  li p { margin:0 0 6px; }
+  .see { color:var(--muted); font-size:15px; }
+  label.tick { display:inline-flex; align-items:center; gap:6px; font-size:15px; color:var(--accent); margin-top:4px; }
+  label.tick input { width:20px; height:20px; }
+  footer { color:var(--muted); font-size:14px; margin-top:24px; }
+  a { color:var(--accent); }
+  [data-lang="en"] .zh, [data-lang="zh"] .en { display:none; }
+</style>
+</head>
+<body data-lang="zh">
+<main>
+  <header>
+    <div>
+      <h1><span class="zh">降级：关机以后怎么做</span><span class="en">Downgrade: what to do after shutting down</span></h1>
+    </div>
+    <button class="lang" id="lang" type="button">English</button>
+  </header>
+  <p class="lead">
+    <span class="zh">你已经用 StayPut 做好了启动 U 盘、备份好了这台 Mac。下面每一步做完就勾一下，不会走丢。</span>
+    <span class="en">You’ve made the USB startup disk with StayPut and backed up this Mac. Tick each step as you go so you don’t lose your place.</span>
+  </p>
+  <div class="note">
+    <span class="zh">这会<b>抹掉整台 Mac</b>。开始前确认：Time Machine 备份已经做完；Mac 接上了电源；知道 Wi‑Fi 密码和 Apple 账户密码（抹掉后激活要用）。</span>
+    <span class="en">This <b>erases the whole Mac</b>. Before you start: the Time Machine backup has finished; the Mac is on power; you know your Wi-Fi password and Apple Account password (needed to activate the Mac after erasing).</span>
+  </div>
+
+  <ol class="steps" id="steps">
+    <li>
+      <h2><span class="zh">关机</span><span class="en">Shut down</span></h2>
+      <p><span class="zh">U 盘保持插着，最好直接插在 Mac 上，不要经过扩展坞。点左上角苹果菜单 →“关机”，等屏幕完全黑掉。</span>
+         <span class="en">Keep the USB drive plugged in, directly into the Mac if you can (not through a hub). Choose Apple menu  › Shut Down and wait until the screen is completely black.</span></p>
+    </li>
+    <li>
+      <h2><span class="zh">进入启动选项</span><span class="en">Open startup options</span></h2>
+      <p><span class="zh">按住电源键<b>不要松手</b>，直到屏幕上出现“正在载入启动选项”，再松开。MacBook 的电源键是键盘右上角触控 ID 那个键；Mac mini 的电源按钮在机身底部靠后的角上；iMac、Mac Studio 的在背面。</span>
+         <span class="en">Press and <b>hold</b> the power button until you see “Loading startup options”. Then let go. On a MacBook it’s the Touch ID key at the top right of the keyboard; on a Mac mini it’s on the bottom near the back corner; on an iMac or Mac Studio it’s on the back.</span></p>
+      <p class="see"><span class="zh">看到的是一排磁盘图标，右边有一个齿轮“选项”。</span><span class="en">You’ll see a row of disk icons and a gear labelled Options.</span></p>
+    </li>
+    <li>
+      <h2><span class="zh">选 U 盘启动</span><span class="en">Start from the USB drive</span></h2>
+      <p><span class="zh">点“Install macOS …”（黄色的 U 盘图标），再点下面的“继续”。如果让你选一个用户、输密码，就选你平时登录的那个账户，输它的密码。</span>
+         <span class="en">Click “Install macOS …” (the yellow USB drive icon), then Continue. If it asks you to pick a user and enter a password, pick the account you normally log in with.</span></p>
+    </li>
+    <li>
+      <h2><span class="zh">打开磁盘工具</span><span class="en">Open Disk Utility</span></h2>
+      <p><span class="zh">会出现一个列着几个选项的窗口（安装 macOS、磁盘工具……）。选“磁盘工具”，点“继续”。</span>
+         <span class="en">A window with a few options appears (Install macOS, Disk Utility…). Select Disk Utility and click Continue.</span></p>
+    </li>
+    <li>
+      <h2><span class="zh">抹掉这台 Mac</span><span class="en">Erase the Mac</span></h2>
+      <p><span class="zh">在左边“内置”下面选“Macintosh HD”，点上面的“抹掉”。名称保持“Macintosh HD”，格式选“APFS”，然后点“<b>抹掉宗卷组</b>”（没有这个按钮就点“抹掉”）。如果要你输 Apple 账户，输你自己的。</span>
+         <span class="en">In the sidebar under Internal, select “Macintosh HD” and click Erase at the top. Keep the name “Macintosh HD”, choose APFS, then click “<b>Erase Volume Group</b>” (or Erase if that button isn’t there). If it asks for an Apple Account, use your own.</span></p>
+      <p class="see"><span class="zh">选错盘会抹掉别的东西：认准“内置”下面的 Macintosh HD，不是 U 盘，也不是备份盘。</span><span class="en">Pick the right disk: Macintosh HD under Internal, not the USB drive and not your backup disk.</span></p>
+    </li>
+    <li>
+      <h2><span class="zh">激活</span><span class="en">Activate</span></h2>
+      <p><span class="zh">抹掉后可能出现“激活 Mac”：连上 Wi‑Fi，按提示用 Apple 账户激活。完成后点“退出到恢复实用工具”。</span>
+         <span class="en">You may see “Activate Mac”. Join Wi-Fi and sign in with your Apple Account as asked. When it’s done, click “Exit to Recovery Utilities”.</span></p>
+    </li>
+    <li>
+      <h2><span class="zh">安装旧版本</span><span class="en">Install the older macOS</span></h2>
+      <p><span class="zh">退出磁盘工具（左上角“磁盘工具”菜单 →“退出”）。回到选项窗口，选“安装 macOS …”（你做 U 盘时选的那个版本），点“继续”，同意条款，选“Macintosh HD”，点“继续”。</span>
+         <span class="en">Quit Disk Utility (Disk Utility menu › Quit). Back in the options window, choose “Install macOS …” (the version you put on the USB drive) and Continue, agree, choose “Macintosh HD” and Continue.</span></p>
+      <p class="see"><span class="zh">大约 30–60 分钟，中间会重启几次，屏幕黑一会儿是正常的。别拔 U 盘，别合上屏幕。</span><span class="en">It takes about 30–60 minutes and restarts a few times; a black screen for a while is normal. Don’t unplug the USB drive or close the lid.</span></p>
+    </li>
+    <li>
+      <h2><span class="zh">把文件拿回来</span><span class="en">Bring your files back</span></h2>
+      <p><span class="zh">装好后会出现开机设置。到“迁移助理”那一步，选“从 Mac、Time Machine 备份或启动磁盘”，插上备份盘，选最近的那份备份。</span>
+         <span class="en">When the setup screens appear, at Migration Assistant choose “From a Mac, Time Machine backup or startup disk”, plug in your backup disk and pick the latest backup.</span></p>
+      <p class="see"><span class="zh">迁移助理说这份备份用不了？用更新的 macOS 做的备份可能会被拒绝。先跳过、把设置做完，然后打开访达，在左边点备份盘，依次打开最近的那份备份 →“Macintosh HD - 数据”→“用户”→ 你的名字，把“文稿”“桌面”“图片”等文件夹拖回来。App 从 App Store 或官网重新安装。</span><span class="en">Migration Assistant says it can’t use the backup? A backup made on a newer macOS may be refused. Skip it and finish setting up, then open Finder, click the backup disk in the sidebar, open the latest backup › Macintosh HD - Data › Users › your name, and drag Documents, Desktop, Pictures and your other folders back. Reinstall your apps from the App Store or their websites.</span></p>
+      <p class="see"><span class="zh">当时跳过了也没关系：以后在“应用程序 → 实用工具”里打开“迁移助理”。都搬完后可以再装一次 StayPut，把这台 Mac 锁定在这个版本。</span><span class="en">Skipped it? Open Migration Assistant later from Applications › Utilities. Afterwards, reinstall StayPut and lock this Mac to this version.</span></p>
+    </li>
+  </ol>
+
+  <footer>
+    <p><span class="zh">遇到和这里写的不一样的画面？苹果官方说明：</span><span class="en">Something looks different? Apple’s own guides:</span>
+      <a href="https://support.apple.com/101578">support.apple.com/101578</a> ·
+      <a href="https://support.apple.com/102506">support.apple.com/102506</a></p>
+    <p>StayPut · Lidworks</p>
+  </footer>
+</main>
+<script>
+  // 语言：跟着手机系统；可以手动切换。勾选进度存在手机上，存不了也不影响看
+  var body = document.body, btn = document.getElementById('lang');
+  function setLang(l) { body.setAttribute('data-lang', l); document.documentElement.lang = l === 'zh' ? 'zh-Hans' : 'en'; btn.textContent = l === 'zh' ? 'English' : '中文'; }
+  setLang(/^zh/i.test(navigator.language || '') ? 'zh' : 'en');
+  btn.addEventListener('click', function () { setLang(body.getAttribute('data-lang') === 'zh' ? 'en' : 'zh'); });
+  var items = document.querySelectorAll('#steps li'), saved = [];
+  try { saved = JSON.parse(localStorage.getItem('stayput-downgrade') || '[]'); } catch (e) {}
+  items.forEach(function (li, i) {
+    var label = document.createElement('label'); label.className = 'tick';
+    var box = document.createElement('input'); box.type = 'checkbox'; box.checked = !!saved[i];
+    var text = document.createElement('span'); text.innerHTML = '<span class="zh">这步做完了</span><span class="en">Done</span>';
+    label.appendChild(box); label.appendChild(text); li.appendChild(label);
+    li.classList.toggle('done', box.checked);
+    box.addEventListener('change', function () {
+      li.classList.toggle('done', box.checked); saved[i] = box.checked;
+      try { localStorage.setItem('stayput-downgrade', JSON.stringify(saved)); } catch (e) {}
+    });
+  });
+</script>
+</body>
+</html>

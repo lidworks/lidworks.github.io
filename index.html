@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lidworks — small, delightful apps for your Mac</title>
-  <meta name="description" content="Lidworks makes small, delightful Mac apps for the lid of your MacBook: the screen on the inside, the glowing logo on the outside.">
+  <meta name="description" content="Lidworks makes small, delightful Mac apps: instant desktop switching, flicker-free dimming, a New menu for Finder, and tools for the new MacBook Pro.">
   <meta property="og:title" content="Lidworks">
-  <meta property="og:description" content="Small, delightful apps for the lid of your Mac.">
+  <meta property="og:description" content="Small, delightful apps for your Mac.">
   <meta property="og:image" content="https://lidworks.github.io/assets/wipemode-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -23,6 +23,9 @@
       <nav class="nav-links" aria-label="Products">
         <a href="wipemode/">WipeMode</a>
         <a href="steady/">Steady</a>
+        <a href="hop/">Hop</a>
+        <a href="stayput/">StayPut</a>
+        <a href="newhere/">NewHere</a>
         <a href="lidlight/">Lidlight</a>
       </nav>
     </div>
@@ -32,10 +35,11 @@
     <section class="hero">
       <div class="wrap">
         <span class="eyebrow">Lidworks</span>
-        <h1>Small, delightful apps<br>for the lid of your Mac.</h1>
-        <p class="lead">The screen on the inside, the logo on the outside, the hinge in between. Whenever Apple ships something new up there, we build the little app that makes it fun.</p>
+        <h1>Small, delightful apps<br>for your Mac.</h1>
+        <p class="lead">Little tools that smooth over the rough spots in macOS, and make the most of the new MacBook Pro's screen, logo and hinge. Each one does one thing, and looks like it came with your Mac.</p>
 
-        <div class="grid">
+        <h2 style="margin-top: 64px; font-size: 26px">For the new MacBook Pro</h2>
+        <div class="grid" style="margin-top: 20px">
           <a class="card product" href="wipemode/">
             <img src="assets/wipemode-icon.png" alt="" width="72" height="72">
             <span class="tag live">Free · Available now</span>
@@ -63,6 +67,41 @@
             </div>
             <span class="more">See the preview →</span>
           </a>
+        </div>
+
+        <h2 style="margin-top: 64px; font-size: 26px">For every Mac</h2>
+        <div class="grid" style="margin-top: 20px">
+          <a class="card product" href="hop/">
+            <img src="assets/hop-icon.png" alt="" width="72" height="72">
+            <span class="tag live">Free · New</span>
+            <div>
+              <h3>Hop</h3>
+              <p>Switch desktops and full-screen apps instantly. The same Dock, shortcuts and swipes, without the slide.</p>
+            </div>
+            <span class="more">Learn more →</span>
+          </a>
+          <a class="card product" href="stayput/">
+            <img src="assets/stayput-icon.png" alt="" width="72" height="72">
+            <span class="tag live">Free · New</span>
+            <div>
+              <h3>StayPut</h3>
+              <p>Pick your macOS and keep it: stop the upgrade nags, upgrade to exactly the version you want, or go back to an older one.</p>
+            </div>
+            <span class="more">Learn more →</span>
+          </a>
+          <a class="card product" href="newhere/">
+            <img src="assets/newhere-icon.png" alt="" width="72" height="72">
+            <span class="tag live">Free · New</span>
+            <div>
+              <h3>NewHere</h3>
+              <p>Right-click in Finder to create a new Pages, Word, text or code file right where you are.</p>
+            </div>
+            <span class="more">Learn more →</span>
+          </a>
+        </div>
+
+        <h2 style="margin-top: 64px; font-size: 26px">Open hardware</h2>
+        <div class="grid" style="margin-top: 20px">
           <a class="card product" href="endcap/">
             <img src="assets/endcap-icon.png" alt="" width="72" height="72">
             <span class="tag">Open hardware · Concept</span>
@@ -83,6 +122,6 @@
       <p>© <span data-year>2026</span> Lidworks · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
     </div>
   </footer>
-  <script>document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });</script>
+  <script src="assets/site.js"></script>
 </body>
 </html>
