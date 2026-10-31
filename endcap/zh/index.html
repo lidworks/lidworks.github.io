@@ -1,0 +1,1070 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>防晃端帽 · 触屏 MacBook Pro 的「碰屏就锁」铰链锁（开源概念设计）</title>
+<meta name="description" content="Lidworks 的开源硬件概念：装在电脑左后角的小锁，手指碰屏幕时把屏幕稳住，自己开合屏幕时完全松开。可交互 3D 模型，66 个零件。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="防晃端帽 · 触屏 MacBook Pro 的「碰屏就锁」铰链锁（开源概念设计）">
+<meta property="og:description" content="Lidworks 的开源硬件概念：装在电脑左后角的小锁，手指碰屏幕时把屏幕稳住，自己开合屏幕时完全松开。可交互 3D 模型，66 个零件。">
+<meta property="og:url" content="https://lidworks.github.io/endcap/zh/">
+<meta property="og:image" content="https://lidworks.github.io/endcap/hero.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="en" href="https://lidworks.github.io/endcap/">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>防晃端帽</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@700;900&display=swap">
+<style>
+/* Layout: the 3D stage fills the left; a rail on the right holds "how it works", the parts list and the numbers. On phones the rail drops below the stage. */
+:root {
+  --bg: #eceef0; --panel: #f7f8f9; --ink: #15171a; --muted: #59606a; --line: #d3d7dc; --stage: #e1e4e7; --chip: #ffffff;
+  --lock: #cf6219; --free: #2a69ad; --cut: #e0732c;
+  --r-base: #4a78c9; --r-rotor: #2f9a62; --r-lid: #1d8c97; --r-lock: #cf6219; --r-spring: #c49516; --r-act: #7a5ccc;
+  --r-sensor: #c94b82; --r-elec: #45574b; --r-cable: #3a3d42; --r-pad: #86654c;
+  --font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font-display: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1113; --panel: #15181b; --ink: #e7e9ec; --muted: #9aa2ac; --line: #2a2f35; --stage: #0b0d10; --chip: #1c2024;
+    --lock: #f08a3e; --free: #5d9be3; --cut: #f08a3e;
+    --r-base: #6f98e3; --r-rotor: #4cc082; --r-lid: #3fb1bb; --r-lock: #f08a3e; --r-spring: #e3b544; --r-act: #a083ea;
+    --r-sensor: #ea6fa1; --r-elec: #71857a; --r-cable: #8a8f96; --r-pad: #b08b6c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1113; --panel: #15181b; --ink: #e7e9ec; --muted: #9aa2ac; --line: #2a2f35; --stage: #0b0d10; --chip: #1c2024;
+  --lock: #f08a3e; --free: #5d9be3; --cut: #f08a3e;
+  --r-base: #6f98e3; --r-rotor: #4cc082; --r-lid: #3fb1bb; --r-lock: #f08a3e; --r-spring: #e3b544; --r-act: #a083ea;
+  --r-sensor: #ea6fa1; --r-elec: #71857a; --r-cable: #8a8f96; --r-pad: #b08b6c;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
+html[lang="en"] { --font-body: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+#app { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+header.top {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px;
+  padding-block: 12px 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  border-bottom: 1px solid var(--line);
+}
+header.top h1 { margin: 0; font-family: var(--font-display); font-weight: 900; font-size: 24px; letter-spacing: 0.02em; text-wrap: balance; }
+header.top .ver { font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+header.top p { margin: 0; color: var(--muted); font-size: 14px; flex: 1 1 320px; min-width: 0; }
+header.top a.lang { align-self: center; font-size: 13px; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 2px 10px; text-decoration: none; }
+header.top a.lang:hover { border-color: var(--ink); }
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr) 390px; min-height: 0; }
+#stage { position: relative; min-height: 0; background: var(--stage); overflow: hidden; touch-action: none; }
+#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+#leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#leaders line { stroke: var(--ink); stroke-width: 1; opacity: 0.55; }
+#labels { position: absolute; inset: 0; pointer-events: none; }
+.balloon {
+  position: absolute; transform: translate(-50%, -50%); pointer-events: auto;
+  min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; border: 1.5px solid var(--ink);
+  background: var(--chip); color: var(--ink); font: 500 12px/21px var(--font-mono); text-align: center; cursor: pointer;
+}
+.balloon.sel { background: var(--ink); color: var(--chip); }
+.balloon:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--free); outline-offset: 2px; }
+.hud { position: absolute; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.hud.tl { top: 12px; left: max(12px, env(safe-area-inset-left, 0px)); }
+.hud.tr { top: 12px; right: 12px; justify-content: flex-end; max-width: 60%; }
+.hud.bl { left: max(12px, env(safe-area-inset-left, 0px)); bottom: 12px; flex-direction: column; align-items: stretch; gap: 6px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--chip); }
+.seg button, .tog {
+  font: 500 13px/1 var(--font-body); color: var(--ink); background: var(--chip); border: 0; padding: 8px 11px; cursor: pointer;
+}
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--chip); }
+.tog { border: 1px solid var(--line); border-radius: 8px; }
+.tog[aria-pressed="true"] { background: var(--ink); color: var(--chip); border-color: var(--ink); }
+.slider { display: grid; grid-template-columns: 64px minmax(0, 1fr) 46px; align-items: center; gap: 8px; background: var(--chip); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; width: min(330px, calc(100vw - 48px)); }
+.slider label { font-size: 13px; color: var(--muted); }
+.slider output { font: 500 13px var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
+.slider input { width: 100%; accent-color: var(--ink); }
+.state {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; background: var(--chip); border: 1px solid var(--line);
+  font-size: 13px; width: fit-content;
+}
+.state i { width: 10px; height: 10px; border-radius: 50%; background: var(--free); display: inline-block; }
+.state.locked i { background: var(--lock); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lock) 25%, transparent); }
+.state b { font-weight: 700; }
+#readout { font: 500 13px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+#caption {
+  position: absolute; left: 50%; top: 58px; transform: translateX(-50%); width: max-content; max-width: min(560px, calc(100% - 24px));
+  background: color-mix(in srgb, var(--chip) 92%, transparent); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px;
+  font-size: 14px; line-height: 1.55; box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+}
+#caption:empty { display: none; }
+#caption b { color: var(--lock); }
+.scale { position: absolute; right: 12px; bottom: 44px; display: grid; justify-items: end; gap: 3px; font: 500 12px var(--font-mono); color: var(--ink); pointer-events: none; }
+.scale i { display: block; height: 6px; border: 1.5px solid var(--ink); border-top: 0; }
+.xnote { position: absolute; right: 12px; bottom: 12px; font: 12px var(--font-mono); color: var(--muted); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; }
+aside#panel { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; background: var(--panel); border-left: 1px solid var(--line); }
+.tabs { display: flex; gap: 2px; padding: 10px 12px 0; border-bottom: 1px solid var(--line); }
+.tabs button { flex: 1; font: 500 14px var(--font-body); color: var(--muted); background: transparent; border: 0; border-bottom: 2px solid transparent; padding: 8px 4px 10px; cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tabbody { overflow-y: auto; padding: 14px 16px 24px; min-height: 0; }
+.tabbody h2 { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin: 4px 0 8px; text-wrap: balance; }
+.tabbody p { margin: 0 0 10px; }
+.muted { color: var(--muted); }
+ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+ol.steps li button {
+  width: 100%; text-align: left; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start;
+  background: var(--chip); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; color: var(--ink); font: inherit;
+}
+ol.steps li button[aria-current="step"] { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--lock); }
+ol.steps .n { font: 500 13px/28px var(--font-mono); width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--ink); text-align: center; }
+ol.steps .t { font-weight: 700; display: block; }
+ol.steps .d { color: var(--muted); font-size: 13.5px; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 4px 0 14px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+ul.parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+ul.parts button {
+  width: 100%; text-align: left; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start;
+  background: transparent; border: 1px solid transparent; border-radius: 10px; padding: 8px 10px; cursor: pointer; color: var(--ink); font: inherit;
+}
+ul.parts button:hover { background: var(--chip); }
+ul.parts li.grp { font: 500 12px var(--font-mono); letter-spacing: 0.06em; color: var(--muted); padding: 10px 10px 2px; border-top: 1px solid var(--line); margin-top: 6px; }
+ul.parts li.grp:first-child { border-top: 0; margin-top: 0; }
+ul.parts button[aria-current="true"] { background: var(--chip); border-color: var(--ink); }
+ul.parts .num { font: 500 12px/24px var(--font-mono); height: 24px; border-radius: 12px; border: 1.5px solid var(--ink); text-align: center; }
+ul.parts .nm { font-weight: 700; }
+ul.parts .sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-left: 6px; vertical-align: 1px; }
+ul.parts .kid { display: block; font-size: 13.5px; color: var(--muted); }
+ul.parts .more { display: none; font-size: 13px; margin-top: 6px; }
+ul.parts button[aria-current="true"] .more { display: block; }
+.more dl { display: grid; grid-template-columns: 4.5em minmax(0, 1fr); gap: 2px 8px; margin: 0; }
+.more dt { color: var(--muted); }
+.more dd { margin: 0; font-variant-numeric: tabular-nums; }
+dl.nums { margin: 0; }
+dl.nums .row { padding: 10px 0; border-bottom: 1px solid var(--line); }
+dl.nums dt { font-size: 13px; color: var(--muted); }
+dl.nums dd { margin: 0; }
+dl.nums dd.v { font: 600 16px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; margin-top: 2px; }
+dl.nums dd.note { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.warn { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--chip); font-size: 13.5px; color: var(--muted); }
+@media (max-width: 900px) {
+  #app { height: auto; display: block; }
+  .workspace { display: block; }
+  #stage { height: min(64vh, 560px); }
+  aside#panel { display: block; border-left: 0; border-top: 1px solid var(--line); }
+  .tabbody { overflow: visible; }
+  .hud.tr { top: 54px; left: max(12px, env(safe-area-inset-left, 0px)); right: auto; max-width: calc(100% - 24px); justify-content: flex-start; }
+  #caption { top: 100px; }
+  .scale { top: 14px; bottom: auto; }
+  .xnote { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div id="app">
+  <header class="top">
+    <h1>防晃端帽</h1>
+    <span class="ver" id="ver">v1 · 左后角</span>
+    <p id="tagline">装在电脑左后角的小锁：手指点屏幕时把屏幕锁住，你自己开合屏幕时完全松开。</p>
+  </header>
+  <section class="workspace">
+    <div id="stage">
+      <canvas id="gl" tabindex="0" aria-label="三维模型，可以拖动旋转、双指或滚轮缩放"></canvas>
+      <svg id="leaders" aria-hidden="true"></svg>
+      <div id="labels"></div>
+      <div class="hud tl">
+        <div class="seg" role="group" aria-label="视角">
+          <button data-view="whole" aria-pressed="false">整机</button>
+          <button data-view="corner" aria-pressed="true">角落</button>
+          <button data-view="inside" aria-pressed="false">剖开</button>
+          <button data-view="under" aria-pressed="false">底下</button>
+          <button data-view="cover" aria-pressed="false">外壳</button>
+        </div>
+      </div>
+      <div class="hud tr">
+        <button class="tog" id="tShell" aria-pressed="false">机身半透明</button>
+        <button class="tog" id="tFinish" aria-pressed="false">真实颜色</button>
+        <button class="tog" id="tLabels" aria-pressed="true">标号</button>
+      </div>
+      <div class="hud bl">
+        <div class="state" id="state"><i></i><span><b id="stateT">松开</b> <span id="stateD" class="muted">跟着屏幕走</span></span></div>
+        <div class="slider"><label for="lid">屏幕角度</label><input id="lid" type="range" min="0" max="135" step="1" value="110"><output id="lidO" for="lid">110°</output></div>
+        <div class="slider"><label for="explode">拆开</label><input id="explode" type="range" min="0" max="100" step="1" value="0"><output id="explodeO" for="explode">0%</output></div>
+        <div id="readout" aria-live="polite"></div>
+      </div>
+      <div id="caption" aria-live="polite"></div>
+      <div class="scale" aria-hidden="true"><i id="scaleBar"></i><span id="scaleT">10 mm</span></div>
+      <div class="xnote" id="xnote">拖动旋转 · 滚轮缩放 · 点零件看说明</div>
+    </div>
+    <aside id="panel">
+      <nav class="tabs" role="tablist">
+        <button role="tab" id="tab-how" aria-selected="true" aria-controls="body-how">怎么工作</button>
+        <button role="tab" id="tab-parts" aria-selected="false" aria-controls="body-parts">零件</button>
+        <button role="tab" id="tab-nums" aria-selected="false" aria-controls="body-nums">数字</button>
+      </nav>
+      <div class="tabbody" id="body-how" role="tabpanel" aria-labelledby="tab-how">
+        <h2>一步一步看</h2>
+        <p class="muted">点一步，模型会自己动起来演示。</p>
+        <ol class="steps" id="steps"></ol>
+      </div>
+      <div class="tabbody" id="body-parts" role="tabpanel" aria-labelledby="tab-parts" hidden>
+        <h2>每个零件</h2>
+        <div class="legend" id="legend"></div>
+        <ul class="parts" id="parts"></ul>
+      </div>
+      <div class="tabbody" id="body-nums" role="tabpanel" aria-labelledby="tab-nums" hidden>
+        <h2>关键数字</h2>
+        <dl class="nums" id="nums"></dl>
+        <p class="warn" id="caveat"></p>
+      </div>
+    </aside>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script>window.__DESIGN__ = {"lang":"zh","name":"防晃端帽 v1.3 · 后角托 + 外壳","version":"v1.3 · 左后角","geom":{"W":355.5,"D":244.2,"H":12.3,"T":3.7,"Rc":8.7,"Rb":4.5,"Rt":0.6,"Re":1.0,"Ew":37.6,"Rd":4.2,"Rr":1.0,"Zr":4.0,"Kw":15.8,"Ay":242.3,"Az":7.8},"ports_left":[{"name":"MagSafe 3","y":215.2,"z":8.1,"w":16.7,"h":4.2},{"name":"雷雳 5","y":196.7,"z":8.1,"w":8.4,"h":3.0},{"name":"雷雳 5","y":181.7,"z":8.1,"w":8.4,"h":3.0},{"name":"耳机孔","y":168.7,"z":8.1,"w":3.6,"h":3.6}],"feet":[[24,26],[331.5,26],[24,219.2],[331.5,219.2]],"tagline":"屏幕左下角压在角托上，角托带着一片陶瓷鳍；手指一碰屏幕，两根记忆合金丝一热，把小凸轮往前拉，杠杆夹住鳍。两只带“后跟包”的鞋被一根腰带勒在电脑两个后角上，夹子外面罩着一个黑色小罩子，防灰、不夹手。","note":"v1.3：后角托做成一整块（左 IN718、右钛）、后跟带改竖直、垫子换 TPU 防走位、胶加了几道保险、夹子戴上外壳（66 个零件）。尺寸按估算模型 v0（±0.3–1 mm），拿到新机实测后重出图。","section":{"n":[-1,0,0],"d":3.9,"label":"沿凸轮片的正中竖着切开（x = −3.9 mm），从电脑左边往里看：外壳也被切开了，能看到凸轮、内排滚针、钩簧、杠杆内臂、陶瓷鳍、底下的底盖，和前面实心前梁里的丝槽"},"views":{"corner":{"target":[-2,228,6],"cam":[-110,300,80],"r":46},"inside":{"target":[-3,240,4.5],"cam":[-120,244,22],"r":16},"explode":{"target":[-4,228,4],"cam":[-112,304,78],"r":66},"under":{"target":[66,230,3],"cam":[6,125,-220],"r":92},"cover":{"target":[-3,244,9],"cam":[-90,330,95],"r":26}},"motion_scale":40,"force_path":[{"frame":"lid","p":[6.4,244.1,14.15]},{"frame":"lid","p":[1.0,245.2,14.2]},{"frame":"lid","p":[-0.75,240.5,10.5]},{"frame":"lid","p":[-2.0,242.3,7.8]},{"frame":"base","p":[-3.15,248.03,5.71]},{"frame":"base","p":[-1.9,248.03,5.71]},{"frame":"base","p":[-3.2,250.0,5.0]},{"frame":"base","p":[-4.9,250.0,5.0]},{"frame":"base","p":[-5.27,248.5,8.0]},{"frame":"base","p":[-5.49,246.5,9.6]},{"frame":"base","p":[-4.9,241.5,8.0]},{"frame":"base","p":[-3.6,236.8,7.0]},{"frame":"base","p":[-2.5,230.5,8.1]},{"frame":"base","p":[-0.13,230.5,8.1]},{"frame":"base","p":[2.0,230.5,8.1]}],"physics":{"I":0.012,"k_hinge":21,"zeta":0.08,"k_locked":285,"zeta_locked":0.1,"tap_N":1.0,"tap_ms":60,"lever_m":0.24,"exaggerate":40},"steps":[{"title":"平时：完全松开","text":"白色陶瓷鳍停在夹子两只爪子中间，两边空出 5–22 微米，碰不到。两根记忆合金丝是凉的，小弹簧把凸轮拉在最后面。开合屏幕和没装时一样轻。","view":"corner","lid":110,"lock":0,"explode":0,"play":"swing","shell":false},{"title":"没装时点屏幕","text":"屏幕像插在一根软弹簧（苹果的铰链）上的木板：点一下上沿，退约 2.3 mm，再来回晃 3–4 下。","view":"whole","lid":110,"lock":0,"explode":0,"play":"tapFree","shell":false},{"title":"手指一碰：丝一热就缩","text":"电脑上的 App 看到手指碰屏幕，告诉插头里的小芯片；它给两根比头发还细的记忆合金丝通电。丝一热就缩短不到 1 毫米，把凸轮片往前拉。罩子和底盖被切开了，才看得见里面。","view":"inside","lid":110,"lock":1,"explode":0,"select":"C20","shell":false},{"title":"凸轮 → 弹簧 → 杠杆","text":"凸轮的斜坡把两排陶瓷滚针往两边挤：外边顶住墙，里边压弯一对小弹簧片；弹簧片推杠杆的钩尖，杠杆绕两组交叉的薄簧片转一点点，把力放大 4.6 倍，爪子往里走 12 微米夹住鳍。","view":"inside","lid":110,"lock":1,"explode":0,"select":"C15","shell":false},{"title":"锁住时点屏幕","text":"同样一点，盖子够硬时屏幕上沿只退原来的约四分之一（点左上剩 23.5 %），回弹也小很多。手指离开 1.5 秒就松开。","view":"whole","lid":110,"lock":1,"explode":0,"play":"tapLocked","shell":false},{"title":"力是怎么走的","text":"屏幕角 → 角托 → 鳍 → 两片刹车皮 → 卡钳 → 两片薄膜片 → 一整面薄墙 → 左钩块 → 一层 0.25 mm 的 TPU 垫 → 电脑左侧面。一路都是金属和陶瓷，最后一层垫子负责“不打滑、不走位”。","view":"corner","lid":110,"lock":1,"explode":0,"play":"flow","shell":false},{"title":"两只鞋 + 腰带 + 后跟包","text":"往上的那一点力电脑后角上没有地方托，只能靠摩擦：一根钛腰带从肚子底下把左右两只鞋勒紧（700 牛），两条后跟带竖直地从耳朵后面绕到底下、焊在腰带上。后跟带的劲要拐过后角，所以两个后角都做成一整块“后跟包”从底下圆角绕过去接住它。全部只压不粘。","view":"under","lid":110,"lock":1,"explode":0,"shell":true,"select":"B11"},{"title":"戴上外壳：防灰、不夹手","text":"夹子上面扣一个和转轴同心的黑色半圆罩：鳍在罩子里面转进转出，外面摸到的都是不动的罩子，缝的宽度永远不变，手指和头发夹不进去。底下一块底盖、鳍进出的两条边各有一条不碰鳍的刮灰唇——钳口里夹进 5 微米的灰就会让锁变得太紧，所以灰一定要挡在外面。开盖时罩子比卡钳高 4.4 mm，合盖时和屏幕一样高。","view":"cover","lid":110,"lock":0,"explode":0,"select":"C30","play":"swing","shell":false},{"title":"想调角度、断电：自动松开","text":"夹子上的“小秤”发现屏幕被一直推了 0.3 秒、或者有人往合盖方向拉，就断电；丝凉下来（0.3–0.4 秒），弹簧把凸轮拉回去。断电、死机也一样会松开，不需要电池。就算锁着，力一超过 0.4–0.5 N·m 刹车皮就打滑，合到 48° 以下鳍会整个离开夹子。","view":"whole","lid":110,"lock":1,"explode":0,"play":"pushRelease","shell":false},{"title":"拆开看","text":"每个零件都拉开一点，点零件看说明。后角托、横带和后跟带点上面的“底下”按钮再打开“机身半透明”看得最清楚；外壳在零件列表的“外壳”那一组。","view":"explode","lid":110,"lock":0,"explode":1,"shell":false}],"numbers":[{"k":"整条链刚度（推方向，45 °C）","v":"264 N·m/rad（低档 186）","note":"v1.2 写 332；换 TPU 垫后锚固变软。苹果铰链约 21"},{"k":"只锁左边、点左上","v":"推开剩 23.5 %（GJ 60；低档 26.5 %）","note":"验收线 ≤ 25 %；GJ 10 剩 41 %，盖子太软时任何锁都只剩约 40 %"},{"k":"锚固要的摩擦系数","v":"μ ≥ 0.39（装配最坏 0.45）","note":"按 1.5 倍余量要实测 ≥ 0.59（卖 ≥ 0.68）；TPU 64D 估 0.45–0.75，台架 1 决定"},{"k":"胶最吃力的时候","v":"锁着合盖 / 拎屏幕：71–87 N","note":"45 °C 安全系数 0.6–1.2，不够 → 固件早松 + 台架 2 定（≥ 0.85 MPa 才不改）；其余情况 ≥ 2"},{"k":"会不会慢慢走位","v":"TPU 0.25：不走","note":"冷热时中间约 24 mm 一直粘住，扛 205 N 偏力（要 100）；PEEK 三年会挪 0.6–3 mm"},{"k":"后角托最细处","v":"最大剪应力约 455 MPa（S0 110 N）","note":"左边 IN718 余量 1.3–1.65；右边 ≤ 314 MPa，钛打印 ≥ 1.7（扭转近似，要有限元）"},{"k":"横带 / 后跟带","v":"700 ± 50 N / 100 ± 10 N","note":"后跟带竖直、焊在横带折点上；碟簧必须保留"},{"k":"夹灰的影响","v":"每 1 µm 灰夹紧力 +3.4 N","note":"5–13 µm 就让打滑力矩到 0.6 N·m → 外壳 + 刮灰唇 + 固件查夹紧力（> 出厂 × 1.15 就松开）"},{"k":"打滑力矩","v":"0.40–0.50 N·m","note":"低于苹果铰链摩擦下限 0.6；出厂调到 0.45 ± 0.02"},{"k":"锁上 / 松开","v":"16–27 ms / 0.29–0.43 s","note":"外壳让合金丝冷却只慢约 2 %；最高 8 V，没有电池"},{"k":"外形","v":"侧面 5.60、伸出后沿 8.6 mm（不变）","note":"开盖时卡钳顶上多一个 4.4 mm 高的黑罩（合盖齐平）；两个后角底下多一小块后角托"},{"k":"零件和成本","v":"66 个；样机 5 台每台约 366 美元","note":"小批量 50 台每台约 134（性能档 228）；第一件连工具约 1300–1800，能拆四步"}],"caveat":"v1.3 的刚度、强度、成本数字全是估算（C 级），三个“不过就停”的数要先量：拿到新机实测时量盖子扭的频率 f2（≥ 60 Hz 才继续，< 40 Hz 单边版不做）、台架 1 量垫子对苹果铝壳的摩擦系数（≥ 0.59）、台架 2 量胶 45 °C 的强度（≥ 0.85 MPa）。查看器里钳口、钩簧这些微米级的动作放大了 40 倍，凸轮和滚针按真实距离（不到 1 毫米）画；防脱绳画的是开盖 110° 时的样子。","lockedText":"丝热了、凸轮到位：鳍被夹住，屏幕往后推不动","freeText":"丝是凉的：鳍在夹子中间空转，跟着屏幕走","pushText":"你推屏幕上沿：夹子上的“小秤”感觉到一直在推，可屏幕上没有手指……","releaseText":"……断电，丝凉下来，0.3–0.4 秒后松开，屏幕跟着你的手走。","relockText":"手指再碰屏幕，丝一热，它又悄悄夹上。","parts":[{"id":"L1","level":1,"name":"侧条","mat":"ti_black","role":"lid","kid":"一根贴在屏幕左边的细长金属条，像尺子一样，把整个小零件稳稳地挂在屏幕上。","detail":"Ti-6Al-4V，外形同 v1.2。v1.3：贴胶的内表面要按拿到新机实测时量到的屏幕侧边截面做成'平面 + 上下两段圆弧'（仿形），让 0.15 厚的胶 L4 在 zc 12.8–15.5 整条贴满（只贴住平段 1.7 mm 时胶的应力高 1.6 倍）。模型里还是 v1.2 的平面，侧边平段 < 2.2 mm 时改用 0.25 厚 tesa 64825 类胶。","material":"Ti-6Al-4V，喷砂 + 黑色 DLC（贴胶面不镀）","size":"总长 70.5（yc 155.5–226.0）× 高 3.3（zc 12.5–15.8）；厚：前段 0.8 / 中段 1.6 / 搭接段 1.0","moves":"跟着屏幕转","joins":"L4 拉伸胶贴屏幕左侧边（24 h 内不锁）；后段被 L2 夹住（L5b 两颗螺钉 + L5c 定位销）；前端藏着拉手 L5a","shapes":[{"type":"prism","axis":"z","x0":12.5,"x1":15.8,"poly":[[-0.15,155.5],[-0.15,190.0],[-0.95,190.0],[-0.95,158.5],[-0.17,155.5]]},{"type":"box","c":[-0.95,203.0,14.15],"s":[1.6,26.0,3.3],"r":0.3},{"type":"prism","axis":"x","x0":-1.15,"x1":-0.15,"poly":[[216.0,12.5],[226.0,12.5],[226.0,15.8],[216.0,15.8]],"holes":[[[219.0,14.15],[218.983,14.2794],[218.933,14.4],[218.8536,14.5036],[218.75,14.583],[218.6294,14.633],[218.5,14.65],[218.3706,14.633],[218.25,14.583],[218.1464,14.5036],[218.067,14.4],[218.017,14.2794],[218.0,14.15],[218.017,14.0206],[218.067,13.9],[218.1464,13.7964],[218.25,13.717],[218.3706,13.667],[218.5,13.65],[218.6294,13.667],[218.75,13.717],[218.8536,13.7964],[218.933,13.9],[218.983,14.0206]],[[224.0,14.15],[223.983,14.2794],[223.933,14.4],[223.8536,14.5036],[223.75,14.583],[223.6294,14.633],[223.5,14.65],[223.3706,14.633],[223.25,14.583],[223.1464,14.5036],[223.067,14.4],[223.017,14.2794],[223.0,14.15],[223.017,14.0206],[223.067,13.9],[223.1464,13.7964],[223.25,13.717],[223.3706,13.667],[223.5,13.65],[223.6294,13.667],[223.75,13.717],[223.8536,13.7964],[223.933,13.9],[223.983,14.0206]],[[221.5,13.3],[221.483,13.4294],[221.433,13.55],[221.3536,13.6536],[221.25,13.733],[221.1294,13.783],[221.0,13.8],[220.8706,13.783],[220.75,13.733],[220.6464,13.6536],[220.567,13.55],[220.517,13.4294],[220.5,13.3],[220.517,13.1706],[220.567,13.05],[220.6464,12.9464],[220.75,12.867],[220.8706,12.817],[221.0,12.8],[221.1294,12.817],[221.25,12.867],[221.3536,12.9464],[221.433,13.05],[221.483,13.1706]]]}],"explode":[-6,-12,0],"anchor":[-1.75,200.0,14.6],"label":[-15,194,24],"may_touch":["L2","L4","L5a","L5b","L5c"],"group":"屏幕组件","frame":"lid"},{"id":"L2","level":1,"name":"角托转子块","mat":"ti_black","role":"lid","kid":"一块很重很硬的黑色金属，像手掌一样包住屏幕左下角；屏幕被戳时往它身上压，力再经销子传给陶瓷鳍。","detail":"W-Ni-Cu（90W-6Ni-4Cu，无磁）一体：①舌片搭在 L1 外侧；②转子板 1.2 厚伸到转轴，Ø3.0 H7 孔压装鳍销；③同心壳 r 9.03–9.83 绕屏幕 R8.7 圆角，经 L3 顶住圆角；④端唇包住屏幕底端面（留 ≥ 0.3）。模型在舌片根部加了 1.5 mm 过渡块（原设计里舌片和转子板只重叠 0.2 mm 厚，太弱）。","material":"W-Ni-Cu 钨合金（ASTM B777 Class 1，μr < 1.05），CNC + 线切割；喷砂 + 黑色 DLC（L3 粘接面、销孔不镀）","size":"外包络 x −1.75…9.6 × yc 216.0–246.0 × zc 5.3–15.9；转子板厚 1.2；壳厚 0.8；约 5 g","moves":"跟着屏幕转","joins":"舌片用 L5b/L5c 连 L1；壳内弧粘 L3；Ø3 孔压装 L7 + 648 胶；转子板 yc 226–235.5 段贴 L4 胶","shapes":[{"type":"prism","axis":"x","x0":-1.75,"x1":-1.5,"poly":[[216.0,12.5],[226.0,12.5],[226.0,15.8],[216.0,15.8]],"holes":[[[219.45,14.15],[219.4176,14.3959],[219.3227,14.625],[219.1718,14.8218],[218.975,14.9727],[218.7459,15.0676],[218.5,15.1],[218.2541,15.0676],[218.025,14.9727],[217.8282,14.8218],[217.6773,14.625],[217.5824,14.3959],[217.55,14.15],[217.5824,13.9041],[217.6773,13.675],[217.8282,13.4782],[218.025,13.3273],[218.2541,13.2324],[218.5,13.2],[218.7459,13.2324],[218.975,13.3273],[219.1718,13.4782],[219.3227,13.675],[219.4176,13.9041]],[[224.45,14.15],[224.4176,14.3959],[224.3227,14.625],[224.1718,14.8218],[223.975,14.9727],[223.7459,15.0676],[223.5,15.1],[223.2541,15.0676],[223.025,14.9727],[222.8282,14.8218],[222.6773,14.625],[222.5824,14.3959],[222.55,14.15],[222.5824,13.9041],[222.6773,13.675],[222.8282,13.4782],[223.025,13.3273],[223.2541,13.2324],[223.5,13.2],[223.7459,13.2324],[223.975,13.3273],[224.1718,13.4782],[224.3227,13.675],[224.4176,13.9041]],[[221.5,13.3],[221.483,13.4294],[221.433,13.55],[221.3536,13.6536],[221.25,13.733],[221.1294,13.783],[221.0,13.8],[220.8706,13.783],[220.75,13.733],[220.6464,13.6536],[220.567,13.55],[220.517,13.4294],[220.5,13.3],[220.517,13.1706],[220.567,13.05],[220.6464,12.9464],[220.75,12.867],[220.8706,12.817],[221.0,12.8],[221.1294,12.817],[221.25,12.867],[221.3536,12.9464],[221.433,13.05],[221.483,13.1706]]]},{"type":"prism","axis":"x","x0":-1.5,"x1":-1.3,"poly":[[216.0,12.5],[226.0,12.5],[226.0,15.8],[216.0,15.8]],"holes":[[[219.2,14.15],[219.1761,14.3312],[219.1062,14.5],[218.995,14.645],[218.85,14.7562],[218.6812,14.8261],[218.5,14.85],[218.3188,14.8261],[218.15,14.7562],[218.005,14.645],[217.8938,14.5],[217.8239,14.3312],[217.8,14.15],[217.8239,13.9688],[217.8938,13.8],[218.005,13.655],[218.15,13.5438],[218.3188,13.4739],[218.5,13.45],[218.6812,13.4739],[218.85,13.5438],[218.995,13.655],[219.1062,13.8],[219.1761,13.9688]],[[224.2,14.15],[224.1761,14.3312],[224.1062,14.5],[223.995,14.645],[223.85,14.7562],[223.6812,14.8261],[223.5,14.85],[223.3188,14.8261],[223.15,14.7562],[223.005,14.645],[222.8938,14.5],[222.8239,14.3312],[222.8,14.15],[222.8239,13.9688],[222.8938,13.8],[223.005,13.655],[223.15,13.5438],[223.3188,13.4739],[223.5,13.45],[223.6812,13.4739],[223.85,13.5438],[223.995,13.655],[224.1062,13.8],[224.1761,13.9688]],[[221.5,13.3],[221.483,13.4294],[221.433,13.55],[221.3536,13.6536],[221.25,13.733],[221.1294,13.783],[221.0,13.8],[220.8706,13.783],[220.75,13.733],[220.6464,13.6536],[220.567,13.55],[220.517,13.4294],[220.5,13.3],[220.517,13.1706],[220.567,13.05],[220.6464,12.9464],[220.75,12.867],[220.8706,12.817],[221.0,12.8],[221.1294,12.817],[221.25,12.867],[221.3536,12.9464],[221.433,13.05],[221.483,13.1706]]]},{"type":"prism","axis":"x","x0":-1.3,"x1":-1.15,"poly":[[216.0,12.5],[226.0,12.5],[226.0,15.8],[216.0,15.8]],"holes":[[[219.05,14.15],[219.0313,14.2924],[218.9763,14.425],[218.8889,14.5389],[218.775,14.6263],[218.6424,14.6813],[218.5,14.7],[218.3576,14.6813],[218.225,14.6263],[218.1111,14.5389],[218.0237,14.425],[217.9687,14.2924],[217.95,14.15],[217.9687,14.0076],[218.0237,13.875],[218.1111,13.7611],[218.225,13.6737],[218.3576,13.6187],[218.5,13.6],[218.6424,13.6187],[218.775,13.6737],[218.8889,13.7611],[218.9763,13.875],[219.0313,14.0076]],[[224.05,14.15],[224.0313,14.2924],[223.9763,14.425],[223.8889,14.5389],[223.775,14.6263],[223.6424,14.6813],[223.5,14.7],[223.3576,14.6813],[223.225,14.6263],[223.1111,14.5389],[223.0237,14.425],[222.9687,14.2924],[222.95,14.15],[222.9687,14.0076],[223.0237,13.875],[223.1111,13.7611],[223.225,13.6737],[223.3576,13.6187],[223.5,13.6],[223.6424,13.6187],[223.775,13.6737],[223.8889,13.7611],[223.9763,13.875],[224.0313,14.0076]],[[221.5,13.3],[221.483,13.4294],[221.433,13.55],[221.3536,13.6536],[221.25,13.733],[221.1294,13.783],[221.0,13.8],[220.8706,13.783],[220.75,13.733],[220.6464,13.6536],[220.567,13.55],[220.517,13.4294],[220.5,13.3],[220.517,13.1706],[220.567,13.05],[220.6464,12.9464],[220.75,12.867],[220.8706,12.817],[221.0,12.8],[221.1294,12.817],[221.25,12.867],[221.3536,12.9464],[221.433,13.05],[221.483,13.1706]]]},{"type":"prism","axis":"x","x0":-1.75,"x1":-1.35,"poly":[[226.0,12.5],[227.5,12.5],[227.9,13.0],[227.9,15.3],[227.5,15.8],[226.0,15.8]]},{"type":"prism","axis":"x","x0":-1.35,"x1":-0.15,"poly":[[226.0,12.4],[226.0,15.9],[243.0,15.9],[245.4,12.2],[244.8,6.2],[242.3,5.3],[239.8,6.2],[238.8,9.0],[237.2,12.4]],"holes":[[[243.8,7.8],[243.7772,8.0605],[243.7095,8.313],[243.599,8.55],[243.4491,8.7642],[243.2642,8.9491],[243.05,9.099],[242.813,9.2095],[242.5605,9.2772],[242.3,9.3],[242.0395,9.2772],[241.787,9.2095],[241.55,9.099],[241.3358,8.9491],[241.1509,8.7642],[241.001,8.55],[240.8905,8.313],[240.8228,8.0605],[240.8,7.8],[240.8228,7.5395],[240.8905,7.287],[241.001,7.05],[241.1509,6.8358],[241.3358,6.6509],[241.55,6.501],[241.787,6.3905],[242.0395,6.3228],[242.3,6.3],[242.5605,6.3228],[242.813,6.3905],[243.05,6.501],[243.2642,6.6509],[243.4491,6.8358],[243.599,7.05],[243.7095,7.287],[243.7772,7.5395]],[[230.3,15.2],[230.2598,15.35],[230.15,15.4598],[230.0,15.5],[229.85,15.4598],[229.7402,15.35],[229.7,15.2],[229.7402,15.05],[229.85,14.9402],[230.0,14.9],[230.15,14.9402],[230.2598,15.05]]]},{"type":"cyl","axis":"z","c":[8.7,235.5,14.35],"r":9.83,"ri":9.03,"h":3.1,"a0":90,"a1":180},{"type":"prism","axis":"x","x0":-1.35,"x1":6.0,"poly":[[244.2,12.6],[244.9,12.6],[246.0,13.7],[246.0,14.7],[245.0,15.7],[244.2,15.7]]},{"type":"prism","axis":"x","x0":6.0,"x1":9.6,"poly":[[244.5,12.6],[244.9,12.6],[246.0,13.7],[246.0,14.7],[245.0,15.7],[244.5,15.7]]}],"explode":[-6,6,0],"anchor":[-1.35,234.0,11.0],"label":[-14,226,2],"may_touch":["L1","L3","L4","L5b","L5c","L6","L7","L8"],"group":"屏幕组件","frame":"lid"},{"id":"L3","level":1,"name":"PEEK 顶垫","mat":"peek","role":"pad","touches_machine":true,"kid":"一小片米色硬塑料，夹在金属和屏幕之间，只顶住、不粘，保护屏幕的铝边不被刮花。","detail":"PEEK 450G 弧片厚 0.28：r 8.75–9.03、a 99.5–110.5°（弧长 1.7）、高 3.1；接触中心 (6.44, 243.95, 14.15)，正好在力线上（离转轴 6.35）。外弧用 0.03 环氧（Tg ≥ 100 °C）粘在 L2 壳上；87 N 时平均压强 17 MPa。","material":"PEEK 450G 无填充，两边倒 R0.2","size":"弧长 1.7 × 高 3.1 × 厚 0.28（面积 5.2 mm²）","moves":"跟着屏幕转","joins":"外弧粘 L2 壳内弧；内弧只顶屏幕圆角（对屏幕留 0.05 装配间隙）","shapes":[{"type":"cyl","axis":"z","c":[8.7,235.5,14.15],"r":9.03,"ri":8.75,"h":3.1,"a0":99.5,"a1":110.5}],"explode":[3,14,0],"anchor":[6.44,244.1,15.7],"label":[12,256,25],"may_touch":["L2"],"group":"屏幕组件","frame":"lid"},{"id":"L4","name":"侧条拉伸胶","mat":"adhesive","role":"pad","touches_machine":true,"kid":"一条很薄的双面胶，把侧条粘在屏幕边上；以后捏住拉手往前拉长，它就会脱开，不留痕迹。","detail":"tesa 70415 类拉伸免痕胶 0.15，2.7 × 78.0，只贴屏幕左侧边铝面（zc 12.8–15.5，不碰玻璃）；后端 yc 226–235.5 那段粘的是 L2 转子板。","material":"拉伸免痕胶 0.15 mm","size":"2.7 × 78.0 × 0.15（x −0.15…0、yc 157.5–235.5、zc 12.8–15.5）","moves":"跟着屏幕转；拆的时候沿 −yc 拉长脱开","joins":"一面粘屏幕侧边，一面粘 L1 内表面和 L2 转子板","shapes":[{"type":"box","c":[-0.075,196.5,14.15],"s":[0.15,78.0,2.7]}],"explode":[-2.5,-12,0],"anchor":[-0.1,172.0,12.9],"label":[-11,164,4],"may_touch":["L1","L2","L5a"],"group":"屏幕组件","level":2,"frame":"lid"},{"id":"L5a","name":"拉手（藏起来）","mat":"pad","role":"pad","kid":"撕胶时用的小尾巴，平时折起来藏在侧条前端下面，不会被包带勾住。","detail":"PET 0.05。v1.2 伸出侧条前端 15 mm，包带一勾就可能掀胶；v1.3 只伸出 3 mm（yc 152.5–155.5）、往回对折贴在 L1 前端 15° 斜坡下面。拆的时候用随附塑料撬片挑出来再捏住，贴着面、角度 ≤ 30° 慢慢拉。","material":"PET 膜 0.05","size":"2.7 × 6（其中露出 3）× 0.05，对折一层","moves":"随屏幕","joins":"粘在 L4 前端","shapes":[{"type":"box","c":[-0.125,155.5,14.15],"s":[0.05,6.0,2.7]},{"type":"box","c":[-0.2,154.0,14.15],"s":[0.05,3.0,2.7],"r":0.02}],"explode":[-2.5,-18,0],"anchor":[-0.2,146.0,15.5],"label":[-10,138,26],"may_touch":["L1","L4"],"group":"屏幕组件","level":2,"frame":"lid"},{"id":"L5b","name":"沉头螺钉 ×2","mat":"ti","role":"lid","kid":"两颗比米粒还小的螺丝，把角托和侧条拧在一起。","detail":"Ti M1.0 × 0.25 沉头 ×2，在 yc 218.5、223.5，zc 14.15，从外侧穿 L2 舌片拧进 L1 的螺纹孔；头部沉进舌片、和外表面齐平。原定长 2.0，但舌片 0.6 + 搭接段 1.0 只有 1.6 厚，2.0 会穿出 0.4 顶到胶和屏幕；模型取全长 1.5（x −1.75…−0.25）。","material":"Ti-6Al-4V，黑色 DLC","size":"M1.0 × 1.5（建议改，原 2.0），头径 1.9","moves":"跟着屏幕转","joins":"穿 L2 舌片，拧进 L1；装配时点 222 螺纹胶","shapes":[{"type":"cyl","axis":"x","c":[-1.625,218.5,14.15],"r":0.95,"h":0.25},{"type":"cyl","axis":"x","c":[-1.4,218.5,14.15],"r":0.7,"h":0.2},{"type":"cyl","axis":"x","c":[-0.775,218.5,14.15],"r":0.37,"h":1.05},{"type":"spring","axis":"x","c":[-0.775,218.5,14.15],"rm":0.43,"wire":[0.12,0.1],"turns":4,"pitch":0.25,"x0":-1.3},{"type":"cyl","axis":"x","c":[-1.625,223.5,14.15],"r":0.95,"h":0.25},{"type":"cyl","axis":"x","c":[-1.4,223.5,14.15],"r":0.7,"h":0.2},{"type":"cyl","axis":"x","c":[-0.775,223.5,14.15],"r":0.37,"h":1.05},{"type":"spring","axis":"x","c":[-0.775,223.5,14.15],"rm":0.43,"wire":[0.12,0.1],"turns":4,"pitch":0.25,"x0":-1.3}],"explode":[-12,-12,0],"anchor":[-1.75,218.5,15.0],"label":[-13,212,26],"may_touch":["L1","L2"],"group":"屏幕组件","level":2,"frame":"lid"},{"id":"L5c","name":"定位销","mat":"ti","role":"lid","kid":"一根小钉子，让角托和侧条每次都对得一模一样准。","detail":"Ti Ø1.0 销，在 yc 221.0、zc 13.3，压过 L2 舌片和 L1 搭接段，螺钉拧紧前先定好位置。原定长 2.0 同样太长，模型取 1.5。","material":"Ti-6Al-4V，磨削","size":"Ø1.0 × 1.5（建议改，原 2.0）","moves":"跟着屏幕转","joins":"压进 L1、L2 的 Ø1.0 孔","shapes":[{"type":"cyl","axis":"x","c":[-1.0,221.0,13.3],"r":0.5,"h":1.5}],"explode":[-12,-12,0],"anchor":[-1.75,221.0,12.9],"label":[-12,225,3],"may_touch":["L1","L2"],"group":"屏幕组件","level":2,"frame":"lid"},{"id":"L7","name":"鳍销","mat":"ti","role":"rotor","kid":"一根小金属轴，一头插在角托里，另一头带螺纹，陶瓷鳍就套在它上面。","detail":"Ti-6Al-4V 磨削 h6，Ø3.0 × 3.95，中心就在转轴上：x −1.35…−0.15 光轴压装进 L2（+ 648 胶）；x −1.45…−1.35 退刀槽；x −4.10…−1.45 是 M3 × 0.25 细牙，给 L8 调位、L9 锁紧。","material":"Ti-6Al-4V，磨削 h6","size":"Ø3.0 × 3.95（x −4.10…−0.15），螺纹 M3 × 0.25 长 2.65","moves":"跟着屏幕转","joins":"压装 L2；螺纹上拧 L8、L9；穿过 L10 中心孔","shapes":[{"type":"cyl","axis":"x","c":[-0.75,242.3,7.8],"r":1.5,"h":1.2},{"type":"cyl","axis":"x","c":[-1.4,242.3,7.8],"r":1.3,"h":0.1},{"type":"cyl","axis":"x","c":[-2.775,242.3,7.8],"r":1.35,"h":2.65},{"type":"spring","axis":"x","c":[-2.775,242.3,7.8],"rm":1.42,"wire":[0.15,0.16],"turns":10,"pitch":0.25,"x0":-4.05}],"explode":[-26,6,0],"anchor":[-4.1,242.3,7.8],"label":[-17,236,-2],"may_touch":["L2","L8","L9","L10"],"group":"屏幕组件","level":2,"frame":"lid"},{"id":"L8","name":"鳍毂（调位螺母）","mat":"ti","role":"rotor","kid":"一个小螺母，转一转就能把陶瓷鳍沿轴挪一点点，让它正好停在夹子两只爪子中间。","detail":"Ti-6Al-4V，Ø4.8 × 1.35，内螺纹 M3 × 0.25，外端面研磨后用 0.03 环氧粘鳍；两个 3.6 扳手平面。每转一圈走 0.25，转 9° 走 6 µm。取代 v1 的鳍毂 + M1.4 夹紧螺钉（径向螺钉会扫到卡钳 C1）。","material":"Ti-6Al-4V","size":"Ø4.8 × 1.35（x −2.70…−1.35），扳手平面 3.6","moves":"跟着屏幕转（安装时转它调位）","joins":"拧在 L7 上；外端面粘 L10，被 L9 隔着鳍压紧","shapes":[{"type":"prism","axis":"x","x0":-2.7,"x1":-1.35,"poly":[[244.1,7.8],[244.1,8.1133],[244.1,8.4212],[244.1,8.7184],[244.1,9.0],[244.1,9.261],[243.9971,9.4971],[243.761,9.704],[243.5,9.8785],[243.2184,10.0173],[242.9212,10.1182],[242.6133,10.1795],[242.3,10.2],[241.9867,10.1795],[241.6788,10.1182],[241.3816,10.0173],[241.1,9.8785],[240.839,9.704],[240.6029,9.4971],[240.5,9.261],[240.5,9.0],[240.5,8.7184],[240.5,8.4212],[240.5,8.1133],[240.5,7.8],[240.5,7.4867],[240.5,7.1788],[240.5,6.8816],[240.5,6.6],[240.5,6.339],[240.6029,6.1029],[240.839,5.896],[241.1,5.7215],[241.3816,5.5827],[241.6788,5.4818],[241.9867,5.4205],[242.3,5.4],[242.6133,5.4205],[242.9212,5.4818],[243.2184,5.5827],[243.5,5.7215],[243.761,5.896],[243.9971,6.1029],[244.1,6.339],[244.1,6.6],[244.1,6.8816],[244.1,7.1788],[244.1,7.4867]],"holes":[[[243.8,7.8],[243.7772,8.0605],[243.7095,8.313],[243.599,8.55],[243.4491,8.7642],[243.2642,8.9491],[243.05,9.099],[242.813,9.2095],[242.5605,9.2772],[242.3,9.3],[242.0395,9.2772],[241.787,9.2095],[241.55,9.099],[241.3358,8.9491],[241.1509,8.7642],[241.001,8.55],[240.8905,8.313],[240.8228,8.0605],[240.8,7.8],[240.8228,7.5395],[240.8905,7.287],[241.001,7.05],[241.1509,6.8358],[241.3358,6.6509],[241.55,6.501],[241.787,6.3905],[242.0395,6.3228],[242.3,6.3],[242.5605,6.3228],[242.813,6.3905],[243.05,6.501],[243.2642,6.6509],[243.4491,6.8358],[243.599,7.05],[243.7095,7.287],[243.7772,7.5395]]]}],"explode":[-12,6,0],"anchor":[-2.0,242.3,10.1],"label":[-13,233,17],"may_touch":["L2","L7","L10"],"group":"屏幕组件","level":2,"frame":"lid"},{"id":"L9","name":"锁紧螺母","mat":"ti","role":"rotor","kid":"最外面一个更薄的小螺母，把陶瓷鳍和调位螺母一起拧死，再也不会自己转。","detail":"Ti-6Al-4V，M3 × 0.25，外径 4.0、厚 0.5，两平面 3.4；调好鳍的位置后拧紧，点一滴 222 低强度螺纹胶。","material":"Ti-6Al-4V","size":"外径 4.0 × 0.5（x −4.10…−3.60），平面 3.4","moves":"跟着屏幕转","joins":"拧在 L7 上，压住 L10 外侧","shapes":[{"type":"prism","axis":"x","x0":-4.1,"x1":-3.6,"poly":[[244.0,7.8],[244.0,8.0611],[244.0,8.3176],[244.0,8.5654],[244.0,8.8],[243.8867,9.0175],[243.7142,9.2142],[243.5175,9.3867],[243.3,9.5321],[243.0654,9.6478],[242.8176,9.7319],[242.5611,9.7829],[242.3,9.8],[242.0389,9.7829],[241.7824,9.7319],[241.5346,9.6478],[241.3,9.5321],[241.0825,9.3867],[240.8858,9.2142],[240.7133,9.0175],[240.6,8.8],[240.6,8.5654],[240.6,8.3176],[240.6,8.0611],[240.6,7.8],[240.6,7.5389],[240.6,7.2824],[240.6,7.0346],[240.6,6.8],[240.7133,6.5825],[240.8858,6.3858],[241.0825,6.2133],[241.3,6.0679],[241.5346,5.9522],[241.7824,5.8681],[242.0389,5.8171],[242.3,5.8],[242.5611,5.8171],[242.8176,5.8681],[243.0654,5.9522],[243.3,6.0679],[243.5175,6.2133],[243.7142,6.3858],[243.8867,6.5825],[244.0,6.8],[244.0,7.0346],[244.0,7.2824],[244.0,7.5389]],"holes":[[[243.8,7.8],[243.7772,8.0605],[243.7095,8.313],[243.599,8.55],[243.4491,8.7642],[243.2642,8.9491],[243.05,9.099],[242.813,9.2095],[242.5605,9.2772],[242.3,9.3],[242.0395,9.2772],[241.787,9.2095],[241.55,9.099],[241.3358,8.9491],[241.1509,8.7642],[241.001,8.55],[240.8905,8.313],[240.8228,8.0605],[240.8,7.8],[240.8228,7.5395],[240.8905,7.287],[241.001,7.05],[241.1509,6.8358],[241.3358,6.6509],[241.55,6.501],[241.787,6.3905],[242.0395,6.3228],[242.3,6.3],[242.5605,6.3228],[242.813,6.3905],[243.05,6.501],[243.2642,6.6509],[243.4491,6.8358],[243.599,7.05],[243.7095,7.287],[243.7772,7.5395]]]}],"explode":[-20,6,0],"anchor":[-4.1,242.3,5.9],"label":[-16,250,-4],"may_touch":["L7","L10"],"group":"屏幕组件","level":2,"frame":"lid"},{"id":"L10","level":1,"name":"制动鳍","mat":"zirconia","role":"rotor","kid":"一片白色陶瓷扇子，跟着屏幕转；要锁住的时候，两只小手夹住它，屏幕就不晃了。","detail":"Y-TZP 氧化锆扇片 0.90 厚（两面研磨，厚度差 ≤ 2 µm），r 1.5–7.6、合盖扇角 48–140°，保证开盖 88–140° 时把摩擦片（−40…0°）全盖住；外缘两面各倒 0.2，像刮板一样把灰刮出去（模型用台阶表示倒角）。","material":"Y-TZP 氧化锆，两面研磨","size":"扇形 R7.6（内孔 R1.5）× 92° × 0.90（x −3.60…−2.70）","moves":"跟着屏幕转；锁住时被两片摩擦片夹住","joins":"粘在 L8 外端面（0.03 环氧），外侧被 L9 压紧；锁住时接触两片 C4","shapes":[{"type":"cyl","axis":"x","ri":1.5,"a0":48,"a1":140,"c":[-3.15,242.3,7.8],"r":7.6,"h":0.5},{"type":"cyl","axis":"x","ri":1.5,"a0":48,"a1":140,"c":[-3.5,242.3,7.8],"r":7.4,"h":0.2},{"type":"cyl","axis":"x","ri":1.5,"a0":48,"a1":140,"c":[-2.8,242.3,7.8],"r":7.4,"h":0.2}],"explode":[-16,6,0],"anchor":[-3.6,243.8,13.8],"label":[-4.6,256.6,36.4],"may_touch":["L7","L8","L9","C4a","C4b","L6"],"group":"屏幕组件","frame":"lid"},{"id":"L6","name":"防脱绳（拴在罩顶）","frame":"base","mat":"cable","role":"cable","kid":"一根很细的保险绳：万一侧条的胶掉了，屏幕那一头的小零件挂在罩子旁边，不会掉进电脑或刮屏幕。","detail":"芳纶 Ø0.3 + 钛套，长 16 mm（0–140° 两端最远 14.1 + 2 余量）。机身端从 v1.2 的 B1 顶面孔改拴在 C30 罩顶 Ø0.6 孔 (−2.0, 243.7, 15.9)，屏幕端仍是 L2 孔（合盖 yc 230.0、zc 15.2）。绳是软的，模型画的是开盖 110° 时的样子，其他角度检查时它会和屏幕组件'相交'，那是绳在弯。","material":"芳纶（Kevlar）线 0.3","size":"Ø0.3 × 16","moves":"软，跟着屏幕弯","joins":"罩顶孔打结 + 钛套压接；屏幕端拴 L2","shapes":[{"type":"tube","r":0.15,"pts":[[-2.0,243.7,15.9],[-2.0,243.75,16.45],[-1.8,246.4,17.55],[-1.4,249.8,17.85],[-1.05,252.5,17.45],[-0.9,253.461,16.827]]},{"type":"sphere","c":[-2.0,243.7,16.25],"r":0.25}],"explode":[-6,0,8],"anchor":[-2.0,242.0,14.0],"label":[-14,244,30],"may_touch":["L2","B1","L10","C30"],"group":"屏幕组件","level":2},{"id":"C1","name":"卡钳体","level":1,"mat":"ti_black","role":"lock","kid":"夹子的'身体'：一边是不动的爪子，另一边下面挂着一个小盒子，盒子里装着让夹子夹紧的全部机关。","detail":"v1.3：①桥在交叉簧片单元 1 处开槽（单元外包络 + 0.05），同时让开 C2 的外扩；槽从 x −4.80 开到 −3.90（原定 −4.70…−4.00：那样 C2 外扩的两个侧面会贴着桥，锁的时候 C2 往 +x 走 0.012 就碰上）；②小耳座改成包住单元 2 的 +l 半边加 0.3 壁的块（x −4.80…−4.00，z ≤ 11.6），用一条 r 7.30–7.75、a 3–16° 的腹板接回桥（只在 x −4.80…−4.70 这层、a 3–5.5° 伸到 r 8.0 接上桥，离 C30 罩 ≥ 0.13）；③驱动座顶板在鳍层（x −3.70…−2.60）退到 y ≤ 241.9，开到 140° 鳍不碰；④删掉 v1.2 的 0.05 聚酰亚胺底膜，换成 C31 底盖。腹板是模型里补上的（小耳座怎么连回桥还没定），要有限元。","material":"TZM 钼合金（或 90W-6Ni-4Cu），外露面喷砂 + 黑 DLC","size":"整件约 4.8 × 16 × 9.7；驱动座 3.75 × 7.2 × 3.4","moves":"不动（挂在膜片上，左右能浮动几微米）","joins":"膜片 C5/C6 浮在 B1 外墙上；C2 经 C22 交叉簧片铰在它上面；底下挂 C31、侧面挂 C32b、C33；C19 反力墙装在驱动座外层","shapes":[{"type":"cyl","axis":"x","c":[-1.9,242.3,7.8],"r":7.7,"ri":4.6,"h":0.8,"a0":-42,"a1":2},{"type":"cyl","axis":"x","c":[-1.9,242.3,7.8],"r":7.95,"ri":7.6,"h":0.8,"a0":-45,"a1":5},{"type":"prism","axis":"x","x0":-4.8,"x1":-4.7,"poly":[[251.705,7.8],[251.665,6.94],[251.595,6.37],[251.525,5.97],[251.335,5.19],[251.025,4.29],[250.825,3.83],[250.595,3.37],[250.175,2.66],[249.825,2.16],[249.565,1.83],[249.245,1.46],[248.95,1.155],[247.895,2.22],[248.295,2.65],[248.625,3.06],[248.945,3.52],[249.295,4.12],[249.545,4.64],[249.775,5.23],[249.945,5.79],[250.055,6.3],[250.285,5.86],[250.32,5.835],[251.045,6.21],[251.045,6.25],[250.965,6.41],[250.195,7.89],[250.175,8.48],[250.19,8.495],[251.66,8.615],[251.695,8.23]]},{"type":"prism","axis":"x","x0":-4.7,"x1":-3.9,"poly":[[251.705,7.8],[251.665,6.94],[251.595,6.37],[251.525,5.97],[251.335,5.19],[251.025,4.29],[250.825,3.83],[250.595,3.37],[250.175,2.66],[249.825,2.16],[249.565,1.83],[249.245,1.46],[248.95,1.155],[247.895,2.22],[248.295,2.65],[248.625,3.06],[248.945,3.52],[249.295,4.12],[249.545,4.64],[249.775,5.23],[249.945,5.79],[250.055,6.3],[250.285,5.86],[250.32,5.835],[251.045,6.21],[251.045,6.25],[250.955,6.43],[250.195,7.89],[250.175,8.48],[250.19,8.495],[251.66,8.615],[251.695,8.23]]},{"type":"cyl","axis":"x","c":[-2.7,242.3,7.8],"r":9.4,"h":2.4,"ri":7.9,"a0":-45,"a1":5},{"type":"prism","axis":"x","x0":-2.3,"x1":-1.5,"poly":[[242.4,0.4],[242.4,4.5],[244.2,4.0],[245.718,4.722],[248.022,2.648],[246.4,0.4]]},{"type":"prism","axis":"z","x0":3.45,"x1":3.8,"poly":[[-5.25,236.6],[-3.7,236.6],[-3.7,243.8],[-5.25,243.8]]},{"type":"prism","axis":"z","x0":3.45,"x1":3.8,"poly":[[-3.7,236.6],[-2.6,236.6],[-2.6,241.9],[-3.7,241.9]]},{"type":"prism","axis":"z","x0":3.45,"x1":3.8,"poly":[[-2.6,236.6],[-1.5,236.6],[-1.5,243.8],[-2.6,243.8]]},{"type":"prism","axis":"z","x0":0.45,"x1":3.45,"poly":[[-5.25,236.6],[-5.05,236.6],[-5.05,243.8],[-5.25,243.8]]},{"type":"prism","axis":"z","x0":0.45,"x1":3.45,"poly":[[-1.75,236.6],[-1.5,236.6],[-1.5,243.8],[-1.75,243.8]]},{"type":"prism","axis":"z","x0":0.6,"x1":3.0,"poly":[[-5.25,236.6],[-4.35,236.6],[-4.35,236.9],[-5.25,236.9]]},{"type":"prism","axis":"z","x0":0.45,"x1":3.45,"poly":[[-5.05,243.4],[-4.75,243.4],[-4.75,243.8],[-5.05,243.8]]},{"type":"prism","axis":"z","x0":0.45,"x1":2.95,"poly":[[-4.75,243.4],[-3.7,243.4],[-3.7,243.8],[-4.75,243.8]]},{"type":"prism","axis":"z","x0":0.45,"x1":3.45,"poly":[[-2.6,243.4],[-1.75,243.4],[-1.75,243.8],[-2.6,243.8]]},{"type":"prism","axis":"x","x0":-4.8,"x1":-4.0,"poly":[[250.035,8.35],[250.03,8.215],[249.945,8.39],[249.91,8.415],[249.88,8.415],[249.585,8.27],[249.555,8.65],[249.475,9.15],[249.24,9.035],[249.125,9.26],[249.37,9.385],[249.395,9.41],[249.395,9.45],[248.405,11.36],[248.3,11.595],[248.575,11.59],[249.455,9.87],[249.48,9.855],[249.755,9.93],[249.875,9.46],[249.945,9.1]]},{"type":"prism","axis":"x","x0":-4.8,"x1":-4.7,"poly":[[250.285,8.36],[250.28,8.215],[250.04,8.205],[249.945,8.39],[249.91,8.415],[249.88,8.415],[249.59,8.265],[249.565,8.5],[250.26,8.565]]}],"explode":[-2,12,-8],"anchor":[-4.8,250.0,2.4],"label":[-20,262,-2],"may_touch":["C4a","C6","C7","C12","C19","C21","C22","C31","C32b","C33"],"frame":"base","group":"卡钳组件"},{"id":"C2","name":"动钳口（杠杆）","level":1,"mat":"carbide","role":"lock","motion":{"type":"translate","d":[0.012,0,0]},"kid":"夹子会动的那只爪子，做成一根跷跷板：下面的钩尖被往里推一点，上面的爪子就带着 4.6 倍的力夹住鳍。","detail":"v1.3：①钳口扇形在单元 1 处外扩 r 7.70–8.00、a −9…−2°，把单元 1 的 −l 端包进来；②小耳改成 r 5.4–6.8、a 0–36°，让开 C1 的小耳座和单元 2 的中段，顶面 z ≤ 11.4；③鳍层里的折弯改 y 241.20–241.90，内臂 242.35 → 241.90、241.5 → 241.2。杠杆比仍约 4.6。","material":"TZM 钼合金（不镀）","size":"0.70 厚；钳口 r 4.6–7.7 × 44°；钩臂约 9 长","moves":"锁的时候钳口往鳍走 12 µm（钩尖约 55 µm）","joins":"经两个 C22 交叉簧片单元铰在 C1 上；钩尖被 C17 钩簧推；钳口内面贴 C4b 摩擦片和 C32a 刮灰唇","shapes":[{"type":"cyl","axis":"x","c":[-4.35,242.3,7.8],"r":7.7,"ri":4.6,"h":0.7,"a0":-42,"a1":2},{"type":"cyl","axis":"x","c":[-4.35,242.3,7.8],"r":8.0,"h":0.7,"ri":7.7,"a0":-9,"a1":-2},{"type":"prism","axis":"x","x0":-4.7,"x1":-4.0,"poly":[[246.2,4.9],[248.1,3.0],[247.6,3.05],[242.0,3.05],[242.0,3.4],[245.4,3.4]]},{"type":"prism","axis":"z","x0":3.05,"x1":3.4,"poly":[[-4.7,241.2],[-1.85,241.2],[-1.85,241.9],[-4.7,241.9]]},{"type":"prism","axis":"x","x0":-2.45,"x1":-1.85,"poly":[[241.9,3.05],[241.9,3.4],[241.2,3.4],[240.3,2.1],[240.3,1.1],[239.8,1.1],[239.8,2.1],[241.3,3.05]]},{"type":"prism","axis":"x","x0":-4.7,"x1":-4.0,"poly":[[249.105,7.8],[247.71,7.795],[247.695,7.81],[247.695,8.12],[247.645,8.6],[247.565,9.02],[247.465,9.39],[247.275,9.91],[247.075,10.33],[246.885,10.66],[246.675,10.96],[246.68,10.985],[247.23,11.385],[247.795,11.39],[247.55,11.265],[247.535,11.2],[248.635,9.06],[248.69,9.035],[248.965,9.17],[249.065,8.53]]}],"explode":[-11,12,-8],"anchor":[-2.1,240.05,1.6],"label":[-15.2,243.3,-20.6],"may_touch":["C4b","C22","C17","C32a"],"frame":"base","group":"卡钳组件"},{"id":"C4a","name":"定摩擦片","mat":"friction","role":"lock","moves":"不动","material":"烧结铜基摩擦材料（无铁）","size":"扇形 r 4.6–7.6 × −40…0°，厚 0.40，面积 12.8 mm²","joins":"背面钎焊（或高温环氧）在钳口上，装好后两片一起合磨","kid":"贴在不动爪子上的'刹车皮'，夹住陶瓷鳍时靠它的摩擦力挡住屏幕。","detail":"和刹车片一样的烧结铜基材料，扇形 r 4.6–7.6、−40…0°（世界坐标，不随屏幕），平均摩擦半径 6.22 mm；外表面 x −2.70 正对鳍。","shapes":[{"type":"cyl","axis":"x","c":[-2.5,242.3,7.8],"r":7.6,"ri":4.6,"h":0.4,"a0":-40,"a1":0}],"explode":[-4,12,-8],"anchor":[-2.7,248.1,5.7],"label":[-10,256,14],"may_touch":["C1","L10","C32b"],"frame":"base","group":"卡钳组件","level":2},{"id":"C4b","name":"动摩擦片","mat":"friction","role":"lock","moves":"跟动钳口一起往 +x 走 12 µm","material":"烧结铜基摩擦材料（无铁）","size":"扇形 r 4.6–7.6 × −40…0°，厚 0.40，面积 12.8 mm²","joins":"背面钎焊（或高温环氧）在钳口上，装好后两片一起合磨","kid":"贴在会动爪子上的另一片'刹车皮'，从外面压住陶瓷鳍。","detail":"同定摩擦片；外表面 x −3.60 正对鳍，松开时离鳍 6 µm。","motion":{"type":"translate","d":[0.012,0,0]},"shapes":[{"type":"cyl","axis":"x","c":[-3.8,242.3,7.8],"r":7.6,"ri":4.6,"h":0.4,"a0":-40,"a1":0}],"explode":[-9,12,-8],"anchor":[-3.6,247.0,3.6],"label":[-14,244,16],"may_touch":["C2","L10","C32a"],"frame":"base","group":"卡钳组件","level":2},{"id":"C5","name":"膜片 A（外）","level":1,"mat":"ti","role":"spring","material":"Ti-6Al-4V 0.22 冷轧板，线切割","size":"框 7.9 × 9.8、边宽 1.0、厚 0.22；毂 3 × 3；叶片宽 3.0","moves":"不动（毂能左右动几微米）","kid":"两片很薄的钛'弹簧片'之一：上下前后很硬，左右很软，让夹子能自己对正。","detail":"Ti-6Al-4V 0.22，形状同 v1.1，挪到 x −5.38…−5.16；框整圈用结构环氧粘在 B1 外墙内面（v1.1 只粘了前边，竖直力走 1 mm 宽的框边，整片只有约 18 N/µm）。外墙内面铣 0.03 深的槽让毂和叶片能动 ±10 µm。","joins":"框粘 B1 外墙；毂夹 C7；C14 穿四角","shapes":[{"type":"prism","axis":"x","x0":-5.38,"x1":-5.16,"poly":[[244.9,0.4],[252.8,0.4],[252.8,10.2],[244.9,10.2]],"holes":[[[245.9,6.5],[248.5,6.5],[248.5,9.2],[245.9,9.2]],[[245.9,1.4],[248.5,1.4],[248.5,3.5],[245.9,3.5]],[[251.5,1.4],[251.8,1.4],[251.8,9.2],[251.5,9.2]],[[245.8,0.9],[245.7464,1.1],[245.6,1.2464],[245.4,1.3],[245.2,1.2464],[245.0536,1.1],[245.0,0.9],[245.0536,0.7],[245.2,0.5536],[245.4,0.5],[245.6,0.5536],[245.7464,0.7]],[[252.7,0.9],[252.6464,1.1],[252.5,1.2464],[252.3,1.3],[252.1,1.2464],[251.9536,1.1],[251.9,0.9],[251.9536,0.7],[252.1,0.5536],[252.3,0.5],[252.5,0.5536],[252.6464,0.7]],[[245.8,9.7],[245.7464,9.9],[245.6,10.0464],[245.4,10.1],[245.2,10.0464],[245.0536,9.9],[245.0,9.7],[245.0536,9.5],[245.2,9.3536],[245.4,9.3],[245.6,9.3536],[245.7464,9.5]],[[252.7,9.7],[252.6464,9.9],[252.5,10.0464],[252.3,10.1],[252.1,10.0464],[251.9536,9.9],[251.9,9.7],[251.9536,9.5],[252.1,9.3536],[252.3,9.3],[252.5,9.3536],[252.6464,9.5]],[[250.5,5.0],[250.433,5.25],[250.25,5.433],[250.0,5.5],[249.75,5.433],[249.567,5.25],[249.5,5.0],[249.567,4.75],[249.75,4.567],[250.0,4.5],[250.25,4.567],[250.433,4.75]]]}],"explode":[-19,12,-8],"anchor":[-5.38,246.0,9.7],"label":[-22,244,20],"may_touch":["B1","B19","C7","C14"],"frame":"base","group":"卡钳组件"},{"id":"C6","name":"膜片 B（内）","mat":"ti","role":"spring","material":"Ti-6Al-4V 0.22 mm 冷轧板，线切割","size":"框 7.9 × 9.8、边宽 1.0、厚 0.22；毂 3 × 3；叶片宽 3.0","moves":"框不动；毂跟卡钳沿 x 浮动 ±10 µm（叶片弯一点点）","kid":"和膜片 A 一模一样的第二片，两片隔开一点叠起来，夹子就不会歪。","detail":"同 C5，x −5.02…−4.80；它的毂直接贴 C1 桥外端面（x −4.80），结构环氧 + Ø1.0 毂销。两片隔 0.28（座环厚度）组成平行导向。","joins":"框：C14 销 + 环氧贴 B1 座环内侧；毂：贴 C1 桥外端面","shapes":[{"type":"prism","axis":"x","x0":-5.02,"x1":-4.8,"poly":[[244.9,0.4],[252.8,0.4],[252.8,10.2],[244.9,10.2]],"holes":[[[245.9,6.5],[248.5,6.5],[248.5,9.2],[245.9,9.2]],[[245.9,1.4],[248.5,1.4],[248.5,3.5],[245.9,3.5]],[[251.5,1.4],[251.8,1.4],[251.8,9.2],[251.5,9.2]],[[245.8,0.9],[245.7464,1.1],[245.6,1.2464],[245.4,1.3],[245.2,1.2464],[245.0536,1.1],[245.0,0.9],[245.0536,0.7],[245.2,0.5536],[245.4,0.5],[245.6,0.5536],[245.7464,0.7]],[[252.7,0.9],[252.6464,1.1],[252.5,1.2464],[252.3,1.3],[252.1,1.2464],[251.9536,1.1],[251.9,0.9],[251.9536,0.7],[252.1,0.5536],[252.3,0.5],[252.5,0.5536],[252.6464,0.7]],[[245.8,9.7],[245.7464,9.9],[245.6,10.0464],[245.4,10.1],[245.2,10.0464],[245.0536,9.9],[245.0,9.7],[245.0536,9.5],[245.2,9.3536],[245.4,9.3],[245.6,9.3536],[245.7464,9.5]],[[252.7,9.7],[252.6464,9.9],[252.5,10.0464],[252.3,10.1],[252.1,10.0464],[251.9536,9.9],[251.9,9.7],[251.9536,9.5],[252.1,9.3536],[252.3,9.3],[252.5,9.3536],[252.6464,9.5]],[[250.5,5.0],[250.433,5.25],[250.25,5.433],[250.0,5.5],[249.75,5.433],[249.567,5.25],[249.5,5.0],[249.567,4.75],[249.75,4.567],[250.0,4.5],[250.25,4.567],[250.433,4.75]]]}],"explode":[-15,12,-8],"anchor":[-4.8,252.3,2.0],"label":[-18,266,8],"may_touch":["C1","C7","C14"],"frame":"base","group":"卡钳组件","level":2},{"id":"C7","name":"毂垫块 + 毂销","mat":"ti","role":"lock","moves":"不动","kid":"两片膜片中心之间的小垫块和一根小销子，把夹子的身体挂在膜片中间。","detail":"Ti-6Al-4V 垫块 3.0 × 3.0 × 0.14（v1.1 0.28），中心孔 Ø1.0，x −5.16…−5.02，中心 H (250.0, 5.0)；毂销 Ø1.0 从 x −5.38 穿到 −4.00 插进 C1 桥。","material":"Ti-6Al-4V","size":"垫块 3.0 × 3.0 × 0.14；销 Ø1.0 × 1.38","joins":"夹在 C5、C6 的毂之间；销插 C1","shapes":[{"type":"prism","axis":"x","x0":-5.16,"x1":-5.02,"poly":[[248.5,3.5],[251.5,3.5],[251.5,6.5],[248.5,6.5]],"holes":[[[250.5,5.0],[250.433,5.25],[250.25,5.433],[250.0,5.5],[249.75,5.433],[249.567,5.25],[249.5,5.0],[249.567,4.75],[249.75,4.567],[250.0,4.5],[250.25,4.567],[250.433,4.75]]]},{"type":"cyl","axis":"x","c":[-4.69,250.0,5.0],"r":0.5,"h":1.38}],"explode":[-17,12,-8],"anchor":[-5.1,250.0,6.4],"label":[-12,262,-2],"may_touch":["C1","C5","C6","B19"],"frame":"base","group":"卡钳组件","level":2},{"id":"C14","name":"安装销 ×4","mat":"ti","role":"lock","moves":"不动","kid":"四根很短的小销子，把两片膜片、座环和外墙对齐穿在一起。","detail":"Ti-6Al-4V 磨削 Ø0.8 × 0.80（x −5.60…−4.80），两端齐平，穿 B1 外墙 + C5 + B19 + C6。","material":"Ti-6Al-4V，磨削","size":"Ø0.8 × 0.80 ×4","joins":"过盈 + 环氧","shapes":[{"type":"cyl","axis":"x","c":[-5.2,245.4,0.9],"r":0.4,"h":0.8},{"type":"cyl","axis":"x","c":[-5.2,245.4,9.7],"r":0.4,"h":0.8},{"type":"cyl","axis":"x","c":[-5.2,252.3,0.9],"r":0.4,"h":0.8},{"type":"cyl","axis":"x","c":[-5.2,252.3,9.7],"r":0.4,"h":0.8}],"explode":[-21,12,-8],"anchor":[-5.6,252.3,9.7],"label":[-14,264,22],"may_touch":["B1","C5","C6","B19"],"frame":"base","group":"卡钳组件","level":2},{"id":"C12","name":"应变片（测力）","mat":"copper","role":"sensor","moves":"不动","kid":"贴在夹子身上的一张'小秤'，能感觉到屏幕在被推还是在被戳。","detail":"康铜箔应变片同 v1.1（桥外圆面）；引线改走：沿 C1 驱动座顶板 → 进丝槽 → B2 顶面槽接 P11（v1.1 走罩里的空腔，现在罩是实心的）。用来判断'持续用力 > 0.3 s 就松开'，也看夹紧力，掉到 80 N 以下提示重新校准。","material":"康铜箔 + 聚酰亚胺基底，M-Bond 610 胶","size":"1.6 × 1.6 × 0.05；引线约 55 长","joins":"粘在 C1 桥外圆面；引线到 P11","shapes":[{"type":"cyl","axis":"x","c":[-2.8,242.3,7.8],"r":9.43,"ri":9.4,"h":1.6,"a0":-11,"a1":1},{"type":"cyl","axis":"x","c":[-3.2,242.3,7.8],"r":9.47,"ri":9.43,"h":0.7,"a0":-10,"a1":0},{"type":"cyl","axis":"x","c":[-2.4,242.3,7.8],"r":9.47,"ri":9.43,"h":0.7,"a0":-10,"a1":0},{"type":"tube","r":0.05,"pts":[[-2.0,251.734,6.975],[-1.7,251.634,6.675],[-1.52,251.3,6.0],[-1.52,249.0,4.4],[-1.52,242.6,4.0],[-2.25,242.0,3.85],[-2.25,236.7,3.85],[-2.25,236.55,2.8],[-2.25,220.0,2.8],[-2.25,202.5,2.8],[-2.25,201.4,3.4]]}],"explode":[-2,15,-8],"anchor":[-2.8,251.7,6.6],"label":[-8,268,16],"may_touch":["C1","B1","B2","P11","B11"],"frame":"base","group":"卡钳组件","level":2},{"id":"C15","frame":"base","name":"凸轮片","level":1,"mat":"ti","role":"act","group":"卡钳组件","motion":{"type":"translate","d":[0,-0.93,0],"scale":1},"kid":"一片会往前滑的小斜坡：记忆合金丝一拉，它往前走不到 1 毫米，斜坡把滚针和弹簧往里挤，夹子就夹紧了。","detail":"Ti-6Al-4V，外形和位置同 v1.2（松开 y 237.5–243.0）。v1.3 降成本：慢走丝切全型面 + 终点平台在 4.9° 正弦规上研磨（不再成形磨 ±1 µm）；平台斜率 0.086（允许 0.068–0.100，原 0.075 ± 0.004），误差由 C19 的倾斜顶丝补回来。验收按'回推力'：拆掉丝后用 0–5 N 测力计在平台上量，要 1.43–2.3 N。","material":"Ti-6Al-4V，慢走丝 + 平台研磨 + DLC（样机不镀）","size":"0.35 × 2.0 × 5.5；前端压接片 1.6 × 0.4","moves":"锁的时候往前（−y）滑 0.93 mm","joins":"两面夹在 C16 两排滚针之间；前端压接片接 C20；后端挂 C21","explode":[0,0,-8],"anchor":[-3.9,240.0,0.6],"label":[-12,232,-12],"may_touch":["C16","C20","C21"],"shapes":[{"type":"prism","axis":"z","x0":0.6,"x1":2.6,"poly":[[-4.1,237.5],[-4.1,243.0],[-3.75,243.0],[-3.75,240.98],[-3.757,240.88],[-3.8,240.7],[-3.84,240.52],[-3.87,240.35],[-3.925,240.05],[-3.925,237.5]]},{"type":"prism","axis":"z","x0":1.75,"x1":2.6,"poly":[[-3.925,237.5],[-2.3,237.5],[-2.3,237.9],[-3.925,237.9]]}]},{"id":"C16","frame":"base","name":"滚针 ×6 + 保持架","level":2,"mat":"ceramic","role":"act","group":"卡钳组件","motion":{"type":"translate","d":[0,-0.465,0],"scale":1},"kid":"六根比牙签还细的陶瓷小滚棒，让凸轮滑的时候几乎没有摩擦。","detail":"Si₃N₄ Ø0.30 × 2.0，两排各 3 根（x −4.40…−4.10、−3.75…−3.45），PEEK 0.25 保持架；凸轮走 0.93 时它们滚 0.465。线载 3.1 N/mm。","material":"Si₃N₄ 滚针；PEEK 保持架","size":"Ø0.30 × 2.0 ×6","moves":"锁的时候跟着滚 0.465 mm","joins":"夹在 C18 滚道和 C15 之间","explode":[0,0,-10],"anchor":[-4.25,240.05,1.6],"label":[-14,248,-14],"may_touch":["C15","C18","C17"],"shapes":[{"type":"cyl","axis":"z","c":[-4.25,239.4,1.6],"r":0.15,"h":2.0},{"type":"cyl","axis":"z","c":[-4.25,240.05,1.6],"r":0.15,"h":2.0},{"type":"cyl","axis":"z","c":[-4.25,240.7,1.6],"r":0.15,"h":2.0},{"type":"cyl","axis":"z","c":[-3.6,239.4,1.6],"r":0.15,"h":2.0},{"type":"cyl","axis":"z","c":[-3.6,240.05,1.6],"r":0.15,"h":2.0},{"type":"cyl","axis":"z","c":[-3.6,240.7,1.6],"r":0.15,"h":2.0},{"type":"prism","axis":"z","x0":0.45,"x1":0.6,"poly":[[-4.4,239.0],[-4.1,239.0],[-4.1,241.1],[-4.4,241.1]]},{"type":"prism","axis":"z","x0":2.6,"x1":2.75,"poly":[[-4.4,239.0],[-4.1,239.0],[-4.1,241.1],[-4.4,241.1]]},{"type":"prism","axis":"z","x0":0.45,"x1":0.6,"poly":[[-3.75,239.0],[-3.45,239.0],[-3.45,241.1],[-3.75,241.1]]},{"type":"prism","axis":"z","x0":2.6,"x1":2.75,"poly":[[-3.75,239.0],[-3.45,239.0],[-3.45,241.1],[-3.75,241.1]]}]},{"id":"C17","frame":"base","name":"钩簧（两片并联）","level":2,"mat":"spring","role":"spring","group":"卡钳组件","motion":{"type":"translate","d":[0.05,0,0],"scale":9.6},"kid":"两片小弹簧片：凸轮把它们往里压 0.1 毫米，它们就用定好的力推杠杆——夹紧的力由它说了算，不怕热胀冷缩。","detail":"Elgiloy 或时效 GH4169。v1.3：两片和根部块的 y 上限 242.2 → 241.9（开到 140° 不碰鳍），片厚 0.45 → 0.42 保持 0.16 N/µm；根部应力约 +8 %，要有限元。","material":"Elgiloy 钴基弹簧合金","size":"每片 0.42 × 1.6 × 3.7","moves":"锁的时候被压 115 µm，尖上往里走约 50 µm","joins":"根部焊在 C2；尖上嵌 C18","explode":[-4,0,-10],"anchor":[-2.95,240.0,2.5],"label":[-8,236,-14],"may_touch":["C2","C18","C16"],"shapes":[{"type":"prism","axis":"z","x0":0.9,"x1":2.5,"poly":[[-3.45,238.2],[-3.03,238.2],[-3.03,241.9],[-3.45,241.9]]},{"type":"prism","axis":"z","x0":0.9,"x1":2.5,"poly":[[-2.87,238.2],[-2.45,238.2],[-2.45,241.9],[-2.87,241.9]]},{"type":"prism","axis":"z","x0":0.9,"x1":3.05,"poly":[[-3.45,241.3],[-2.45,241.3],[-2.45,241.9],[-3.45,241.9]]}]},{"id":"C18","frame":"base","name":"硬滚道片 ×2","level":2,"mat":"ceramic","role":"act","group":"卡钳组件","kid":"两片很硬的陶瓷小板，给滚针当'跑道'，压不出坑。","detail":"Si₃N₄ 0.30：一片嵌在 C19 墙块内面（2.0 × 4.4，原定 5.0，按墙块长度截短），一片嵌在 C17 尖上（2.0 × 2.1）。","material":"Si₃N₄ 0.30","size":"2.0 × 4.4 和 2.0 × 2.1","moves":"不动（C17 上那片跟着钩簧动几十微米，模型没画）","joins":"嵌在 C19 和 C17 上","explode":[-6,0,-10],"anchor":[-4.55,240.0,0.6],"label":[-16,240,-16],"may_touch":["C16","C19","C17"],"shapes":[{"type":"prism","axis":"z","x0":0.6,"x1":2.6,"poly":[[-4.7,238.0],[-4.4,238.0],[-4.4,242.4],[-4.7,242.4]]},{"type":"prism","axis":"z","x0":0.6,"x1":2.6,"poly":[[-3.45,239.0],[-3.15,239.0],[-3.15,241.1],[-3.45,241.1]]}]},{"id":"C19","frame":"base","name":"反力墙块 + 楔 + 倾斜顶丝","level":2,"mat":"ti_black","role":"lock","group":"卡钳组件","kid":"夹子盒子最外面的一堵小墙，旁边有一个斜楔和一颗小螺丝，拧螺丝就能把夹紧力调到刚刚好。","detail":"TZM 墙块（样机钼板线切割）+ Ti 楔。v1.3 新加一颗 M1 × 0.2 倾斜顶丝（从 C1 侧壁后端顶墙）和一根支点销（墙前端）：墙能绕 z 倾 ±0.015 rad（两端差 ±66 µm），用来补凸轮平台斜率的误差，斜率每变 0.01 顶丝转约 79°。","material":"TZM 墙块；Ti-6Al-4V 楔块和顶丝","size":"墙块 0.50 × 4.4 × 2.4；楔 0.15 × 4.6；M1 顶丝 × 2；支点销 Ø0.24","moves":"不动（只在出厂时调一次）","joins":"墙块靠楔和顶丝顶在 C1 侧壁上，支点销在前端","explode":[-8,0,-10],"anchor":[-4.65,238.5,3.0],"label":[-18,228,-6],"may_touch":["C1","C18"],"shapes":[{"type":"prism","axis":"z","x0":0.6,"x1":3.0,"poly":[[-4.9,238.0],[-4.4,238.0],[-4.4,242.4],[-4.9,242.4]]},{"type":"prism","axis":"z","x0":0.7,"x1":2.9,"poly":[[-5.05,237.8],[-4.9,237.8],[-4.9,242.4],[-5.05,242.4]]},{"type":"cyl","axis":"y","c":[-4.8,237.2,1.8],"r":0.5,"h":1.2},{"type":"cyl","axis":"x","c":[-5.15,242.0,1.8],"r":0.5,"h":0.2},{"type":"cyl","axis":"z","c":[-4.95,238.25,1.8],"r":0.12,"h":2.2}]},{"id":"C20","frame":"base","name":"记忆合金丝 ×2 + 压接套","level":1,"mat":"copper","role":"act","group":"卡钳组件","kid":"两根比头发还细的'肌肉丝'：通电一热就缩短一点点，把凸轮往前拉；断电一凉就松开。","detail":"Flexinol HT Ø0.10 × 2。v1.3：前压接套中心 y 215.0 → 209.2（套 y 208.2–210.2），丝长 21.5 → 26.7 mm，应变 4.3 % → 3.5 %（两次核算一致）；寿命没有厂家数据，台架 10⁶ 次。丝槽 y 210.2–236.5 在 B2 和 B11 底梁里。","material":"Flexinol HT（镍钛）Ø0.10；黄铜压接套 + 聚酰亚胺绝缘","size":"Ø0.10 × 26.7 × 2；套 Ø0.8 × 2","moves":"通电时缩短约 0.93 mm（模型画松开的样子）","joins":"前端压接 B2；后端压接 C15；电从 P11 来","explode":[-6,-10,-10],"anchor":[-2.8,226.0,2.3],"label":[-14,214,-12],"may_touch":["C15","B1","B2","P11","B11"],"shapes":[{"type":"cyl","axis":"y","c":[-3.1,209.2,2.3],"r":0.4,"h":2.0,"ri":0.06},{"type":"tube","r":0.05,"pts":[[-3.1,210.2,2.3],[-3.1,226.0,2.3],[-3.1,236.9,2.3]]},{"type":"cyl","axis":"y","c":[-3.1,237.2,2.3],"r":0.25,"h":0.6},{"type":"cyl","axis":"y","c":[-2.5,209.2,2.3],"r":0.4,"h":2.0,"ri":0.06},{"type":"tube","r":0.05,"pts":[[-2.5,210.2,2.3],[-2.5,226.0,2.3],[-2.5,236.9,2.3]]},{"type":"cyl","axis":"y","c":[-2.5,237.2,2.3],"r":0.25,"h":0.6}]},{"id":"C21","frame":"base","name":"复位簧 ×2","level":2,"mat":"spring","role":"spring","group":"卡钳组件","kid":"两片小弹簧：断电后把凸轮拉回原位，让夹子一定松开。","detail":"①Ti 0.1 S 形箔，一直把凸轮往回拉 0.3 N；②Elgiloy 0.1 箔，只在凸轮离开起点的头 0.30 mm（空行程段）钩住它往回拉 ≥ 1.5 N（没有它，断电后钳口会贴着鳍停住）。都挂在 C1 驱动座后壁和凸轮后端之间。","material":"Ti-6Al-4V 0.1；Elgiloy 0.1","size":"约 0.25 × 0.8 × 0.85","moves":"锁的时候被拉长 0.93 mm（模型画松开的样子）","joins":"一头挂 C1 后壁，一头挂 C15 后端","explode":[0,6,-10],"anchor":[-3.9,243.2,1.6],"label":[-10,252,-14],"may_touch":["C15","C1"],"shapes":[{"type":"prism","axis":"z","x0":1.3,"x1":1.55,"poly":[[-4.05,243.1],[-3.8,243.1],[-3.8,243.3],[-4.05,243.3]]},{"type":"prism","axis":"z","x0":1.6,"x1":1.85,"poly":[[-4.05,243.3],[-3.8,243.3],[-3.8,243.5],[-4.05,243.5]]},{"type":"prism","axis":"z","x0":1.9,"x1":2.15,"poly":[[-4.05,243.1],[-3.8,243.1],[-3.8,243.3],[-4.05,243.3]]},{"type":"prism","axis":"z","x0":1.3,"x1":2.15,"poly":[[-4.05,243.0],[-3.8,243.0],[-3.8,243.1],[-4.05,243.1]]},{"type":"prism","axis":"z","x0":1.3,"x1":2.15,"poly":[[-4.05,243.3],[-3.8,243.3],[-3.8,243.4],[-4.05,243.4]]},{"type":"prism","axis":"z","x0":0.7,"x1":0.8,"poly":[[-4.05,242.95],[-3.8,242.95],[-3.8,243.4],[-4.05,243.4]]}]},{"id":"C22","frame":"base","name":"动钳口支点（交叉簧片 ×2）","level":1,"mat":"spring","role":"spring","group":"卡钳组件","kid":"杠杆转动的'关节'：两组像剪刀一样交叉的极薄弹簧片，往一个方向一转就弯，往别的方向推却很硬。","detail":"Elgiloy 或 GH4169 线切割。两个 X 形交叉簧片单元，外包络各 0.70 × 0.75 × 2.40、绕 x 转 27.26°；中心单元 1 (−4.35, 250.113, 7.127)、单元 2 (−4.35, 248.464, 10.327)。每个单元：l < −0.275 是接 C2 的块，l > +0.275 是接 C1 的块，中间两片 0.120 ± 0.005 的簧片 ±45° 交叉、根部圆角 ≥ 0.05，交叉线就是铰线。只有这个厚度窗口能同时满足：绕 x ≥ 625、绕铰线 ≤ 2（实际约 1.1–2.3）N·m/rad，x 向和面内 ≥ 100 N/µm（摩擦片处切向 86.5 N/µm，要 ≥ 68.5）。","material":"Elgiloy（或时效 GH4169），慢走丝 Ø0.05–0.07 或激光微加工","size":"单元外包络 0.70 × 0.75 × 2.40 × 2；簧片 0.120","moves":"锁的时候弯 0.31°","joins":"两端的块分别粘进 C1 和 C2 的槽（间隙 0.05 填结构胶）","explode":[-6,14,-6],"anchor":[-4.35,248.88,9.53],"label":[-14,262,14],"may_touch":["C1","C2"],"shapes":[{"type":"box","c":[-4.35,250.113,7.127],"s":[0.7,0.75,2.4],"rx":27.26},{"type":"box","c":[-4.35,248.464,10.327],"s":[0.7,0.75,2.4],"rx":27.26}]},{"id":"C30","name":"鳍罩（驼峰）","kid":"一个黑色的半圆小罩子，盖在夹子上面：鳍在罩子里面转进转出，外面摸到的都是不动的罩子，手指和头发夹不进去，灰也落不进夹子。","detail":"和转轴同心的半圆罩：罩顶圆弧 r 7.90–8.20（x −4.70…−1.70 段 6.5–150°，x −5.60…−4.70 段 18.5–150°），前唇、外侧板 x −5.60…−5.30、内侧拱 x −2.30…−1.70（r 2.65 半圆缺口跨过鳍毂 L8）。离鳍毂 0.24、鳍 0.30、L2 0.35、卡钳 ≥ 0.11——这些缝的宽度不随开盖角变，所以不是'剪刀口'。只挂在 B1 上，不碰卡钳，不在受力路线里，没有一直带着的摩擦。代价：开盖时比卡钳顶高 4.4 mm（最高 z 16.0），合盖时和屏幕顶面齐平。罩顶有 L6 绳孔。","material":"批量 Ti-6Al-4V 0.30（侧板激光切 + 罩顶卷圆激光焊）+ 黑 DLC；样机 SLA 韧性树脂、壁 0.5（只上台架）","size":"罩顶 r 7.90–8.20 × 144° × 宽 3.9；外侧板 0.30；内侧拱 0.60","moves":"不动","joins":"安装耳压在 B1 舌顶，2 颗 M1.0 × 2 钛螺钉（±0.3 长圆孔，用 0.25 塞片对着鳍调好再拧）+ 3 点 RTV；内面贴 0.1 聚氨酯阻尼膜防'叮'声","mat":"ti_black","role":"base","frame":"base","shapes":[{"type":"cyl","axis":"x","c":[-3.2,242.3,7.8],"r":8.2,"ri":7.9,"h":3.0,"a0":6.5,"a1":150.0},{"type":"cyl","axis":"x","c":[-5.15,242.3,7.8],"r":8.2,"ri":7.9,"h":0.8999999999999995,"a0":18.5,"a1":150.0},{"type":"prism","axis":"x","x0":-5.6,"x1":-1.7,"poly":[[234.95,11.63],[236.1,11.63],[236.1,11.95],[234.95,12.05]]},{"type":"prism","axis":"x","x0":-5.6,"x1":-5.3,"poly":[[250.11,10.32],[244.92,10.31],[244.9,11.61],[236.0,11.61],[235.99,9.82],[235.49,9.8],[235.49,9.0],[235.32,8.99],[235.31,11.48],[235.45,11.76],[235.19,11.9],[235.95,13.0],[236.8,13.89],[237.38,14.37],[238.34,14.99],[239.38,15.47],[240.5,15.81],[241.74,15.99],[243.1,15.97],[244.42,15.73],[245.52,15.35],[246.6,14.79],[247.5,14.15],[248.39,13.3],[249.07,12.44],[249.49,11.76],[249.77,11.2]]},{"type":"prism","axis":"z","x0":11.62,"x1":11.92,"poly":[[-5.6,238.5],[-4.4,238.5],[-4.4,244.5],[-5.6,244.5]]},{"type":"prism","axis":"x","x0":-2.3,"x1":-1.7,"poly":[[250.45,8.78],[250.44,8.73],[250.16,8.69],[250.14,8.61],[249.76,8.57],[249.74,8.17],[246.88,8.09],[246.77,8.06],[246.76,7.79],[244.96,7.79],[244.89,8.4],[244.71,8.92],[244.45,9.36],[244.06,9.79],[243.68,10.07],[243.28,10.27],[242.68,10.43],[242.08,10.45],[241.62,10.37],[241.02,10.13],[240.66,9.89],[240.31,9.56],[240.03,9.18],[239.83,8.78],[239.69,8.3],[239.64,7.79],[238.02,7.79],[238.01,9.8],[235.52,9.81],[235.51,11.6],[235.39,11.62],[235.44,11.77],[235.19,11.9],[235.95,13.0],[236.8,13.89],[237.84,14.69],[238.94,15.29],[240.18,15.73],[241.5,15.97],[242.86,15.99],[244.0,15.83],[245.22,15.47],[246.4,14.91],[247.5,14.15],[248.39,13.3],[249.19,12.26],[249.77,11.2],[250.23,9.92]]}],"explode":[0,0,12],"anchor":[-3.6,242.3,16.0],"label":[-18.8,232.2,3.7],"level":1,"group":"外壳","may_touch":["B1","L6"]},{"id":"C31","name":"卡钳底盖","kid":"夹子底下的一块小盖板，像锅盖一样从下面把夹子的开口封上，灰进不去。","detail":"Ti-6Al-4V 0.20 底板 x −5.20…−1.55、y 236.75–251.40、z −0.25…−0.05，加 0.25 宽、0.44 高的围边和后挡。换掉 v1.2 那张 0.05 的聚酰亚胺膜。钳口里只要夹进 5 µm 的灰，夹紧力就涨 17 N（每微米 +3.4 N），打滑力矩会碰到'不伤苹果铰链'的 0.6 N·m 线，所以底口必须封。开到 ≥ 135° 时鳍下沿离它 0.25。","material":"Ti-6Al-4V 0.20 板 + 围边（激光切 + 点焊）","size":"3.65 × 14.65 × 0.20，围边高 0.44","moves":"随卡钳浮动（几微米）","joins":"只连 C1（RTV 或 2 颗 M1.0 只拧外侧围边，不许两边都用结构胶粘死）；离 B1 0.18、B11 ≥ 0.15、L2 0.20","mat":"ti_black","role":"base","frame":"base","shapes":[{"type":"prism","axis":"z","x0":-0.25,"x1":-0.05,"poly":[[-5.2,236.75],[-1.55,236.75],[-1.55,251.4],[-5.2,251.4]]},{"type":"prism","axis":"z","x0":-0.05,"x1":0.39,"poly":[[-5.2,236.75],[-4.95,236.75],[-4.95,243.7],[-5.2,243.7]]},{"type":"prism","axis":"z","x0":-0.05,"x1":0.39,"poly":[[-1.8,236.75],[-1.55,236.75],[-1.55,243.7],[-1.8,243.7]]},{"type":"prism","axis":"z","x0":-0.05,"x1":0.39,"poly":[[-4.95,236.75],[-1.8,236.75],[-1.8,237.0],[-4.95,237.0]]},{"type":"prism","axis":"x","x0":-4.65,"x1":-1.55,"poly":[[251.1,-0.05],[251.4,-0.05],[251.4,3.7],[251.1,4.3]]}],"explode":[0,0,-16],"anchor":[-3.4,246,-0.15],"label":[-12,247,-6],"level":2,"group":"外壳","may_touch":["C1"]},{"id":"C32a","name":"刮灰唇（动钳口侧）×2","kid":"夹子两只爪子边上的两条软边，像门底的挡风条，鳍进出时把灰挡在外面，但不碰鳍。","detail":"PTFE 填充 PEEK 或 UHMW-PE 片 0.30，两条：r 4.80–7.60，a 0.5–3.5° 和 −46…−43°（鳍进出钳口的两条边），中心 x −3.80，贴在 C2 钳口内面。离鳍 0.05（锁住时 0.038），不碰鳍，所以不加摩擦；出厂用 0.04 塞片贴。固件每次锁住后看夹紧力，比出厂大 15 % 就松开并提醒清洁。","material":"PTFE 填充 PEEK（或 UHMW-PE）0.30，背胶","size":"r 4.80–7.60 × 3° × 0.30，两条","moves":"随动钳口 C2","joins":"背胶贴 C2 钳口内面","mat":"rubber","role":"pad","frame":"base","shapes":[{"type":"cyl","axis":"x","c":[-3.8,242.3,7.8],"r":7.6,"ri":4.8,"h":0.3,"a0":0.5,"a1":3.5},{"type":"cyl","axis":"x","c":[-3.8,242.3,7.8],"r":7.6,"ri":4.8,"h":0.3,"a0":-46.0,"a1":-43.0}],"explode":[-4,0,0],"anchor":[-3.8,249.9,8.2],"label":[-12,254,10],"level":2,"group":"外壳","may_touch":["C2","C4b"],"motion":{"type":"translate","d":[0.012,0,0]}},{"id":"C32b","name":"刮灰唇（定钳口侧）×2","kid":"另一只爪子边上的两条软边，和对面那两条一起把钳口的进出口挡住。","detail":"同 C32a，中心 x −2.50，贴在 C1 定钳口内面；离鳍 0.05，不碰。","material":"同 C32a","size":"r 4.80–7.60 × 3° × 0.30，两条","moves":"随卡钳浮动","joins":"背胶贴 C1 定钳口内面","mat":"rubber","role":"pad","frame":"base","shapes":[{"type":"cyl","axis":"x","c":[-2.5,242.3,7.8],"r":7.6,"ri":4.8,"h":0.3,"a0":0.5,"a1":3.5},{"type":"cyl","axis":"x","c":[-2.5,242.3,7.8],"r":7.6,"ri":4.8,"h":0.3,"a0":-46.0,"a1":-43.0}],"explode":[4,0,0],"anchor":[-2.5,249.9,8.2],"label":[6,254,10],"level":2,"group":"外壳","may_touch":["C1","C4a"]},{"id":"C33","name":"内挡板（下半）","kid":"罩子里面靠电脑那一侧的下半块挡板，和罩子的上半块对齐，把夹子的里侧也围起来。","detail":"Ti-6Al-4V 0.60 线切割：x −2.30…−1.70，转轴以下 z 4.01–7.67，r 2.65 下半圆缺口跨过鳍毂，前到 y 238.11，后到 C1 定钳口。和 C30 的内侧拱上下对接，留 0.12 横缝（一个装在不动的 B1 上、一个随卡钳浮动，不能碰）。离 L8 0.24、L2 0.35、B11 ≥ 0.3。","material":"Ti-6Al-4V 0.60，线切割","size":"约 6 × 4 × 0.60","moves":"随卡钳浮动","joins":"粘在 C1 定钳口侧面和驱动座顶板上","mat":"ti_black","role":"base","frame":"base","shapes":[{"type":"prism","axis":"x","x0":-2.3,"x1":-1.7,"poly":[[246.77,7.66],[246.71,6.96],[246.53,6.3],[246.13,5.46],[245.69,4.88],[245.67,4.82],[245.73,4.74],[244.26,4.03],[244.1,4.03],[242.42,4.51],[242.39,4.14],[242.04,4.01],[240.78,4.01],[239.04,4.19],[238.11,4.24],[238.12,7.67],[239.64,7.67],[239.71,7.2],[239.83,6.82],[240.03,6.42],[240.31,6.04],[240.66,5.71],[241.02,5.47],[241.62,5.23],[242.08,5.15],[242.52,5.15],[243.04,5.25],[243.58,5.47],[244.06,5.81],[244.45,6.24],[244.71,6.68],[244.87,7.12],[244.96,7.67]]}],"explode":[-10,8,-4],"anchor":[-2.0,240.0,5.5],"label":[-10,236,2],"level":2,"group":"外壳","may_touch":["C1"]},{"id":"B1","name":"左钩块（钩体 + 臂 + 舌 + 外墙）","group":"地基组件","level":1,"mat":"ti_black","role":"base","kid":"地基的'大脚'：一块很重很硬的黑色金属，钩在电脑左后角侧面，后面伸出一面薄墙，把夹子整个托在墙上。","detail":"TZM（样机 316L 或 Nitronic 60，要有限元）。v1.3 和 B11 重新分工：v1.2 底下那截'罩后段'划给 B11，B1 只留①钩体（y 225.5–235.5、z 4.70–11.60，内面让到 x −0.25 给 0.25 的 TPU 垫，顶面绳孔取消）②臂 ③舌 ④外墙 0.22（卡钳托架 750 N·m/rad，所以 B1 仍用 TZM）；⑤新加防掀挡唇 x −1.95…−1.40、y 228.0–234.8、z 11.60–13.00：合着盖摔到右侧着地时挡住屏幕那头往外甩，不靠胶。和 B11 的分界：z = 4.70 面（结构环氧 + 3 颗 B25）和 x = −1.60 面（臂和竖肋粘接）。","material":"TZM 钼合金（或 90W-6Ni-4Cu，μr < 1.05），外露面喷砂 + 黑 DLC","size":"钩体 5.35 × 10 × 6.9；外墙 0.22 厚；挡唇 0.55 × 6.8 × 1.4","moves":"不动","joins":"钩体经 B4 压机身侧面；底面粘 B11 + 3 颗 B25；臂和 B11 竖肋粘接；外墙内面整圈粘 C5 框、4 根 C14；舌顶挂 C30；顶面贴 B24","shapes":[{"type":"prism","axis":"z","x0":4.7,"x1":11.6,"poly":[[-0.75,225.5],[-0.25,226.0],[-0.25,235.0],[-0.75,235.5],[-5.1,235.5],[-5.6,235.0],[-5.6,226.0],[-5.1,225.5]]},{"type":"prism","axis":"z","x0":4.7,"x1":9.8,"poly":[[-5.6,235.5],[-1.6,235.5],[-1.6,236.5],[-5.6,236.5]]},{"type":"prism","axis":"z","x0":3.9,"x1":9.8,"poly":[[-5.6,236.5],[-1.6,236.5],[-1.6,238.0],[-5.6,238.0]]},{"type":"prism","axis":"z","x0":3.9,"x1":11.6,"poly":[[-5.6,238.0],[-4.2,238.0],[-4.2,244.9],[-5.6,244.9]]},{"type":"prism","axis":"x","x0":-5.6,"x1":-5.38,"poly":[[236.0,0.4],[252.8,0.4],[252.8,10.2],[244.9,10.2],[244.9,11.6],[236.0,11.6]],"holes":[[[245.8,0.9],[245.724,1.135],[245.524,1.28],[245.276,1.28],[245.076,1.135],[245.0,0.9],[245.076,0.665],[245.276,0.52],[245.524,0.52],[245.724,0.665]],[[245.8,9.7],[245.724,9.935],[245.524,10.08],[245.276,10.08],[245.076,9.935],[245.0,9.7],[245.076,9.465],[245.276,9.32],[245.524,9.32],[245.724,9.465]],[[252.7,0.9],[252.624,1.135],[252.424,1.28],[252.176,1.28],[251.976,1.135],[251.9,0.9],[251.976,0.665],[252.176,0.52],[252.424,0.52],[252.624,0.665]],[[252.7,9.7],[252.624,9.935],[252.424,10.08],[252.176,10.08],[251.976,9.935],[251.9,9.7],[251.976,9.465],[252.176,9.32],[252.424,9.32],[252.624,9.465]]]},{"type":"box","c":[-1.675,231.4,12.3],"s":[0.55,6.8,1.4],"r":0.15}],"explode":[-10,0,-6],"anchor":[-5.6,230.5,9.0],"label":[-16,226,22],"may_touch":["B4","B11","B24","B25","C5","C14","C30","C12","B9"],"frame":"base"},{"id":"B2","name":"前梁（实心）","group":"地基组件","level":1,"mat":"ti_black","role":"base","kid":"沿电脑左下边趴着的一根实心硬'脚'，把夹子推过来的力撑到前面圆边上；里面藏着记忆合金丝的小通道。","detail":"TZM 或纯钼（不能用 316L/钛：前段圆角起不起作用全靠它硬）。v1.3：合金丝压接座前移到 y 208.2–210.2（丝长 26.7），y 202.0–208.2 是引线槽（顶上 B31 封），210.2–225.5 是丝槽；内面离机身圆角让到 0.32 给 TPU 垫；后端燕尾插进 B11（不再是 B1）。","material":"TZM 钼合金（或 90W-6Ni-4Cu），黑 DLC","size":"长 29（y 199.5–228.5，含燕尾）；截面 5.6 × 5.2","moves":"不动（单独沿 −y 从 B1 拔出）","joins":"燕尾插 B11（环氧 + 2 颗 B9）；内面贴 B5；B10 两块定位胶；槽里有 C20 丝、P11 尾巴、C12 引线；顶面贴 B31","shapes":[{"type":"prism","axis":"y","x0":199.5,"x1":200.2,"poly":[[-0.25,-5.6],[4.95,-5.6],[4.95,-0.32],[4.5,-0.32],[3.913,-0.282],[3.335,-0.167],[2.778,0.023],[2.25,0.283],[1.761,0.61],[1.318,0.998],[0.93,1.441],[0.603,1.93],[0.343,2.458],[0.153,3.015],[0.038,3.593],[0.0,4.18],[-0.25,4.18]]},{"type":"prism","axis":"y","x0":200.2,"x1":202.0,"poly":[[-0.25,-5.6],[4.95,-5.6],[4.95,-4.5],[1.7,-4.5],[1.7,-1.0],[4.95,-1.0],[4.95,-0.32],[4.5,-0.32],[3.913,-0.282],[3.335,-0.167],[2.778,0.023],[2.25,0.283],[1.761,0.61],[1.318,0.998],[0.93,1.441],[0.603,1.93],[0.343,2.458],[0.153,3.015],[0.038,3.593],[0.0,4.18],[-0.25,4.18]]},{"type":"prism","axis":"y","x0":202.0,"x1":208.2,"poly":[[-0.25,-5.6],[4.95,-5.6],[4.95,-0.32],[4.5,-0.32],[3.913,-0.282],[3.335,-0.167],[2.778,0.023],[2.25,0.283],[1.761,0.61],[1.318,0.998],[0.93,1.441],[0.603,1.93],[0.343,2.458],[0.153,3.015],[0.038,3.593],[0.0,4.18],[-0.25,4.18]],"holes":[[[1.7,-3.4],[2.9,-3.4],[2.9,-2.2],[1.7,-2.2]]]},{"type":"prism","axis":"y","x0":208.2,"x1":210.2,"poly":[[-0.25,-5.6],[4.95,-5.6],[4.95,-0.32],[4.5,-0.32],[3.913,-0.282],[3.335,-0.167],[2.778,0.023],[2.25,0.283],[1.761,0.61],[1.318,0.998],[0.93,1.441],[0.603,1.93],[0.343,2.458],[0.153,3.015],[0.038,3.593],[0.0,4.18],[-0.25,4.18]],"holes":[[[1.85,-3.65],[2.75,-3.65],[2.75,-1.95],[1.85,-1.95]]]},{"type":"prism","axis":"y","x0":210.2,"x1":225.5,"poly":[[-0.25,-5.6],[4.95,-5.6],[4.95,-0.32],[4.5,-0.32],[3.913,-0.282],[3.335,-0.167],[2.778,0.023],[2.25,0.283],[1.761,0.61],[1.318,0.998],[0.93,1.441],[0.603,1.93],[0.343,2.458],[0.153,3.015],[0.038,3.593],[0.0,4.18],[-0.25,4.18]],"holes":[[[1.7,-3.4],[2.9,-3.4],[2.9,-2.2],[1.7,-2.2]]]},{"type":"prism","axis":"y","x0":225.5,"x1":228.5,"poly":[[0.6,-4.6],[4.3,-4.6],[4.3,-0.8],[0.6,-0.8]],"holes":[[[1.7,-3.4],[2.9,-3.4],[2.9,-2.2],[1.7,-2.2]]]}],"explode":[-10,-12,-6],"anchor":[-2.0,210,1.0],"label":[-16,196,-8],"may_touch":["B11","B5","B9","B10","C20","P11","C12","B31"],"frame":"base"},{"id":"B4","name":"钩体侧面垫","group":"地基组件","level":2,"mat":"rubber","role":"pad","touches_machine":true,"kid":"钩子和电脑之间的一片薄而'涩'的塑料垫，只压不粘；电脑热胀冷缩时它自己歪一下，钩子就不会一点点挪。","detail":"TPU 64D 0.25（Covestro Desmopan / Lubrizol Estane 64D 级挤出膜），背胶只在 B1 那面，x −0.25…0、y 225.5–235.5、z 4.70–11.50。v1.2 是 PEEK 0.10：冷热循环时只有中间 3.4 mm 一直粘住、扛 29 N 偏力，三年会挪 0.6–3 mm；TPU 0.25 中间约 24 mm 一直粘住、扛 205 N（要 100）→ 不挪。代价是软一些：锚固 5548 → 1504 N·m/rad。摩擦系数要实测 ≥ 0.59（卖 ≥ 0.68），台架 1 决定；不过就退到'PEEK 0.05 面 + TPU 底'夹心。","material":"TPU 64D 0.25（Covestro Desmopan / Lubrizol Estane 64D 级挤出膜）","size":"10.0 × 6.8 × 0.25","moves":"不动","joins":"出厂粘在 B1 钩体内面；对机身只压不粘","shapes":[{"type":"prism","axis":"z","x0":4.7,"x1":11.5,"poly":[[-0.25,225.5],[0.0,225.5],[0.0,235.5],[-0.25,235.5]]}],"explode":[-4,0,0],"anchor":[-0.05,232,10.5],"label":[-10,238,20],"may_touch":["B1"],"frame":"base"},{"id":"B5","name":"圆角全长衬垫","group":"地基组件","level":2,"mat":"rubber","role":"pad","touches_machine":true,"kid":"沿电脑左下圆边贴的一长条弯弯的薄塑料，让整根'脚'都压在圆边上，像鞋底一样防滑。","detail":"TPU 64D 0.25（Covestro Desmopan / Lubrizol Estane 64D 级挤出膜），开窗和范围同 v1.2（y 199.5–235.5，B10 处开窗），只是给横带让位的那段从 y 229.5 提前到 228.0（横带左段斜过来，前边到 y 228.2），这段从 ψ 25° 起，厚 0.10 → 0.25。只压不粘。","material":"TPU 64D 0.25（Covestro Desmopan / Lubrizol Estane 64D 级挤出膜）","size":"长 36 × 沿圆角约 6.4 × 0.25","moves":"不动","joins":"背胶贴在 B2/B1 内面；对机身只压不粘","shapes":[{"type":"prism","axis":"y","x0":199.5,"x1":205.0,"poly":[[-0.053,4.102],[0.022,3.589],[0.154,3.088],[0.341,2.605],[0.583,2.146],[0.874,1.718],[1.213,1.325],[1.593,0.974],[2.011,0.667],[2.461,0.41],[2.937,0.206],[2.851,-0.029],[2.349,0.186],[1.875,0.458],[1.434,0.781],[1.033,1.152],[0.676,1.566],[0.368,2.018],[0.114,2.501],[-0.084,3.011],[-0.223,3.539],[-0.302,4.08]]},{"type":"prism","axis":"y","x0":205.0,"x1":210.0,"poly":[[-0.053,4.102],[-0.022,3.84],[0.023,3.581],[0.084,3.325],[0.159,3.073],[0.248,2.825],[0.351,2.583],[0.469,2.347],[0.599,2.119],[0.743,1.898],[0.899,1.686],[0.702,1.533],[0.537,1.756],[0.386,1.989],[0.248,2.23],[0.125,2.478],[0.015,2.733],[-0.079,2.995],[-0.158,3.261],[-0.222,3.531],[-0.27,3.804],[-0.302,4.08]]},{"type":"prism","axis":"y","x0":210.0,"x1":214.0,"poly":[[-0.053,4.102],[0.033,3.534],[0.189,2.982],[0.414,2.454],[0.702,1.958],[1.051,1.502],[1.454,1.093],[1.905,0.738],[2.397,0.443],[2.922,0.211],[3.472,0.047],[3.416,-0.196],[2.836,-0.024],[2.282,0.221],[1.763,0.532],[1.287,0.907],[0.862,1.338],[0.495,1.819],[0.19,2.342],[-0.046,2.899],[-0.211,3.481],[-0.302,4.08]]},{"type":"prism","axis":"y","x0":214.0,"x1":219.0,"poly":[[-0.053,4.102],[-0.022,3.84],[0.023,3.581],[0.084,3.325],[0.159,3.073],[0.248,2.825],[0.351,2.583],[0.469,2.347],[0.599,2.119],[0.743,1.898],[0.899,1.686],[0.702,1.533],[0.537,1.756],[0.386,1.989],[0.248,2.23],[0.125,2.478],[0.015,2.733],[-0.079,2.995],[-0.158,3.261],[-0.222,3.531],[-0.27,3.804],[-0.302,4.08]]},{"type":"prism","axis":"y","x0":219.0,"x1":228.0,"poly":[[-0.053,4.102],[0.047,3.472],[0.234,2.862],[0.503,2.284],[0.85,1.75],[1.269,1.269],[1.75,0.85],[2.284,0.503],[2.862,0.234],[3.472,0.047],[4.102,-0.053],[4.08,-0.302],[3.416,-0.196],[2.773,0.0],[2.163,0.284],[1.599,0.651],[1.092,1.092],[0.651,1.599],[0.284,2.163],[0.0,2.773],[-0.196,3.416],[-0.302,4.08]]},{"type":"prism","axis":"y","x0":228.0,"x1":235.5,"poly":[[0.358,2.569],[0.583,2.146],[0.85,1.75],[1.158,1.383],[1.502,1.051],[1.879,0.756],[2.284,0.503],[2.714,0.293],[3.164,0.13],[3.628,0.014],[4.102,-0.053],[4.08,-0.302],[3.58,-0.231],[3.091,-0.109],[2.617,0.063],[2.163,0.284],[1.735,0.552],[1.338,0.862],[0.975,1.213],[0.651,1.599],[0.368,2.018],[0.132,2.463]]}],"explode":[-4,-10,-14],"anchor":[1.0,215,1.0],"label":[10,205,-10],"may_touch":["B2","B10","B11"],"frame":"base"},{"id":"B9","name":"B1–B2 连接螺钉 ×2","group":"地基组件","level":2,"mat":"ti","role":"base","kid":"两颗比米粒还小的螺丝，从侧面把'大脚'和'前脚'拧在一起。","detail":"Ti-6Al-4V M1.4 沉头，从外侧 x −5.60 面拧进 B2 燕尾。原定 (y 226.5/227.5, z 2.3)、长 3：两颗沉头 Ø2.4 只隔 1 mm 会重叠，z 2.3 还会扎进丝槽；模型改成 (y 227.0, z 1.1 / 3.6)、长 2.0，离丝槽 0.2。燕尾里另涂结构环氧（只受剪）。","material":"Ti-6Al-4V","size":"M1.4 × 2.0，沉头 Ø2.4","moves":"不动","joins":"从 x −5.60 沿 +x 拧进 B11 底梁前端的燕尾（v1.2 拧进 B1），把 B2 的燕尾锁住","shapes":[{"type":"cyl","axis":"x","c":[-5.55,227.0,1.1],"r":1.2,"h":0.1},{"type":"cyl","axis":"x","c":[-5.425,227.0,1.1],"r":1.05,"h":0.15},{"type":"cyl","axis":"x","c":[-4.475,227.0,1.1],"r":0.7,"h":1.75},{"type":"cyl","axis":"x","c":[-5.55,227.0,3.6],"r":1.2,"h":0.1},{"type":"cyl","axis":"x","c":[-5.425,227.0,3.6],"r":1.05,"h":0.15},{"type":"cyl","axis":"x","c":[-4.475,227.0,3.6],"r":0.7,"h":1.75}],"explode":[-16,0,-6],"anchor":[-5.6,227.0,2.3],"label":[-14,218,4],"may_touch":["B11","B2"],"frame":"base"},{"id":"B10","name":"定位胶 ×2（带拉手）","group":"地基组件","level":2,"mat":"adhesive","role":"pad","touches_machine":true,"kid":"两小块能拉着撕掉的双面胶，先把地基粘在正确的位置；不要了就拉住前面的小尾巴往前拉，一点痕迹也不留。","detail":"拉伸免痕胶 0.15，每块 5.0（y）× 沿圆角约 3.3（z 1.0–3.5），贴 B2 罩内面 y 205–210、214–219；两条 0.05 PET 拉手沿圆角缝往前伸出 B2 前端 7 mm（z 3.05–3.45 和 3.6–4.0，互不压）。只定位，不承受锁住时的力。","material":"tesa 70415 类拉伸免痕胶 + PET 0.05 拉手","size":"胶 5.0 × 3.3 × 0.15 ×2；拉手 0.4 × 约 40","moves":"不动（拆的时候沿 −y 拉出）","joins":"一面粘 B2 罩内面，一面粘机身左下圆角","shapes":[{"type":"prism","axis":"y","w0":205.0,"w1":210.0,"poly":[[3.5,-0.037],[3.138,0.061],[2.786,0.189],[2.445,0.347],[2.119,0.532],[1.809,0.743],[1.518,0.98],[1.248,1.24],[1.0,1.522],[1.0,1.672],[1.248,1.39],[1.518,1.13],[1.809,0.893],[2.119,0.682],[2.445,0.497],[2.786,0.339],[3.138,0.211],[3.5,0.113]]},{"type":"prism","axis":"y","w0":214.0,"w1":219.0,"poly":[[3.5,-0.037],[3.138,0.061],[2.786,0.189],[2.445,0.347],[2.119,0.532],[1.809,0.743],[1.518,0.98],[1.248,1.24],[1.0,1.522],[1.0,1.672],[1.248,1.39],[1.518,1.13],[1.809,0.893],[2.119,0.682],[2.445,0.497],[2.786,0.339],[3.138,0.211],[3.5,0.113]]},{"type":"prism","axis":"y","w0":171.0,"w1":205.0,"poly":[[3.45,0.044],[3.249,0.097],[3.05,0.16],[3.05,0.21],[3.249,0.147],[3.45,0.094]]},{"type":"prism","axis":"y","w0":171.0,"w1":214.0,"poly":[[4.0,-0.052],[3.799,-0.025],[3.6,0.011],[3.6,0.061],[3.799,0.025],[4.0,-0.002]]}],"explode":[-3,-12,-4],"anchor":[0.3,172,3.5],"label":[-6,160,12],"may_touch":["B2","B5","B11"],"frame":"base"},{"id":"B11","frame":"base","name":"左后角托（一体）","level":1,"mat":"ti_black","role":"base","group":"地基组件","touches_machine":true,"kid":"像鞋的'后跟包'：从电脑左后角底下那个圆角里绕过去，把后跟带往下拉的劲稳稳接住，再送到鞋上。","detail":"时效 IN718（GH4169，无磁，屈服 ≥ 1030 MPa）激光粉床打印 + HIP + 双时效，再精加工粘接面、燕尾、丝槽、背板两面。一整块：①底梁 = v1.2 B1 的罩后段（y 225.5–236.5，顶面切到 z 4.70，v1.2 的缺口填实，内面离机身圆角 0.32 给 TPU，丝槽通到 236.5，前端燕尾接 B2，横带压板座在 (2.5, 231.5)）；②后角托底：12 段截面（y 236.5–243.5，每 0.5 一段），再按机器模型裁掉离机身 < 0.15 的一层（实测 ≥ 0.14），离屏幕和随屏幕零件 0–145° ≥ 0.25、离卡钳 ≥ 0.12，最外 x −1.58、最低 z −0.22，不碰机身；③月牙块（y ≥ 239.5 段内弧再让 0.15 贴 TPU）；④竖肋 x −1.60…−0.10、y 235.5–238.0、z 4.6–10.2；⑤背板 y 244.30–244.80、x −0.10…38.0（打印 0.8 再两面磨到 0.50 ± 0.02），x 32.5–37.5 下沿是蛇形簧（约 20 N/mm）；上沿外侧倒角 0.35 × 0.27（开盖 30–36° 时屏幕下沿从这里扫过，不倒角会进去 0.02）。为什么做成一整块：后跟带的劲要拐过后角才能送到鞋上，拐角处是'拧'，v1.2 那里只有几张纸厚（算出来 830–3950 MPa）；现在最细处 S0 110 N 时最大剪应力约 455、99.5 % 分位约 363 MPa，IN718 余量 1.3–1.65（扭转近似，要三维有限元）。","material":"时效 IN718（GH4169），打印 + HIP + 精加工，外露面黑 DLC","size":"底梁 11 × 5.6 × 4.95；后角托底 7 × 约 6.6 × 11.8；背板 38.1 × 0.5 × 7.5","moves":"不动","joins":"顶面 z 4.70 粘 B1 + 3 颗 B25；竖肋粘 B1 臂；燕尾接 B2（B9）；背板内侧下沿点焊 B12；底面压板座压 B13；丝槽里走 C20；背板上沿贴 B26；对机身只压不粘（经 B5、月牙块 TPU）","explode":[14,2,-12],"anchor":[-1.0,240.0,1.5],"label":[-14,246,-6],"may_touch":["B1","B2","B5","B9","B12","B13","B25","B26","C20","C31","C12","B10"],"shapes":[{"type":"prism","axis":"y","x0":225.5,"x1":228.5,"poly":[[-0.25,-5.6],[4.7,-5.6],[4.7,-0.32],[4.5,-0.32],[3.913,-0.282],[3.335,-0.167],[2.778,0.023],[2.25,0.283],[1.761,0.61],[1.318,0.998],[0.93,1.441],[0.603,1.93],[0.343,2.458],[0.153,3.015],[0.038,3.593],[0.0,4.18],[-0.25,4.18]],"holes":[[[0.6,-4.6],[4.3,-4.6],[4.3,-0.8],[0.6,-0.8]]]},{"type":"prism","axis":"y","x0":228.5,"x1":234.5,"poly":[[-0.25,-5.6],[4.7,-5.6],[4.7,-0.32],[4.5,-0.32],[3.991,-0.291],[3.489,-0.205],[3.0,-0.063],[2.53,0.134],[2.085,0.383],[1.671,0.68],[1.294,1.023],[0.957,1.405],[0.666,1.824],[0.424,2.272],[0.235,2.745],[0.1,3.237],[0.1,0.0],[-0.25,0.0]],"holes":[[[1.7,-3.4],[2.9,-3.4],[2.9,-2.2],[1.7,-2.2]]]},{"type":"prism","axis":"y","x0":234.5,"x1":236.5,"poly":[[-0.25,-5.6],[4.7,-5.6],[4.7,-0.32],[4.5,-0.32],[3.913,-0.282],[3.335,-0.167],[2.778,0.023],[2.25,0.283],[1.761,0.61],[1.318,0.998],[0.93,1.441],[0.603,1.93],[0.343,2.458],[0.153,3.015],[0.038,3.593],[0.0,4.18],[-0.25,4.18]],"holes":[[[1.7,-3.4],[2.9,-3.4],[2.9,-2.2],[1.7,-2.2]]]},{"type":"prism","axis":"y","x0":236.5,"x1":237.0,"poly":[[-0.157,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[11.598,-1.545],[11.593,-0.09],[3.903,-0.08],[3.843,-0.04],[3.603,-0.03],[3.563,0.01],[3.393,0.05],[3.203,0.07],[3.003,0.17],[2.863,0.22],[2.803,0.22],[2.203,0.52],[1.703,0.87],[1.453,1.1],[0.968,1.605],[0.618,2.105],[0.328,2.685],[0.328,2.755],[0.128,3.285],[0.058,3.755],[0.028,3.795],[-0.002,4.455],[-0.027,4.47],[-0.152,4.475]]},{"type":"prism","axis":"y","x0":237.0,"x1":237.5,"poly":[[-0.157,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[11.178,-1.545],[11.158,-0.165],[11.143,-0.02],[4.103,-0.03],[4.073,0.0],[3.863,0.02],[3.603,0.07],[3.503,0.07],[3.443,0.11],[3.303,0.12],[3.163,0.19],[2.983,0.25],[2.853,0.27],[2.003,0.72],[1.623,1.04],[1.583,1.07],[1.553,1.07],[1.178,1.465],[0.918,1.755],[0.618,2.205],[0.328,2.785],[0.328,2.865],[0.178,3.235],[0.178,3.315],[0.148,3.425],[0.128,3.445],[0.108,3.605],[0.078,3.645],[0.058,3.885],[0.028,3.945],[-0.002,4.605],[-0.027,4.62],[-0.152,4.625]]},{"type":"prism","axis":"y","x0":237.5,"x1":238.0,"poly":[[-0.157,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[10.128,-1.545],[10.108,-0.085],[10.093,0.08],[4.103,0.07],[4.073,0.1],[4.033,0.11],[3.753,0.12],[3.693,0.16],[3.593,0.17],[3.453,0.21],[3.303,0.22],[3.263,0.26],[3.143,0.3],[3.003,0.32],[2.953,0.36],[2.843,0.41],[2.753,0.42],[2.253,0.67],[1.753,1.02],[1.428,1.325],[1.018,1.755],[0.668,2.255],[0.328,2.935],[0.328,3.015],[0.258,3.215],[0.178,3.385],[0.178,3.485],[0.138,3.645],[0.078,3.785],[0.078,3.945],[0.058,4.065],[0.028,4.095],[-0.002,4.805],[-0.087,4.84],[-0.152,4.845]]},{"type":"prism","axis":"y","x0":238.0,"x1":238.5,"poly":[[-0.007,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[9.043,-1.57],[9.058,-1.465],[9.103,0.13],[11.598,0.155],[11.593,0.21],[3.953,0.22],[3.923,0.25],[3.883,0.26],[3.653,0.27],[3.603,0.31],[3.453,0.32],[3.393,0.36],[3.253,0.37],[3.033,0.47],[2.953,0.47],[2.253,0.82],[1.953,1.02],[1.863,1.11],[1.543,1.37],[1.348,1.565],[1.158,1.765],[0.918,2.055],[0.518,2.705],[0.228,3.435],[0.228,3.525],[0.198,3.625],[0.168,3.665],[0.158,3.785],[0.108,4.015],[0.078,4.045],[0.078,4.185],[0.058,4.315],[0.028,4.345],[0.028,4.595]]},{"type":"prism","axis":"y","x0":238.5,"x1":239.0,"poly":[[0.013,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[7.643,-1.57],[7.658,-1.465],[7.703,0.13],[11.598,0.155],[11.593,0.38],[4.053,0.37],[4.003,0.41],[3.753,0.42],[3.723,0.45],[3.633,0.47],[3.503,0.47],[3.453,0.51],[3.303,0.52],[3.093,0.62],[3.003,0.62],[2.883,0.7],[2.653,0.8],[2.553,0.82],[2.483,0.89],[2.053,1.12],[1.893,1.27],[1.853,1.27],[1.733,1.4],[1.543,1.56],[1.368,1.735],[1.148,1.985],[1.038,2.135],[0.918,2.255],[0.848,2.405],[0.738,2.585],[0.668,2.655],[0.428,3.135],[0.388,3.315],[0.328,3.475],[0.278,3.545],[0.278,3.625],[0.228,3.765],[0.188,3.945],[0.128,4.085],[0.128,4.215],[0.108,4.315],[0.078,4.345],[0.078,4.505],[0.058,4.655],[0.028,4.695],[0.028,4.945]]},{"type":"prism","axis":"y","x0":239.0,"x1":239.5,"poly":[[0.053,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[6.193,-1.57],[6.208,-1.465],[6.253,0.13],[11.598,0.155],[11.593,0.57],[4.053,0.57],[4.023,0.6],[3.983,0.61],[3.703,0.62],[3.633,0.67],[3.153,0.77],[2.923,0.89],[2.743,0.96],[2.153,1.27],[1.763,1.6],[1.703,1.62],[1.068,2.305],[0.768,2.755],[0.428,3.435],[0.428,3.515],[0.218,4.075],[0.208,4.215],[0.148,4.475],[0.128,4.495],[0.108,4.705],[0.078,4.745],[0.078,4.915],[0.068,4.985]]},{"type":"prism","axis":"y","x0":239.5,"x1":240.0,"poly":[[0.123,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[5.543,-1.57],[5.558,-1.465],[5.603,0.13],[11.598,0.155],[11.593,0.81],[4.273,0.81],[3.953,0.82],[3.923,0.85],[3.883,0.86],[3.653,0.87],[3.613,0.91],[3.453,0.92],[3.383,0.97],[3.003,1.07],[2.873,1.15],[2.453,1.36],[2.243,1.5],[2.103,1.57],[1.933,1.7],[1.518,2.095],[1.188,2.485],[1.068,2.605],[0.868,2.905],[0.828,3.025],[0.738,3.185],[0.678,3.245],[0.678,3.305],[0.478,3.695],[0.468,3.785],[0.268,4.315],[0.258,4.445],[0.208,4.655],[0.178,4.695],[0.178,4.805],[0.158,4.905],[0.128,4.945]]},{"type":"prism","axis":"y","x0":240.0,"x1":240.5,"poly":[[0.223,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[5.093,-1.57],[5.108,-1.465],[5.153,0.13],[11.598,0.155],[11.593,1.08],[4.153,1.07],[4.123,1.1],[4.073,1.11],[3.933,1.12],[3.753,1.16],[3.553,1.17],[3.493,1.22],[3.103,1.32],[3.053,1.36],[2.923,1.42],[2.853,1.42],[2.653,1.52],[2.583,1.59],[2.463,1.65],[2.243,1.8],[2.103,1.87],[1.733,2.19],[1.218,2.755],[0.918,3.205],[0.478,4.135],[0.468,4.235],[0.408,4.415],[0.328,4.585],[0.328,4.695],[0.308,4.765],[0.278,4.795],[0.268,4.935]]},{"type":"prism","axis":"y","x0":240.5,"x1":241.0,"poly":[[0.393,5.0],[-0.212,4.995],[-0.197,-1.38],[3.893,-1.38],[3.953,-1.57],[4.243,-1.57],[4.258,-1.465],[4.303,0.13],[11.598,0.155],[11.593,1.4],[4.613,1.4],[4.593,1.37],[4.403,1.37],[4.373,1.4],[4.323,1.41],[3.903,1.42],[3.863,1.46],[3.653,1.47],[3.583,1.52],[3.473,1.55],[3.303,1.57],[2.553,1.92],[2.053,2.27],[1.618,2.705],[1.388,2.985],[1.268,3.105],[0.968,3.555],[0.578,4.385],[0.578,4.475],[0.428,4.835]]},{"type":"prism","axis":"y","x0":241.0,"x1":241.5,"poly":[[0.623,5.0],[-0.212,4.995],[-0.197,-1.37],[3.393,-1.37],[3.408,-1.275],[3.453,0.13],[11.598,0.155],[11.593,1.77],[4.053,1.77],[4.003,1.81],[3.753,1.82],[3.683,1.87],[3.553,1.87],[3.493,1.92],[3.253,1.97],[3.173,2.03],[3.083,2.07],[3.003,2.07],[2.803,2.17],[2.733,2.24],[2.553,2.35],[2.403,2.42],[2.293,2.53],[1.973,2.79],[1.518,3.255],[1.018,4.005],[0.728,4.635],[0.728,4.705]]},{"type":"prism","axis":"y","x0":241.5,"x1":242.0,"poly":[[0.873,5.0],[-0.212,4.995],[-0.197,-1.37],[2.543,-1.37],[2.558,-1.275],[2.603,0.13],[11.598,0.155],[11.593,2.2],[4.613,2.2],[4.593,2.17],[4.353,2.17],[4.293,2.21],[3.903,2.22],[3.833,2.27],[3.353,2.37],[3.233,2.45],[3.103,2.51],[3.003,2.52],[2.933,2.59],[2.503,2.82],[2.063,3.21],[1.518,3.805],[1.318,4.105],[1.268,4.245],[1.188,4.385],[1.118,4.455],[1.028,4.635],[1.028,4.715],[0.948,4.885]]},{"type":"prism","axis":"y","x0":242.0,"x1":243.5,"poly":[[3.07,3.05],[3.055,3.045],[3.06,0.13],[11.605,0.155],[11.6,2.7],[4.62,2.7],[4.6,2.68],[4.35,2.68],[4.31,2.71],[3.93,2.73],[3.85,2.77],[3.63,2.83],[3.54,2.83]]},{"type":"prism","axis":"z","x0":4.6,"x1":11.6,"poly":[[-0.1,244.2],[6.599,244.2],[6.535,244.184],[6.126,244.072],[5.723,243.94],[5.327,243.79],[4.938,243.621],[4.557,243.434],[4.186,243.229],[3.825,243.006],[3.475,242.767],[3.137,242.511],[2.811,242.24],[2.499,241.954],[2.2,241.653],[1.916,241.338],[1.647,241.01],[1.394,240.67],[1.158,240.318],[0.938,239.956],[0.736,239.583],[0.688,239.139],[0.524,238.756],[0.379,238.365],[0.253,237.968],[0.146,237.565],[0.058,237.158],[-0.011,236.746],[-0.061,236.333],[-0.09,235.917],[-0.1,235.5]]},{"type":"prism","axis":"z","x0":4.6,"x1":11.6,"poly":[[6.595,243.942],[6.156,243.82],[5.724,243.675],[5.301,243.508],[4.886,243.32],[4.482,243.109],[4.09,242.878],[3.71,242.627],[3.344,242.356],[2.992,242.066],[2.656,241.758],[2.337,241.433],[2.035,241.092],[1.752,240.736],[1.487,240.365],[1.243,239.981],[1.018,239.584],[0.798,239.702],[1.028,240.11],[1.28,240.505],[1.552,240.886],[1.844,241.253],[2.154,241.604],[2.483,241.938],[2.828,242.255],[3.19,242.553],[3.566,242.831],[3.957,243.09],[4.361,243.328],[4.777,243.544],[5.203,243.739],[5.639,243.91],[6.083,244.059],[6.535,244.184]]},{"type":"prism","axis":"z","x0":4.6,"x1":11.6,"poly":[[-0.1,244.2],[7.3,244.2],[7.3,244.3],[-0.1,244.3]]},{"type":"prism","axis":"x","x0":-0.1,"x1":32.5,"poly":[[244.3,4.1],[244.8,4.1],[244.8,11.33],[244.45,11.6],[244.3,11.6]]},{"type":"prism","axis":"x","x0":32.5,"x1":37.5,"poly":[[244.3,4.4],[244.8,4.4],[244.8,11.33],[244.45,11.6],[244.3,11.6]]},{"type":"prism","axis":"x","x0":37.5,"x1":38.0,"poly":[[244.3,4.1],[244.8,4.1],[244.8,11.33],[244.45,11.6],[244.3,11.6]]},{"type":"prism","axis":"z","x0":4.6,"x1":10.2,"poly":[[-1.6,235.5],[-0.1,235.5],[-0.1,238.0],[-1.6,238.0]]}]},{"id":"B12","frame":"base","name":"左后跟带（竖直）","level":1,"mat":"ti","role":"base","group":"地基组件","touches_machine":true,"kid":"一条比纸还薄的钛带，从耳朵后面绕到电脑肚子底下，再斜着拉回'大脚'的脚跟——像鞋的后跟带，让鞋不往外翻。","detail":"Ti-6Al-4V 0.15 × 5.0，预成形，贴机身那面 PET 0.05，所有边倒圆 R0.07。v1.3 改成竖直走（x 32.5–37.5）：竖段贴耳朵后端面 y 244.25–244.40、z 4.05–4.60，上端出厂点焊在 B11 背板内侧下沿 → 绕耳朵后下圆角 R4.5 → 底面段 y 237.1–239.7，前端半搭接点焊在 B13 的折点上（两片叠起来仍 0.30，底面最低仍 −0.35）。v1.2 的斜拉法会自己拉成斜线、往下的劲只剩约三分之一。S0 = 100 ± 10 N，由带长 + 背板蛇形簧定，出厂用拉力计核；每点一下应力幅 6.4 MPa。","material":"Ti-6Al-4V 0.15 预成形 + Elgiloy S 簧，贴机身那面 PET 0.05","size":"5.0 宽 × 0.15，展开约 13","moves":"不动（预紧件）","joins":"上端点焊 B11 背板；下端 2 个 Ø1 焊点半搭接在 B13 上（每点拉脱约 235 N）","explode":[0,14,4],"anchor":[35.0,244.3,2.0],"label":[44,262,-6],"may_touch":["B11","B13"],"shapes":[{"type":"prism","axis":"z","x0":4.05,"x1":4.6,"poly":[[32.5,244.25],[37.5,244.25],[37.5,244.4],[32.5,244.4]]},{"type":"cyl","axis":"x","c":[35.0,239.7,4.5],"r":4.7,"h":5.0,"ri":4.55,"a0":-90,"a1":-1},{"type":"prism","axis":"z","x0":-0.2,"x1":-0.05,"poly":[[32.5,237.1],[37.5,237.1],[37.5,239.7],[32.5,239.7]]}]},{"id":"B13","frame":"base","name":"横带（一整根，x 35 处折约 8°）","level":1,"mat":"ti","role":"base","group":"地基组件","touches_machine":true,"kid":"一条横穿电脑肚子底下的薄钛'腰带'，把左右两只'鞋'勒紧在电脑两个后角上，靠摩擦把夹子托住。","detail":"Ti-6Al-4V 0.30 × 6.0 + PET 0.05（每边宽 0.3 包住钛边），一整根激光切，所有边倒圆 R0.15。左段中线从 B11 压板座 (2.5, 231.5) 斜到折点 (35.0, 236.1)，中段 y 236.1（x 35.0–320.5，两边 y 233.1–239.1，离后下圆角起点 239.7 留 0.6），右段镜像斜到右鞋张紧器；x 32.5–37.5 / 318–323、y 237.1–239.1 局部减薄到 0.15 和后跟带半搭接。T = 700 ± 50 N，碟簧必须保留（拉死时 70 °C 张力 +133 N）。不要拉条和节点板（核算证明多余）。","material":"Ti-6Al-4V 0.30 + PET 0.05","size":"约 356 × 6.0 × 0.35","moves":"不动（预紧件）","joins":"左端压板 → B1；右端 → B14 拉杆","explode":[0,0,-26],"anchor":[180,232.5,-0.35],"label":[180,246,-14],"may_touch":["B11","B12","B14","B15","B17","B25"],"shapes":[{"type":"prism","axis":"z","x0":-0.35,"x1":-0.05,"poly":[[0.3,228.189],[32.5,232.746],[32.5,238.746],[0.3,234.189]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.05,"poly":[[32.5,232.746],[35.0,233.1],[35.0,237.1],[32.5,237.1]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.2,"poly":[[32.5,237.1],[35.0,237.1],[35.0,239.1],[32.5,238.746]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.05,"poly":[[35.0,233.1],[37.5,233.1],[37.5,237.1],[35.0,237.1]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.2,"poly":[[35.0,237.1],[37.5,237.1],[37.5,239.1],[35.0,239.1]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.05,"poly":[[37.5,233.1],[318.0,233.1],[318.0,239.1],[37.5,239.1]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.05,"poly":[[318.0,233.1],[320.5,233.1],[320.5,237.1],[318.0,237.1]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.2,"poly":[[318.0,237.1],[320.5,237.1],[320.5,239.1],[318.0,239.1]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.05,"poly":[[320.5,233.1],[323.0,232.746],[323.0,237.1],[320.5,237.1]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.2,"poly":[[320.5,237.1],[323.0,237.1],[323.0,238.746],[320.5,239.1]]},{"type":"prism","axis":"z","x0":-0.35,"x1":-0.05,"poly":[[323.0,232.746],[356.6,227.99],[356.6,233.99],[323.0,238.746]]},{"type":"prism","axis":"z","x0":-0.05,"x1":0.0,"poly":[[0.3,228.189],[35.0,233.1],[35.0,239.1],[0.3,234.189]]},{"type":"prism","axis":"z","x0":-0.05,"x1":0.0,"poly":[[35.0,233.1],[320.5,233.1],[320.5,239.1],[35.0,239.1]]},{"type":"prism","axis":"z","x0":-0.05,"x1":0.0,"poly":[[320.5,233.1],[355.5,228.146],[355.5,234.146],[320.5,239.1]]},{"type":"prism","axis":"z","x0":0.0,"x1":0.1,"poly":[[0.3,228.189],[3.3,228.613],[3.3,234.613],[0.3,234.189]]}]},{"id":"B19","frame":"base","name":"座环","level":2,"mat":"ti","role":"spring","group":"地基组件","kid":"夹在两片膜片中间的一个薄金属框，让两片膜片隔开一点距离。","detail":"90W-6Ni-4Cu 0.14，外形 y 244.9–252.8 × z 0.4–10.2、边宽 1.0、4 个 Ø0.8 孔，x −5.16…−5.02。v1.1 的座环是 B1 的一部分，现在单独成件，和 C5、C6 用结构环氧叠压。","material":"90W-6Ni-4Cu 0.14","size":"7.9 × 9.8 × 0.14，边宽 1.0","moves":"不动","joins":"C5 ↔ B19 ↔ C6 叠压粘接，C14 穿过","explode":[-18,12,-8],"anchor":[-5.1,252.3,5.0],"label":[-16,270,4],"may_touch":["C5","C6","C7","C14"],"shapes":[{"type":"prism","axis":"x","x0":-5.16,"x1":-5.02,"poly":[[244.9,0.4],[252.8,0.4],[252.8,10.2],[244.9,10.2]],"holes":[[[245.9,1.4],[251.8,1.4],[251.8,9.2],[245.9,9.2]],[[245.8,0.9],[245.724,1.135],[245.524,1.28],[245.276,1.28],[245.076,1.135],[245.0,0.9],[245.076,0.665],[245.276,0.52],[245.524,0.52],[245.724,0.665]],[[245.8,9.7],[245.724,9.935],[245.524,10.08],[245.276,10.08],[245.076,9.935],[245.0,9.7],[245.076,9.465],[245.276,9.32],[245.524,9.32],[245.724,9.465]],[[252.7,0.9],[252.624,1.135],[252.424,1.28],[252.176,1.28],[251.976,1.135],[251.9,0.9],[251.976,0.665],[252.176,0.52],[252.424,0.52],[252.624,0.665]],[[252.7,9.7],[252.624,9.935],[252.424,10.08],[252.176,10.08],[251.976,9.935],[251.9,9.7],[251.976,9.465],[252.176,9.32],[252.424,9.32],[252.624,9.465]]]}]},{"frame":"base","id":"B24","name":"下挡垫","level":2,"group":"地基组件","mat":"peek","role":"pad","kid":"钩块顶上一块小硬垫：合着盖子摔的时候，屏幕那头先撞到它，不靠胶硬扛。","detail":"PEEK 450G 0.65，背胶，x −1.30…−0.20、y 228.0–235.0、z 11.60–12.25，贴 B1 钩体顶面。合盖时离 L2 底面 0.15（v1.2 那里空 0.8）：平摔时屏幕组件只能横着动 0.15 就被挡住，胶只受很小的剪。","material":"PEEK 450G 0.65，背胶","size":"1.1 × 7.0 × 0.65","moves":"不动","joins":"背胶贴 B1 钩体顶面","explode":[0,0,6],"anchor":[-0.75,231.5,12.25],"label":[-8,226,20],"may_touch":["B1"],"shapes":[{"type":"prism","axis":"z","x0":11.6,"x1":12.25,"poly":[[-1.3,228.0],[-0.2,228.0],[-0.2,235.0],[-1.3,235.0]]}]},{"frame":"base","id":"B25","name":"B1–B11 连接螺钉 ×3","level":2,"group":"地基组件","mat":"ti","role":"base","kid":"三颗小螺丝，从底下把'后跟包'和钩块拧成一体。","detail":"Ti-6Al-4V M1.4 × 7.5 内六角，螺纹胶；从 B11 底面沉孔（Ø2.6 × 0.6）沿 +z 拧进 B1 钩体（螺纹深 3），y 229.3 / 231.5 / 234.5（第一颗原定在 228.5，会打穿 B2 燕尾 y 225.5–228.5，挪到 229.3）。分界面另有整面结构环氧（约 50 mm²）。受力估算：x 向剪力 ≤ 约 470 N、内侧边拉力 ≤ 约 510 N → 每颗约 170 N，M1.4 钛约 175 MPa（屈服 ≥ 830）。模型把螺钉放在 x −1.05（原定 x −0.9），离 TPU 圆角垫留 0.03。","material":"Ti-6Al-4V，M1.4 × 7.5 内六角","size":"M1.4 × 7.5 × 3","moves":"不动（出厂装好，不拆）","joins":"头在 B11 底面沉孔里，螺纹拧进 B1","explode":[-4,-8,-20],"anchor":[-1.05,231.5,0.0],"label":[-10,222,-8],"may_touch":["B11","B1","B13"],"shapes":[{"type":"cyl","axis":"z","c":[-1.05,229.3,-0.15],"r":1.2,"h":0.2},{"type":"cyl","axis":"z","c":[-1.05,229.3,3.5],"r":0.7,"h":7.1},{"type":"cyl","axis":"z","c":[-1.05,231.5,-0.15],"r":1.2,"h":0.2},{"type":"cyl","axis":"z","c":[-1.05,231.5,3.5],"r":0.7,"h":7.1},{"type":"cyl","axis":"z","c":[-1.05,234.5,-0.15],"r":1.2,"h":0.2},{"type":"cyl","axis":"z","c":[-1.05,234.5,3.5],"r":0.7,"h":7.1}]},{"frame":"base","id":"B26","name":"背板上沿防刮膜","level":2,"group":"地基组件","mat":"adhesive","role":"pad","kid":"背板上沿贴的一条滑溜溜的膜：万一鞋往后挪了一点，屏幕下沿只会擦到它，不会刮花。","detail":"PTFE 0.05 背胶，1.0 × 36 mm：y 244.80–244.85、x −0.1…36.0、z 10.25–11.25（原定 z 10.6–11.6，下移了 0.35：开盖 30–36° 时屏幕下沿从背板上沿外角扫过，原位置会被扫进 0.06）。开到 140° 时背板和屏幕下沿的缝从 0.13 变 0.08。每月'纸片检查'：背板和耳朵之间塞不进一张打印纸就说明没走位。","material":"PTFE 0.05，背胶","size":"36 × 1.0 × 0.05","moves":"不动","joins":"贴 B11 背板外侧上沿","explode":[0,6,0],"anchor":[18,244.85,10.75],"label":[18,252,20],"may_touch":["B11"],"shapes":[{"type":"prism","axis":"z","x0":10.25,"x1":11.25,"poly":[[-0.1,244.8],[36.0,244.8],[36.0,244.85],[-0.1,244.85]]}]},{"frame":"base","id":"B31","name":"引线槽封条","level":2,"group":"地基组件","mat":"adhesive","role":"pad","kid":"一小条胶带，把前梁顶上的小槽封住，灰和汗进不去。","detail":"聚酰亚胺胶带 0.05：3.5 × 8.0，盖 B2 顶面引线槽 y 200.2–208.2、x −4.5…−1.0；丝槽入口 y 208.2 点一点硅胶（模型画成小球）。","material":"聚酰亚胺胶带 0.05 + 硅胶点","size":"3.5 × 8.0 × 0.05","moves":"不动","joins":"贴 B2 顶面；拆的时候撕下","explode":[0,-4,6],"anchor":[-2.8,204,5.0],"label":[-10,196,12],"may_touch":["B2","P11","P10","P10a"],"shapes":[{"type":"prism","axis":"z","x0":4.95,"x1":5.0,"poly":[[-4.5,200.2],[-1.0,200.2],[-1.0,208.2],[-4.5,208.2]]},{"type":"sphere","c":[-2.8,208.2,4.95],"r":0.35}]},{"id":"B14","frame":"base","name":"张紧器","level":2,"mat":"ti","role":"base","group":"地基组件（右鞋）","kid":"右边的一个小扳手：扳下去就把'腰带'拉紧，扳到刻线就是刚好的力。","detail":"钛扳手过中心凸轮 + Ø1.5 轴销 + BeCu 碟簧 6 片 + 拉杆，同 v1.2。v1.3：扳手末端加 Ø1.5 孔配 40 mm 钢撬杆（随附），手离扳手 ≥ 30 mm，扳完平贴不夹手；扳手四边全圆 R0.15；说明书写'只能用撬杆扳'。护板 B30 默认不加（待定）。","material":"Ti-6Al-4V；碟簧 BeCu","size":"扳手 8.0 × 4.2 × 0.3；碟簧 Ø2.6 × 6 片","moves":"不动（装的时候扳一次）","joins":"拉杆拉 B13 右端；碟簧组串在中间；扳手转在 B15 侧面","explode":[17,0,-6],"anchor":[358.0,232,2.0],"label":[369.5,240,-8],"may_touch":["B13","B15"],"shapes":[{"type":"prism","axis":"z","x0":0.2,"x1":4.4,"poly":[[358.1,228.0],[357.8,228.0],[357.8,236.0],[358.1,236.0]]},{"type":"cyl","axis":"x","c":[356.8,229.2,3.6],"r":0.75,"h":2.0},{"type":"prism","axis":"z","x0":3.0,"x1":4.0,"poly":[[358.12,231.9],[358.1,231.9],[358.1,232.1],[358.12,232.1]]},{"type":"cyl","axis":"x","c":[357.59,233.4,1.7],"r":1.3,"h":0.22,"ri":0.45},{"type":"cyl","axis":"x","c":[357.32,233.4,1.7],"r":1.3,"h":0.22,"ri":0.45},{"type":"cyl","axis":"x","c":[357.05,233.4,1.7],"r":1.3,"h":0.22,"ri":0.45},{"type":"cyl","axis":"x","c":[356.78,233.4,1.7],"r":1.3,"h":0.22,"ri":0.45},{"type":"cyl","axis":"x","c":[356.51,233.4,1.7],"r":1.3,"h":0.22,"ri":0.45},{"type":"cyl","axis":"x","c":[356.24,233.4,1.7],"r":1.3,"h":0.22,"ri":0.45},{"type":"prism","axis":"z","x0":-0.35,"x1":1.4,"poly":[[356.6,233.0],[355.4,233.0],[355.4,233.8],[356.6,233.8]]}]},{"id":"B15","frame":"base","name":"右鞋（一体，含右后角托）","level":1,"mat":"steel","role":"base","group":"地基组件（右鞋）","kid":"右后角的小鞋：和左边一样有'后跟包'绕过右后角底下，横带从这里勒紧。","detail":"Ti-6Al-4V 激光粉床打印 + 去应力 + 精加工；背板段打印 0.8 再两面磨到 0.50 ± 0.02。v1.3 把 v1.2 的 B15 和 B16 并成一件（B16 在 y 235.5 接 B15 的地方月牙块只有尖，拧不住）：①侧块 x 355.75–358.10、y 225.5–238.5（往后加长 3 mm；内面让 0.15 给 TPU），②圆角托 y 222.0–236.5，③右后角托底 12 段（截面同 B11，最外 x 358.08、最低 z −0.22），④月牙块 + 背板（x 317.5–355.6，x 318–323 下沿蛇形簧，上沿外侧倒角同 B11），⑤底面压接座、张紧器座同 v1.2。最细处剪应力 ≤ 314 MPa，钛打印余量 ≥ 1.7。","material":"316L 不锈钢，黑色 PVD","size":"侧块 2.35 × 13 × 6.9；背板 38.1 × 0.5 × 7.5","moves":"不动","joins":"张紧器 B14 装在侧块前后壁之间；横带 B13 进张紧器；背板内侧下沿点焊 B17；内面经 B18、月牙块 TPU 压机身","explode":[10,0,-6],"anchor":[357.5,232,9.0],"label":[371.5,226,22],"may_touch":["B14","B13","B17","B18"],"shapes":[{"type":"prism","axis":"z","x0":4.7,"x1":11.6,"poly":[[358.1,225.5],[355.75,225.5],[355.75,238.5],[358.1,238.5]]},{"type":"prism","axis":"y","x0":222.0,"x1":236.5,"poly":[[0.326,353.41],[0.601,353.833],[0.918,354.225],[1.275,354.582],[1.667,354.899],[2.09,355.174],[2.54,355.403],[3.011,355.584],[3.498,355.715],[3.996,355.794],[4.5,355.82],[4.5,356.1],[3.967,356.072],[3.44,355.989],[2.924,355.85],[2.426,355.659],[1.95,355.417],[1.502,355.126],[1.087,354.79],[0.71,354.413],[0.374,353.998],[0.083,353.55]]},{"type":"prism","axis":"z","x0":4.5,"x1":4.7,"poly":[[356.5,222.0],[355.82,222.0],[355.82,236.5],[356.5,236.5]]},{"type":"prism","axis":"z","x0":-0.35,"x1":4.7,"poly":[[358.1,227.5],[355.75,227.5],[355.75,228.0],[358.1,228.0]]},{"type":"prism","axis":"z","x0":-0.35,"x1":4.7,"poly":[[358.1,236.0],[355.75,236.0],[355.75,236.5],[358.1,236.5]]},{"type":"prism","axis":"z","x0":-0.25,"x1":0.0,"poly":[[353.1,235.6],[350.9,235.6],[350.9,236.5],[353.1,236.5]]},{"type":"prism","axis":"y","x0":236.5,"x1":237.0,"poly":[[2.152,358.075],[-0.203,358.07],[-0.208,350.495],[-0.153,350.5],[-0.153,351.03],[-0.003,351.04],[0.027,351.7],[0.057,351.74],[0.127,352.21],[0.327,352.74],[0.327,352.81],[0.627,353.41],[0.957,353.88],[1.267,354.21],[1.722,354.645],[2.212,354.985],[2.792,355.275],[2.882,355.285],[3.042,355.345],[3.192,355.425],[3.502,355.475],[3.572,355.495],[3.602,355.525],[3.752,355.525],[3.872,355.545],[3.902,355.575],[4.162,355.575],[4.352,355.595],[11.597,355.6],[11.592,358.055]]},{"type":"prism","axis":"y","x0":237.0,"x1":237.5,"poly":[[2.152,358.075],[-0.203,358.07],[-0.208,350.495],[-0.153,350.5],[-0.153,350.88],[-0.003,350.89],[0.027,351.55],[0.057,351.61],[0.077,351.85],[0.107,351.89],[0.127,352.05],[0.147,352.07],[0.177,352.18],[0.177,352.26],[0.307,352.58],[0.327,352.64],[0.327,352.71],[0.627,353.31],[0.907,353.73],[1.552,354.425],[1.582,354.425],[2.012,354.785],[2.842,355.225],[2.972,355.245],[3.202,355.325],[3.292,355.375],[3.382,355.375],[3.462,355.395],[3.502,355.425],[4.062,355.495],[4.102,355.525],[11.597,355.53],[11.592,358.055]]},{"type":"prism","axis":"y","x0":237.5,"x1":238.0,"poly":[[2.152,358.075],[-0.203,358.07],[-0.208,350.495],[-0.153,350.5],[-0.148,350.665],[-0.068,350.665],[-0.003,350.69],[0.007,351.02],[0.027,351.16],[0.027,351.4],[0.057,351.43],[0.077,351.55],[0.077,351.71],[0.127,351.82],[0.177,352.01],[0.177,352.11],[0.257,352.28],[0.327,352.48],[0.327,352.56],[0.677,353.26],[1.007,353.73],[1.282,354.025],[1.772,354.495],[2.262,354.835],[2.742,355.075],[2.802,355.075],[3.032,355.185],[3.122,355.195],[3.252,355.235],[3.302,355.275],[3.712,355.345],[3.752,355.375],[4.072,355.395],[4.102,355.425],[11.597,355.42],[11.592,358.055]]},{"type":"prism","axis":"y","x0":238.0,"x1":238.5,"poly":[[2.152,358.075],[-0.203,358.07],[-0.208,350.495],[-0.008,350.495],[0.007,350.52],[0.027,351.15],[0.057,351.18],[0.107,351.48],[0.127,351.71],[0.187,351.83],[0.227,351.98],[0.227,352.06],[0.327,352.28],[0.327,352.36],[0.727,353.16],[1.057,353.63],[1.772,354.345],[2.262,354.685],[2.942,355.025],[3.022,355.025],[3.242,355.125],[3.342,355.125],[3.412,355.145],[3.452,355.175],[3.622,355.195],[3.652,355.225],[3.792,355.225],[3.922,355.245],[3.952,355.275],[4.242,355.285],[11.597,355.29],[11.592,358.055]]},{"type":"prism","axis":"y","x0":238.5,"x1":239.0,"poly":[[4.592,358.075],[-0.203,358.07],[-0.208,350.495],[0.017,350.5],[0.027,350.8],[0.057,350.84],[0.077,350.99],[0.077,351.15],[0.107,351.18],[0.127,351.28],[0.127,351.41],[0.197,351.59],[0.277,351.87],[0.277,351.96],[0.337,352.05],[0.447,352.4],[0.667,352.84],[0.747,352.93],[0.847,353.09],[0.917,353.24],[1.317,353.71],[1.852,354.225],[1.882,354.225],[1.952,354.275],[2.062,354.385],[2.492,354.615],[2.552,354.675],[2.642,354.695],[2.872,354.795],[2.992,354.875],[3.072,354.875],[3.292,354.975],[3.402,354.975],[3.472,354.995],[3.502,355.025],[3.702,355.045],[3.752,355.075],[4.022,355.095],[4.052,355.125],[11.597,355.13],[11.592,355.555],[4.652,355.575],[4.607,357.97]]},{"type":"prism","axis":"y","x0":239.0,"x1":239.5,"poly":[[4.592,358.075],[-0.203,358.07],[-0.208,350.495],[0.067,350.5],[0.077,350.75],[0.107,350.78],[0.127,351.0],[0.147,351.02],[0.207,351.28],[0.217,351.42],[0.427,351.98],[0.427,352.06],[0.777,352.76],[1.057,353.18],[1.702,353.875],[1.732,353.875],[2.162,354.235],[2.612,354.475],[3.142,354.725],[3.652,354.835],[3.702,354.875],[3.882,354.875],[4.022,354.895],[4.052,354.925],[11.597,354.93],[11.592,355.555],[4.652,355.575],[4.607,357.97]]},{"type":"prism","axis":"y","x0":239.5,"x1":240.0,"poly":[[4.592,358.075],[-0.203,358.07],[-0.208,350.495],[0.127,350.5],[0.127,350.55],[0.157,350.59],[0.177,350.69],[0.177,350.8],[0.207,350.84],[0.257,351.05],[0.277,351.21],[0.467,351.71],[0.477,351.81],[0.537,351.9],[0.657,352.15],[0.677,352.25],[0.737,352.31],[0.847,352.52],[0.877,352.61],[1.057,352.88],[1.447,353.33],[1.902,353.775],[2.112,353.935],[2.232,353.995],[2.462,354.145],[2.882,354.355],[2.992,354.425],[3.402,354.535],[3.452,354.575],[3.592,354.585],[3.652,354.625],[3.792,354.625],[3.912,354.645],[3.952,354.675],[4.182,354.675],[4.382,354.695],[11.597,354.7],[11.592,355.555],[4.652,355.575],[4.607,357.97]]},{"type":"prism","axis":"y","x0":240.0,"x1":240.5,"poly":[[4.592,358.075],[-0.203,358.07],[-0.208,350.495],[0.222,350.495],[0.257,350.53],[0.277,350.6],[0.277,350.7],[0.307,350.73],[0.327,350.8],[0.327,350.91],[0.407,351.08],[0.477,351.29],[0.477,351.36],[0.927,352.31],[1.257,352.79],[1.772,353.345],[2.112,353.635],[2.252,353.705],[2.422,353.825],[2.592,353.915],[2.662,353.985],[2.842,354.075],[2.912,354.075],[2.982,354.105],[3.122,354.185],[3.512,354.285],[3.552,354.325],[4.122,354.395],[4.152,354.425],[11.597,354.42],[11.592,355.555],[4.652,355.575],[4.607,357.97]]},{"type":"prism","axis":"y","x0":240.5,"x1":241.0,"poly":[[4.592,358.075],[-0.203,358.07],[-0.208,350.495],[0.392,350.495],[0.417,350.63],[0.577,351.02],[0.577,351.11],[0.627,351.22],[0.977,351.96],[1.257,352.38],[1.577,352.75],[2.072,353.245],[2.562,353.585],[3.292,353.925],[3.602,353.985],[3.652,354.025],[3.832,354.035],[3.872,354.045],[3.902,354.075],[4.372,354.095],[4.402,354.125],[4.602,354.125],[4.622,354.095],[11.597,354.1],[11.592,355.555],[4.652,355.575],[4.607,357.97]]},{"type":"prism","axis":"y","x0":241.0,"x1":241.5,"poly":[[4.592,358.075],[-0.203,358.07],[-0.208,350.495],[0.622,350.495],[0.727,350.79],[0.727,350.86],[1.027,351.51],[1.507,352.23],[2.022,352.755],[2.412,353.085],[2.562,353.155],[2.742,353.265],[2.812,353.335],[2.992,353.425],[3.072,353.425],[3.252,353.525],[3.482,353.575],[3.552,353.625],[3.702,353.635],[3.752,353.675],[3.902,353.675],[4.022,353.695],[4.052,353.725],[11.597,353.73],[11.592,355.555],[4.652,355.575],[4.607,357.97]]},{"type":"prism","axis":"y","x0":241.5,"x1":242.0,"poly":[[4.592,358.075],[-0.203,358.07],[-0.208,350.495],[0.872,350.495],[0.977,350.67],[1.027,350.79],[1.027,350.86],[1.117,351.04],[1.187,351.11],[1.277,351.27],[1.327,351.41],[1.507,351.68],[1.867,352.09],[2.122,352.345],[2.512,352.685],[2.942,352.915],[3.002,352.975],[3.092,352.985],[3.222,353.045],[3.342,353.125],[3.862,353.235],[3.902,353.275],[4.122,353.275],[4.322,353.295],[4.352,353.325],[4.602,353.325],[4.612,353.305],[11.597,353.31],[11.592,355.555],[4.652,355.575],[4.607,357.97]]},{"type":"prism","axis":"y","x0":242.0,"x1":243.5,"poly":[[4.592,358.075],[-0.203,358.07],[-0.208,350.495],[1.242,350.495],[1.427,350.86],[1.857,351.48],[2.272,351.895],[2.492,352.075],[2.602,352.185],[2.662,352.235],[3.392,352.625],[3.892,352.735],[3.952,352.775],[4.242,352.785],[4.322,352.795],[4.352,352.825],[4.602,352.825],[4.612,352.805],[11.597,352.81],[11.592,355.555],[4.652,355.575],[4.607,357.97]]},{"type":"prism","axis":"z","x0":4.6,"x1":11.6,"poly":[[355.6,244.2],[348.901,244.2],[348.965,244.184],[349.374,244.072],[349.777,243.94],[350.173,243.79],[350.562,243.621],[350.943,243.434],[351.314,243.229],[351.675,243.006],[352.025,242.767],[352.363,242.511],[352.689,242.24],[353.001,241.954],[353.3,241.653],[353.584,241.338],[353.853,241.01],[354.106,240.67],[354.342,240.318],[354.562,239.956],[354.764,239.583],[354.812,239.139],[354.976,238.756],[355.121,238.365],[355.247,237.968],[355.354,237.565],[355.442,237.158],[355.511,236.746],[355.561,236.333],[355.59,235.917],[355.6,235.5]]},{"type":"prism","axis":"z","x0":4.6,"x1":11.6,"poly":[[348.905,243.942],[349.344,243.82],[349.776,243.675],[350.199,243.508],[350.614,243.32],[351.018,243.109],[351.41,242.878],[351.79,242.627],[352.156,242.356],[352.508,242.066],[352.844,241.758],[353.163,241.433],[353.465,241.092],[353.748,240.736],[354.013,240.365],[354.257,239.981],[354.482,239.584],[354.702,239.702],[354.472,240.11],[354.22,240.505],[353.948,240.886],[353.656,241.253],[353.346,241.604],[353.017,241.938],[352.672,242.255],[352.31,242.553],[351.934,242.831],[351.543,243.09],[351.139,243.328],[350.723,243.544],[350.297,243.739],[349.861,243.91],[349.417,244.059],[348.965,244.184]]},{"type":"prism","axis":"z","x0":4.6,"x1":11.6,"poly":[[355.6,244.2],[348.2,244.2],[348.2,244.3],[355.6,244.3]]},{"type":"prism","axis":"x","x0":323.0,"x1":355.6,"poly":[[244.3,4.1],[244.8,4.1],[244.8,11.33],[244.45,11.6],[244.3,11.6]]},{"type":"prism","axis":"x","x0":318.0,"x1":323.0,"poly":[[244.3,4.4],[244.8,4.4],[244.8,11.33],[244.45,11.6],[244.3,11.6]]},{"type":"prism","axis":"x","x0":317.5,"x1":318.0,"poly":[[244.3,4.1],[244.8,4.1],[244.8,11.33],[244.45,11.6],[244.3,11.6]]}],"touches_machine":true},{"id":"B17","frame":"base","name":"右后跟带（竖直）","level":2,"mat":"ti","role":"base","group":"地基组件（右鞋）","touches_machine":true,"kid":"右边的后跟带，和左边一样，从耳朵后面绕到底下拉回右鞋。","detail":"同 B12 镜像（x 318.0–323.0）；上端点焊在 B15 背板内侧，下端半搭接点焊在 B13 右折点；S0 100 ± 10 N。","material":"Ti-6Al-4V 0.15 + Elgiloy S 簧","size":"5.0 宽 × 0.15，展开约 13","moves":"不动（预紧件）","joins":"上端点焊 B15 背板；下端半搭接 B13","explode":[0,10,-4],"anchor":[320.5,244.3,2.0],"label":[311.5,262,-6],"may_touch":["B15","B13"],"shapes":[{"type":"prism","axis":"z","x0":4.05,"x1":4.6,"poly":[[323.0,244.25],[318.0,244.25],[318.0,244.4],[323.0,244.4]]},{"type":"cyl","axis":"x","c":[320.5,239.7,4.5],"r":4.7,"h":5.0,"ri":4.55,"a0":-90,"a1":-1},{"type":"prism","axis":"z","x0":-0.2,"x1":-0.05,"poly":[[323.0,237.1],[318.0,237.1],[318.0,239.7],[323.0,239.7]]}]},{"id":"B18","frame":"base","name":"右鞋垫","level":2,"mat":"rubber","role":"pad","group":"地基组件（右鞋）","touches_machine":true,"kid":"右鞋和电脑之间的薄塑料，只压不粘。","detail":"TPU 64D 0.25（Covestro Desmopan / Lubrizol Estane 64D 级挤出膜），范围同 v1.2（右侧面 y 225.5–235.5 + 右下圆角 y 222.0–235.5），厚 0.10 → 0.25。只压不粘。","material":"TPU 64D 0.25（Covestro Desmopan / Lubrizol Estane 64D 级挤出膜）","size":"侧面 10.0 × 6.8；圆角 13.5 × 约 4.3；厚 0.25","moves":"不动","joins":"背胶贴 B15；对机身只压不粘","explode":[6,0,-4],"anchor":[355.55,228,8.0],"label":[365.5,216,16],"may_touch":["B15"],"shapes":[{"type":"prism","axis":"z","x0":4.7,"x1":11.5,"poly":[[355.75,225.5],[355.5,225.5],[355.5,235.5],[355.75,235.5]]},{"type":"prism","axis":"y","x0":222.0,"x1":235.5,"poly":[[0.542,353.285],[0.779,353.654],[1.051,353.998],[1.354,354.315],[1.686,354.601],[2.045,354.854],[2.425,355.072],[2.825,355.252],[3.24,355.393],[3.667,355.493],[4.102,355.553],[4.08,355.802],[3.622,355.739],[3.171,355.633],[2.733,355.485],[2.312,355.295],[1.91,355.065],[1.533,354.798],[1.182,354.496],[0.862,354.162],[0.576,353.799],[0.326,353.41]]}]},{"id":"P1","name":"USB-C 插头外壳","group":"插头组件","level":1,"mat":"steel","role":"elec","touches_machine":true,"kid":"插进电脑雷雳口的那个小铁头，和充电线的头一样。它只负责通电，不用来扛力。","detail":"USB 2.0 16P 板装直插公头的不锈钢外壳：插入部分 8.25 × 2.4 × 6.65（x 0…+6.65，在口里），壁厚 0.2；外壳一直延伸到板子内侧面（x −0.90），两侧弹片卡口没画。","material":"SUS 不锈钢冲压，镀镍","size":"8.25 × 2.4 × 7.55（含 0.9 法兰段）","moves":"不动（拔插头时沿 −x）","joins":"外壳脚焊在 P2 内侧面；插在雷雳口里只接电，不受结构力","shapes":[{"type":"prism","axis":"x","x0":-0.9,"x1":6.65,"poly":[[199.625,6.9],[199.936,6.941],[200.225,7.061],[200.474,7.251],[200.664,7.5],[200.784,7.789],[200.825,8.1],[200.825,8.1],[200.784,8.411],[200.664,8.7],[200.474,8.949],[200.225,9.139],[199.936,9.259],[199.625,9.3],[193.775,9.3],[193.464,9.259],[193.175,9.139],[192.926,8.949],[192.736,8.7],[192.616,8.411],[192.575,8.1],[192.575,8.1],[192.616,7.789],[192.736,7.5],[192.926,7.251],[193.175,7.061],[193.464,6.941],[193.775,6.9]],"holes":[[[199.625,7.1],[199.884,7.134],[200.125,7.234],[200.332,7.393],[200.491,7.6],[200.591,7.841],[200.625,8.1],[200.625,8.1],[200.591,8.359],[200.491,8.6],[200.332,8.807],[200.125,8.966],[199.884,9.066],[199.625,9.1],[193.775,9.1],[193.516,9.066],[193.275,8.966],[193.068,8.807],[192.909,8.6],[192.809,8.359],[192.775,8.1],[192.775,8.1],[192.809,7.841],[192.909,7.6],[193.068,7.393],[193.275,7.234],[193.516,7.134],[193.775,7.1]]]}],"explode":[-6,0,0],"anchor":[3.0,196.7,9.299999999999999],"label":[4,204,22],"may_touch":["P1a","P1b","P2"],"frame":"base"},{"id":"P1a","name":"插头绝缘芯 + 法兰","group":"插头组件","level":2,"mat":"pom","role":"elec","touches_machine":true,"kid":"铁壳里面的塑料芯，中间有一条缝：电脑口里那片'舌头'就插进这条缝，两边的金手指碰上它就通电了。","detail":"LCP 绝缘体填满外壳，中间留 6.7 × 0.7 的槽（电脑插座的舌片插进来）；口外 x −0.90…0 是 8.65 × 2.8 的塑料法兰，挡住外壳和铝面之间的缝（离侧面 0）。","material":"LCP（耐焊接高温塑料）","size":"芯 7.85 × 2.0 × 6.1；法兰 8.65 × 2.8 × 0.9","moves":"不动","joins":"压在 P1 外壳里，触点 P1b 嵌在它上面","shapes":[{"type":"prism","axis":"x","x0":0.0,"x1":6.1,"poly":[[199.625,7.1],[199.884,7.134],[200.125,7.234],[200.332,7.393],[200.491,7.6],[200.591,7.841],[200.625,8.1],[200.625,8.1],[200.591,8.359],[200.491,8.6],[200.332,8.807],[200.125,8.966],[199.884,9.066],[199.625,9.1],[193.775,9.1],[193.516,9.066],[193.275,8.966],[193.068,8.807],[192.909,8.6],[192.809,8.359],[192.775,8.1],[192.775,8.1],[192.809,7.841],[192.909,7.6],[193.068,7.393],[193.275,7.234],[193.516,7.134],[193.775,7.1]],"holes":[[[199.75,7.75],[199.9,7.79],[200.01,7.9],[200.05,8.05],[200.05,8.15],[200.01,8.3],[199.9,8.41],[199.75,8.45],[193.65,8.45],[193.5,8.41],[193.39,8.3],[193.35,8.15],[193.35,8.05],[193.39,7.9],[193.5,7.79],[193.65,7.75]]]},{"type":"prism","axis":"x","x0":-0.9,"x1":0.0,"poly":[[199.625,6.7],[199.987,6.748],[200.325,6.888],[200.615,7.11],[200.837,7.4],[200.977,7.738],[201.025,8.1],[201.025,8.1],[200.977,8.462],[200.837,8.8],[200.615,9.09],[200.325,9.312],[199.987,9.452],[199.625,9.5],[193.775,9.5],[193.413,9.452],[193.075,9.312],[192.785,9.09],[192.563,8.8],[192.423,8.462],[192.375,8.1],[192.375,8.1],[192.423,7.738],[192.563,7.4],[192.785,7.11],[193.075,6.888],[193.413,6.748],[193.775,6.7]],"holes":[[[199.625,6.9],[199.936,6.941],[200.225,7.061],[200.474,7.251],[200.664,7.5],[200.784,7.789],[200.825,8.1],[200.825,8.1],[200.784,8.411],[200.664,8.7],[200.474,8.949],[200.225,9.139],[199.936,9.259],[199.625,9.3],[193.775,9.3],[193.464,9.259],[193.175,9.139],[192.926,8.949],[192.736,8.7],[192.616,8.411],[192.575,8.1],[192.575,8.1],[192.616,7.789],[192.736,7.5],[192.926,7.251],[193.175,7.061],[193.464,6.941],[193.775,6.9]]]}],"explode":[-6,0,-7],"anchor":[-0.45,193.7,6.699999999999999],"label":[-8,186,-6],"may_touch":["P1","P1b","P2"],"frame":"base"},{"id":"P1b","name":"插头金手指 ×16","group":"插头组件","level":2,"mat":"gold","role":"elec","touches_machine":true,"kid":"16 根细细的金色小弹片，上下两排，就是它们把电和信号从电脑接到小板子上。","detail":"磷青铜镀金，0.25 宽、0.5 间距，上下各 8 根（GND、VBUS、CC、D+、D−、SBU 等，USB 2.0 只用这些）；尾巴穿出绝缘芯，弯成 0.5 长的焊脚贴在 P2 内侧面焊盘上。","material":"磷青铜镀金","size":"每根 0.25 × 0.12 × 5.0，焊脚 0.25 × 0.5","moves":"不动","joins":"嵌在 P1a 里，焊脚焊 P2","shapes":[{"type":"box","c":[3.1,193.95,8.51],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,193.95,7.69],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,195.45,8.51],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,195.45,7.69],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,195.95,8.51],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,195.95,7.69],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,196.45,8.51],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,196.45,7.69],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,196.95,8.51],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,196.95,7.69],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,197.45,8.51],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,197.45,7.69],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,197.95,8.51],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,197.95,7.69],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,199.45,8.51],"s":[5.0,0.25,0.12]},{"type":"box","c":[3.1,199.45,7.69],"s":[5.0,0.25,0.12]},{"type":"box","c":[-0.84,193.95,6.85],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,193.95,9.35],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,195.45,6.85],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,195.45,9.35],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,195.95,6.85],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,195.95,9.35],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,196.45,6.85],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,196.45,9.35],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,196.95,6.85],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,196.95,9.35],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,197.45,6.85],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,197.45,9.35],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,197.95,6.85],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,197.95,9.35],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,199.45,6.85],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.84,199.45,9.35],"s":[0.12,0.25,1.5]},{"type":"box","c":[-0.09,193.95,8.65],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,193.95,7.55],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,195.45,8.65],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,195.45,7.55],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,195.95,8.65],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,195.95,7.55],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,196.45,8.65],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,196.45,7.55],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,196.95,8.65],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,196.95,7.55],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,197.45,8.65],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,197.45,7.55],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,197.95,8.65],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,197.95,7.55],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,199.45,8.65],"s":[1.38,0.2,0.1]},{"type":"box","c":[-0.09,199.45,7.55],"s":[1.38,0.2,0.1]}],"explode":[-6,0,7],"anchor":[3.0,198.7,8.5],"label":[-2,206,22],"may_touch":["P1","P1a","P2"],"frame":"base"},{"id":"P2","name":"电路板","group":"插头组件","level":1,"mat":"pcb","role":"elec","kid":"插头里的一块绿色小板子，所有小芯片都住在它上面，像一块迷你主板。","detail":"FR4 4 层 0.6，13.0 × 6.0，位置同 v1.1；元件变少：单片机、仪表放大器、5 → 8 V 小升压、合金丝开关管、保险丝、电流采样、TVS。先读 USB-C 的 CC：口子给 ≥ 2 A 用 9.5 W 脉冲，否则 7.5 W。","material":"FR4 4 层 0.6，沉金","size":"13.0 × 6.0 × 0.6（y 190.2–203.2、z 5.5–11.5）","moves":"不动","joins":"插头 P1 焊在内侧面；元件焊两面；P11 焊在外侧面后下角；四周被 P10a/P10 包住","shapes":[{"type":"box","c":[-1.2,196.7,8.5],"s":[0.6,13.0,6.0]}],"explode":[-12,0,0],"anchor":[-1.2,190.6,11.0],"label":[-14,182,20],"may_touch":["P1","P1a","P1b","P3","P4","P5","P7b","P8","P9","P10","P10a","P11"],"frame":"base"},{"id":"P3","name":"单片机","group":"插头组件","level":2,"mat":"chip","role":"elec","kid":"插头的'小脑袋'：听电脑说'有人摸屏幕了'，就给合金丝通电让夹子夹紧；没人摸了就松开。","detail":"STM32C071F8U6（UFQFPN20 3 × 3 × 0.55，带 USB 全速）或同级；USB 自定义 HID 收 Mac 的锁/松命令，开关合金丝加热管 P7b、读应变片放大器 INA333、看门狗。原定的 4 × 4 放不下，换成 3 × 3 封装。","material":"QFN 塑封芯片","size":"3.0 × 3.0 × 0.55","moves":"不动","joins":"焊在 P2 外侧面","shapes":[{"type":"box","c":[-1.775,191.9,9.9],"s":[0.55,3.0,3.0]},{"type":"cyl","axis":"x","c":[-2.06,190.8,11.0],"r":0.18,"h":0.03}],"explode":[-18,0,0],"anchor":[-2.05,191.9,9.9],"label":[-12,186,26],"may_touch":["P2"],"frame":"base"},{"id":"P8","name":"仪表放大器","group":"插头组件","level":2,"mat":"chip","role":"sensor","kid":"一个'放大镜'芯片：把夹子上应变片那一点点电压放大，单片机才看得出有人在使劲扳屏幕。","detail":"TI INA333（WSON-8 3 × 3 × 0.8）读 C12 应变片半桥。原定放在内侧面，但那里被插头外壳挡住，挪到外侧面单片机旁边。","material":"WSON 塑封芯片","size":"3.0 × 3.0 × 0.8","moves":"不动","joins":"焊在 P2 外侧面","shapes":[{"type":"box","c":[-1.9,195.1,9.9],"s":[0.8,3.0,3.0]}],"explode":[-18,0,0],"anchor":[-2.3,195.1,11.0],"label":[-10,196,27],"may_touch":["P2"],"frame":"base"},{"id":"P4","name":"升压芯片（5 → 8 V）","group":"插头组件","level":1,"mat":"chip","role":"elec","kid":"一颗小芯片，把电脑口子的 5 伏升到 8 伏，让合金丝热得更快、夹子锁得更快。","detail":"同步升压 5 → 8 V、≥ 1.5 A 开关电流（TPS61xxx 类），QFN 3 × 3，放原 P4 的位置。只在锁的那 16–27 ms 满功率，保温时 0.1–0.2 W。","material":"QFN 塑封芯片","size":"3.0 × 3.0 × 0.8","moves":"不动","joins":"焊在 P2 外侧面；输出经 P11 去记忆合金丝","shapes":[{"type":"prism","axis":"z","x0":7.9,"x1":10.9,"poly":[[-2.3,198.9],[-1.5,198.9],[-1.5,201.9],[-2.3,201.9]]},{"type":"cyl","axis":"x","c":[-2.315,199.3,10.5],"r":0.2,"h":0.03}],"explode":[-18,0,0],"anchor":[-2.5,200.4,11.0],"label":[-14,212,22],"may_touch":["P2"],"frame":"base"},{"id":"P5","name":"升压电感","group":"插头组件","level":2,"mat":"chip","role":"elec","kid":"一个小线圈，帮升压芯片存一点点电。","detail":"2.2 µH，2520 封装，≥ 2.5 A。","material":"一体成型电感（金属粉芯）","size":"2.5 × 2.0 × 1.0","moves":"不动","joins":"焊在 P2 外侧面","shapes":[{"type":"prism","axis":"z","x0":6.05,"x1":8.05,"poly":[[-2.5,194.1],[-1.5,194.1],[-1.5,196.1],[-2.5,196.1]]},{"type":"prism","axis":"z","x0":5.8,"x1":6.05,"poly":[[-2.5,194.1],[-1.5,194.1],[-1.5,196.1],[-2.5,196.1]]},{"type":"prism","axis":"z","x0":8.05,"x1":8.3,"poly":[[-2.5,194.1],[-1.5,194.1],[-1.5,196.1],[-2.5,196.1]]}],"explode":[-18,0,0],"anchor":[-2.5,195.1,6.9],"label":[-12,194,-6],"may_touch":["P2"],"frame":"base"},{"id":"P7b","name":"合金丝开关管","group":"插头组件","level":2,"mat":"chip","role":"elec","kid":"一个电子开关：打开它，电流就流过记忆合金丝。","detail":"30 V 逻辑电平 N-MOS，DFN 2 × 2，Rds ≤ 30 mΩ。用 PWM 按丝电阻反馈加热和保温；断电 = 关 = 丝冷 = 松开。击穿常通是最坏的单一故障：PTC 限流 1.5 A，锁仍然 0.40–0.50 N·m 打滑，合到 48° 以下鳍离开钳口。","material":"DFN 塑封管","size":"2.0 × 2.0 × 0.8","moves":"不动","joins":"焊在 P2 内侧面","shapes":[{"type":"box","c":[-0.5,202.1,10.4],"s":[0.8,2.0,2.0]}],"explode":[-9,0,0],"anchor":[-0.09999999999999998,202.1,11.0],"label":[6,212,18],"may_touch":["P2"],"frame":"base"},{"id":"P9","name":"小件（保险丝、采样电阻、TVS）","group":"插头组件","level":2,"mat":"chip","role":"elec","kid":"几颗米粒大的小元件：保险丝、量电流的电阻、防静电的管子。","detail":"加：自恢复保险丝 1.5 A（0805）、电流采样电阻 20 mΩ（0402）、TVS；去掉高压退耦。都 ≤ 0.8 高，贴在 P2 两面。","material":"贴片元件","size":"0402（1.0 × 0.5）和 2.5 × 1.0","moves":"不动","joins":"焊在 P2 内侧面","shapes":[{"type":"box","c":[-0.625,194.75,10.7],"s":[0.55,2.5,1.0]},{"type":"box","c":[-0.725,197.0,10.65],"s":[0.35,1.0,0.5]},{"type":"box","c":[-0.725,198.5,10.65],"s":[0.35,1.0,0.5]},{"type":"box","c":[-0.725,201.7,6.25],"s":[0.35,1.0,0.5]},{"type":"box","c":[-0.725,191.1,7.25],"s":[0.35,1.0,0.5]},{"type":"box","c":[-0.725,191.1,9.25],"s":[0.35,1.0,0.5]}],"explode":[-9,0,0],"anchor":[-0.4,194.7,11.2],"label":[8,190,20],"may_touch":["P2"],"frame":"base"},{"id":"P10","name":"包胶外壳","group":"插头组件","level":1,"mat":"rubber","role":"elec","kid":"插头外面那层软软的黑色'衣服'，摸着舒服，碰到也不会刮花电脑。","detail":"TPE 包胶 0.25（原定 0.3，z 方向只剩 0.25 的地方：板子 6.0 高、外形 6.6 高），外形 x −3.20…−0.05、y 189.7–203.7、z 5.15–11.75、R0.8；朝电脑那面敞开（离铝面 0.05，不压铝面）。外露 3.2 mm。","material":"TPE 软胶（黑）","size":"14.0 × 6.6 × 3.15，壁厚 0.25","moves":"不动（拔的时候捏住拉环往外拉）","joins":"包在 P10a 和 P2 外面；软排线从底边穿出","shapes":[{"type":"prism","axis":"x","x0":-3.2,"x1":-2.95,"poly":[[202.9,5.15],[203.206,5.211],[203.466,5.384],[203.639,5.644],[203.7,5.95],[203.7,10.95],[203.639,11.256],[203.466,11.516],[203.206,11.689],[202.9,11.75],[190.5,11.75],[190.194,11.689],[189.934,11.516],[189.761,11.256],[189.7,10.95],[189.7,5.95],[189.761,5.644],[189.934,5.384],[190.194,5.211],[190.5,5.15]]},{"type":"prism","axis":"x","x0":-2.95,"x1":-0.05,"poly":[[202.9,5.15],[203.206,5.211],[203.466,5.384],[203.639,5.644],[203.7,5.95],[203.7,10.95],[203.639,11.256],[203.466,11.516],[203.206,11.689],[202.9,11.75],[190.5,11.75],[190.194,11.689],[189.934,11.516],[189.761,11.256],[189.7,10.95],[189.7,5.95],[189.761,5.644],[189.934,5.384],[190.194,5.211],[190.5,5.15]],"holes":[[[189.95,5.4],[203.45,5.4],[203.45,11.5],[189.95,11.5]]]}],"explode":[-30,0,0],"anchor":[-3.2,190.5,6.0],"label":[-16.6,168.6,10.0],"may_touch":["P10a","P10b","P2","P11"],"frame":"base"},{"id":"P10a","name":"塑料内框","group":"插头组件","level":2,"mat":"pom","role":"elec","kid":"包胶里面的一层硬塑料小盒子，把芯片罩住，包胶的时候软胶就不会挤到芯片上。","detail":"PC 内框：外侧盖板 0.15（x −2.95…−2.80，离最高的电容 0.05）+ 前后两道 0.2 端墙；上下边没地方放框，直接是 TPE。盖板 0.15 太薄，模具上要局部加厚或换成 0.1 聚酰亚胺片（待定）。","material":"PC（聚碳酸酯）","size":"13.5 × 6.1 × 2.65（盖板 0.15、端墙 0.2）","moves":"不动","joins":"卡在 P2 两端，外面包 TPE","shapes":[{"type":"box","c":[-2.875,196.7,8.45],"s":[0.15,13.5,6.1]},{"type":"box","c":[-1.625,190.05,8.45],"s":[2.65,0.2,6.1]},{"type":"box","c":[-1.625,203.35,8.45],"s":[2.65,0.2,6.1]}],"explode":[-24,0,0],"anchor":[-2.9,203.3,8.0],"label":[-16,212,10],"may_touch":["P10","P2"],"frame":"base"},{"id":"P10b","name":"拉环","group":"插头组件","level":2,"mat":"pad","role":"elec","kid":"插头外面一小条布带子，手指捏住它一拉，插头就拔出来了。","detail":"PET 0.1 编织带 3 × 8：6 mm 贴在包胶外表面（x −3.25…−3.20），后端 2.2 mm 往外翻 35°，方便指甲勾住。拔插头时力沿 −x，不撬接口。","material":"PET 编织带 0.1","size":"3.0 × 8.2 × 0.1","moves":"不动（后端可以翻起来）","joins":"尾端埋在 TPE 包胶里","shapes":[{"type":"box","c":[-3.25,195.7,9.9],"s":[0.1,6.0,3.0]},{"type":"box","c":[-3.88,199.6,9.9],"s":[0.1,2.2,3.0],"rz":-35}],"explode":[-36,0,0],"anchor":[-3.3,195.7,11.4],"label":[-18,190,22],"may_touch":["P10"],"frame":"base"},{"id":"P11","name":"软排线","group":"插头组件","level":1,"mat":"cable","role":"cable","kid":"一条很薄的扁电线，从插头里出来钻进前梁顶上的小槽，再沿着丝槽走到合金丝那里。","detail":"同 v1.2。v1.3：第三段 y 201.9–214.0 → 201.9–208.2（压接座前移）。","material":"聚酰亚胺 FPC 0.12，带屏蔽层","size":"宽 1.6 / 1.0 × 厚 0.12 × 约 14","moves":"不动（拔插头前要先从焊盘上脱开）","joins":"一头焊 P2，一头焊合金丝压接套（C20）和应变片 C12 的引线；走前梁顶面的槽，不粘","shapes":[{"type":"prism","axis":"z","x0":1.82,"x1":6.96,"poly":[[-1.62,200.3],[-1.5,200.3],[-1.5,201.9],[-1.62,201.9]]},{"type":"prism","axis":"z","x0":1.7,"x1":1.82,"poly":[[-3.3,200.3],[-1.5,200.3],[-1.5,201.9],[-3.3,201.9]]},{"type":"prism","axis":"z","x0":1.7,"x1":1.82,"poly":[[-3.3,201.9],[-2.3,201.9],[-2.3,208.2],[-3.3,208.2]]}],"explode":[-12,0,0],"anchor":[-1.62,201.0,5.0],"label":[-12,207.0,-4],"may_touch":["P2","P10","B2","C20","C12"],"frame":"base"}],"altLang":{"href":"../","label":"English","hreflang":"en"},"pageTitle":"防晃端帽 · 触屏 MacBook Pro 的「碰屏就锁」铰链锁（开源概念设计）"};</script>
+<script>
+(async function main() {
+'use strict';
+const DEG = Math.PI / 180;
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- design data (inlined for publishing, fetched during local work) ----------
+let DS = window.__DESIGN__;
+if (!DS) DS = await (await fetch('design.json', { cache: 'no-store' })).json();
+const g = DS.geom, AY = g.Ay, AZ = g.Az;
+
+// ---------- interface language (the design file says which; Chinese is the default) ----------
+const LANG = DS.lang === 'en' ? 'en' : 'zh';
+const UI = {
+  zh: {
+    title: '防晃端帽', canvas: '三维模型，可以拖动旋转、双指或滚轮缩放', views: '视角',
+    whole: '整机', corner: '角落', inside: '剖开', under: '底下', cover: '外壳',
+    tShell: '机身半透明', tFinish: '真实颜色', tLabels: '标号',
+    free: '松开', freeD: '跟着屏幕走', locked: '锁住', lockedD: '屏幕往后推不动',
+    lid: '屏幕角度', explode: '拆开', xnote: '拖动旋转 · 滚轮缩放 · 点零件看说明',
+    tabHow: '怎么工作', tabParts: '零件', tabNums: '数字',
+    howH: '一步一步看', howP: '点一步，模型会自己动起来演示。', partsH: '每个零件', numsH: '关键数字',
+    r_base: '固定在机身上', r_lid: '贴着屏幕', r_rotor: '跟着屏幕转', r_lock: '锁（抱紧的地方）', r_spring: '弹簧',
+    r_act: '推锁的小马达', r_sensor: '感觉推力', r_elec: '电路', r_cable: '线和插头', r_pad: '垫子和胶',
+    body: '机身', port: ' 接口', screen: '屏幕', menubar: 'Finder   文件   编辑   显示   前往   窗口',
+    back: '往后', fwd: '往前', readout: (d, mm, pk) => `屏幕上沿：${d} ${mm} mm（最远 ${pk} mm）`,
+    push: '你推屏幕上沿：它感觉到持续的推力，而手指不在屏幕上……', release: '……就松开，屏幕跟着你的手走。', relock: '停下不动一会儿，它又悄悄锁上。',
+    g_lid: '屏幕上的零件', g_rotor: '跟着屏幕转的零件', g_base: '机身上的零件', g_part: '零件',
+    k_detail: '做什么', k_material: '材料', k_size: '尺寸', k_moves: '跟谁动', k_joins: '怎么连',
+    caveat: '模型尺寸来自新机发布资料的估算（误差约 0.3–1 mm），新机开卖后要实测再改。', failed: '模型没能加载：',
+  },
+  en: {
+    title: 'Endcap', canvas: '3D model: drag to rotate, pinch or scroll to zoom', views: 'View',
+    whole: 'Laptop', corner: 'Corner', inside: 'Cutaway', under: 'Below', cover: 'Cover',
+    tShell: 'X-ray', tFinish: 'Colors', tLabels: 'Labels',
+    free: 'Free', freeD: 'moves with the screen', locked: 'Locked', lockedD: 'the screen can’t be pushed back',
+    lid: 'Lid angle', explode: 'Explode', xnote: 'Drag to rotate · scroll to zoom · click a part',
+    tabHow: 'How it works', tabParts: 'Parts', tabNums: 'Numbers',
+    howH: 'Step by step', howP: 'Click a step and the model acts it out.', partsH: 'Every part', numsH: 'Key numbers',
+    r_base: 'Fixed to the laptop', r_lid: 'Stuck to the screen', r_rotor: 'Turns with the screen', r_lock: 'Lock (where it grips)', r_spring: 'Springs',
+    r_act: 'Actuator', r_sensor: 'Force sensing', r_elec: 'Electronics', r_cable: 'Cable and plug', r_pad: 'Pads and tape',
+    body: 'Laptop body', port: ' port', screen: 'Screen', menubar: 'Finder   File   Edit   View   Go   Window',
+    back: 'back', fwd: 'forward', readout: (d, mm, pk) => `Top of the screen: ${mm} mm ${d} (furthest ${pk} mm)`,
+    push: 'You push the top of the screen: it feels a steady push while no finger is on the screen…', release: '…so it lets go, and the screen follows your hand.', relock: 'Hold still for a moment and it quietly locks again.',
+    g_lid: 'Parts on the screen', g_rotor: 'Parts that turn with the screen', g_base: 'Parts on the laptop', g_part: 'Parts',
+    k_detail: 'What it does', k_material: 'Material', k_size: 'Size', k_moves: 'Moves with', k_joins: 'Joined by',
+    caveat: 'Dimensions are estimated from launch material (about ±0.3–1 mm) and will be corrected once the new MacBook Pro can be measured.', failed: 'The model failed to load: ',
+  },
+};
+const tr = k => (UI[LANG][k] ?? UI.zh[k]);   // not `T`: buildLaptop destructures g.T (thickness)
+document.documentElement.lang = LANG === 'en' ? 'en' : 'zh-CN';
+document.title = DS.pageTitle || tr('title');
+$('h1').textContent = tr('title');
+$('#gl').setAttribute('aria-label', tr('canvas'));
+$('.seg').setAttribute('aria-label', tr('views'));
+$$('[data-view]').forEach(b => { b.textContent = tr(b.dataset.view); });
+for (const id of ['tShell', 'tFinish', 'tLabels']) $('#' + id).textContent = tr(id);
+$('#stateT').textContent = tr('free'); $('#stateD').textContent = tr('freeD');
+$('label[for="lid"]').textContent = tr('lid'); $('label[for="explode"]').textContent = tr('explode');
+$('#xnote').textContent = tr('xnote');
+$('#tab-how').textContent = tr('tabHow'); $('#tab-parts').textContent = tr('tabParts'); $('#tab-nums').textContent = tr('tabNums');
+$('#body-how h2').textContent = tr('howH'); $('#body-how .muted').textContent = tr('howP');
+$('#body-parts h2').textContent = tr('partsH'); $('#body-nums h2').textContent = tr('numsH');
+if (DS.altLang) {   // link to the same viewer in the other language (public pages only)
+  const a = document.createElement('a'); a.className = 'lang'; a.href = DS.altLang.href; a.textContent = DS.altLang.label;
+  a.hreflang = DS.altLang.hreflang || ''; $('header.top').appendChild(a);
+}
+if (DS.version) $('#ver').textContent = DS.version;
+if (DS.tagline) $('#tagline').textContent = DS.tagline;
+
+// ---------- renderer, scene, camera ----------
+const stage = $('#stage'), canvas = $('#gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.physicallyCorrectLights = true;
+renderer.localClippingEnabled = true;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(30, 1, 0.5, 6000);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.08; controls.minDistance = 8; controls.maxDistance = 2400;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x7d8590, 0.7));
+const sun = new THREE.DirectionalLight(0xffffff, 2.4);
+sun.position.set(-260, 560, 200); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -320, right: 320, top: 320, bottom: -320, near: 10, far: 1600 });
+sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.5;
+sun.target.position.set(178, 0, -150); scene.add(sun, sun.target);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(4000, 4000), new THREE.ShadowMaterial({ opacity: 0.16 }));
+ground.rotation.x = -Math.PI / 2; ground.position.y = -1.6; ground.receiveShadow = true; scene.add(ground);
+
+// Everything below is authored in the design's own coordinates (x across, y front to back, z up, mm);
+// the root group turns them into three.js coordinates (y up).
+const root = new THREE.Group(); root.rotation.x = -Math.PI / 2; scene.add(root);
+const m2t = (x, y, z) => new THREE.Vector3(x, z, -y);
+function pivotFrame() {
+  const pivot = new THREE.Group(); pivot.position.set(0, AY, AZ);
+  const content = new THREE.Group(); content.position.set(0, -AY, -AZ);
+  pivot.add(content); root.add(pivot); return { pivot, content };
+}
+const frames = { base: { pivot: null, content: new THREE.Group() }, lid: pivotFrame(), rotor: pivotFrame() };
+root.add(frames.base.content);
+
+// ---------- clipping (section view) ----------
+const sec = DS.section || { n: [0, 0, -1], d: AZ };
+const clipPlane = new THREE.Plane(new THREE.Vector3(-sec.n[0], -sec.n[2], sec.n[1]), sec.d);
+const clipList = [];   // materials that take part in the section view
+function clippable(m) { clipList.push(m); return m; }
+function setClip(on) { for (const m of clipList) { m.clippingPlanes = on ? [clipPlane] : []; m.needsUpdate = true; } capMeshes.forEach(c => c.visible = on); }
+const capMeshes = [];
+// Cut faces use the stencil trick: each part's clipped surfaces count back/front faces into the stencil buffer,
+// then a big plane lying on the cut paints that part's colour (hatched) wherever the count is not zero, i.e.
+// exactly where the cut passes through that part's material. Parts that overlap (electrodes inside a stack)
+// stay clean because the faces sit exactly on the cut instead of on whatever back face happens to be nearest.
+const CAP_SIZE = 800;
+const stencilBase = { depthWrite: false, depthTest: false, colorWrite: false, stencilWrite: true, stencilFunc: THREE.AlwaysStencilFunc, clippingPlanes: [clipPlane] };
+const STENCIL = [
+  new THREE.MeshBasicMaterial(Object.assign({ side: THREE.BackSide, stencilFail: THREE.IncrementWrapStencilOp, stencilZFail: THREE.IncrementWrapStencilOp, stencilZPass: THREE.IncrementWrapStencilOp }, stencilBase)),
+  new THREE.MeshBasicMaterial(Object.assign({ side: THREE.FrontSide, stencilFail: THREE.DecrementWrapStencilOp, stencilZFail: THREE.DecrementWrapStencilOp, stencilZPass: THREE.DecrementWrapStencilOp }, stencilBase)),
+];
+const cutGeo = new THREE.PlaneGeometry(CAP_SIZE, CAP_SIZE);
+const capGroup = new THREE.Group(); scene.add(capGroup);
+clipPlane.coplanarPoint(capGroup.position);
+capGroup.lookAt(capGroup.position.clone().sub(clipPlane.normal));
+let hatch = null;
+function hatchTex() {   // light diagonal lines, about 1 mm apart, so a cut face reads as "cut" like in a drawing
+  if (hatch) return hatch;
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, 64, 64);
+  g.strokeStyle = 'rgba(0,0,0,0.2)'; g.lineWidth = 6;
+  for (let k = -64; k <= 64; k += 32) { g.beginPath(); g.moveTo(k, 64); g.lineTo(k + 64, 0); g.stroke(); }
+  hatch = new THREE.CanvasTexture(c); hatch.wrapS = hatch.wrapT = THREE.RepeatWrapping;
+  hatch.repeat.set(CAP_SIZE / 2, CAP_SIZE / 2); hatch.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return hatch;
+}
+
+// ---------- materials ----------
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const phys = o => new THREE.MeshPhysicalMaterial(Object.assign({ roughness: 0.5, metalness: 0 }, o));
+const FIN = {
+  alu_black: { color: 0x2b2c30, metalness: 0.8, roughness: 0.42 }, alu_silver: { color: 0xd3d5d8, metalness: 0.85, roughness: 0.36 },
+  steel: { color: 0xb9bec5, metalness: 1, roughness: 0.26 }, spring: { color: 0x8f959d, metalness: 1, roughness: 0.3 },
+  brass: { color: 0xc6a04f, metalness: 1, roughness: 0.34 }, copper: { color: 0xc4774b, metalness: 1, roughness: 0.32 },
+  ti: { color: 0x9a9a96, metalness: 1, roughness: 0.38 }, rubber: { color: 0x232427, roughness: 0.92 },
+  pom: { color: 0xeeeee8, roughness: 0.55 }, peek: { color: 0xc9ad83, roughness: 0.5 }, pcb: { color: 0x1c2a22, roughness: 0.6 },
+  chip: { color: 0x101113, roughness: 0.4 }, cable: { color: 0x2a2c30, roughness: 0.75 }, pad: { color: 0x5a473b, roughness: 0.85 },
+  ceramic: { color: 0xd8d1c4, roughness: 0.6 }, magnet: { color: 0x9aa0a6, metalness: 1, roughness: 0.3 },
+  adhesive: { color: 0xe8e2cf, roughness: 0.9, transparent: true, opacity: 0.8 }, glass: { color: 0x07080a, roughness: 0.06, clearcoat: 1 },
+  zirconia: { color: 0xf3f1ea, roughness: 0.25, clearcoat: 0.5 }, carbide: { color: 0x5b5f66, metalness: 1, roughness: 0.35 },
+  cfrp: { color: 0x1b1c1f, roughness: 0.35, clearcoat: 0.6 }, friction: { color: 0x9b6a45, metalness: 0.6, roughness: 0.6 },
+  pzt: { color: 0xcfc8bb, roughness: 0.5 }, gold: { color: 0xd4a640, metalness: 1, roughness: 0.25 }, ti_black: { color: 0x3a3b3f, metalness: 0.85, roughness: 0.45 },
+};
+const ROLES = Object.fromEntries(['base', 'lid', 'rotor', 'lock', 'spring', 'act', 'sensor', 'elec', 'cable', 'pad']
+  .map(r => [r, [tr('r_' + r), '--r-' + r]]));
+const roleColor = r => new THREE.Color(css((ROLES[r] || ROLES.base)[1]) || '#888');
+
+// ---------- laptop ----------
+function arcPts(o, cx, cy, r, a0, a1, n, concave) {
+  for (let i = 0; i <= n; i++) {
+    const a = (a0 + (a1 - a0) * i / n) * DEG, c = Math.cos(a), s = Math.sin(a);
+    o.push({ x: cx + r * c, y: cy + r * s, nx: concave ? -c : c, ny: concave ? -s : s });
+  }
+}
+function tidy(o) {
+  const same = (a, b) => Math.abs(a.x - b.x) < 1e-9 && Math.abs(a.y - b.y) < 1e-9 && Math.abs(a.nx - b.nx) < 1e-6 && Math.abs(a.ny - b.ny) < 1e-6;
+  const out = [];
+  for (const p of o) if (!out.length || !same(out[out.length - 1], p)) out.push(p);
+  if (out.length > 1 && same(out[0], out[out.length - 1])) out.pop();
+  return out;
+}
+function rrectOutline(x0, x1, y0, y1, r, n = 18) {
+  const o = [];
+  arcPts(o, x1 - r, y0 + r, r, -90, 0, n); arcPts(o, x1 - r, y1 - r, r, 0, 90, n);
+  arcPts(o, x0 + r, y1 - r, r, 90, 180, n); arcPts(o, x0 + r, y0 + r, r, 180, 270, n);
+  return tidy(o);
+}
+function notchedOutline() {
+  const { W, D, Rc, Ew, Rd, Rr } = g, o = [];
+  arcPts(o, W - Rc, Rc, Rc, -90, 0, 18); arcPts(o, W - Rc, D - Rc, Rc, 0, 90, 18);
+  o.push({ x: W - Ew, y: D, nx: 0, ny: 1 }, { x: W - Ew, y: D, nx: -1, ny: 0 });
+  arcPts(o, W - Ew - Rr, D - Rd + Rr, Rr, 0, -90, 6, true); arcPts(o, Ew + Rr, D - Rd + Rr, Rr, -90, -180, 6, true);
+  o.push({ x: Ew, y: D, nx: 1, ny: 0 }, { x: Ew, y: D, nx: 0, ny: 1 });
+  arcPts(o, Rc, D - Rc, Rc, 90, 180, 18); arcPts(o, Rc, Rc, Rc, 180, 270, 18);
+  return tidy(o);
+}
+// Vertical profile of a slab with rounded bottom (rb) and top (rt) edges, cut to [za, zb].
+function profile(z0, z1, rb, rt, za = z0, zb = z1) {
+  const pts = [];
+  for (let i = 0; i <= 10; i++) { const t = (-90 + 90 * i / 10) * DEG; pts.push({ z: z0 + rb + rb * Math.sin(t), ins: rb - rb * Math.cos(t), phi: t }); }
+  for (let i = 0; i <= 8; i++) { const t = (90 * i / 8) * DEG; pts.push({ z: z1 - rt + rt * Math.sin(t), ins: rt - rt * Math.cos(t), phi: t }); }
+  const lerp = (a, b, z) => { const u = (z - a.z) / ((b.z - a.z) || 1); return { z, ins: a.ins + (b.ins - a.ins) * u, phi: a.phi + (b.phi - a.phi) * u }; };
+  const out = [];
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i], q = pts[i + 1];
+    if (p.z >= za - 1e-9 && p.z <= zb + 1e-9) out.push(p);
+    if (q && p.z < za && q.z > za) out.push(lerp(p, q, za));
+    if (q && p.z < zb && q.z > zb) out.push(lerp(p, q, zb));
+  }
+  return out.sort((a, b) => a.z - b.z).filter((p, i, a) => i === 0 || p.z - a[i - 1].z > 1e-6);
+}
+function sweep(outline, prof) {
+  const N = outline.length, M = prof.length, pos = new Float32Array(N * M * 3), nor = new Float32Array(N * M * 3), idx = [];
+  for (let i = 0; i < N; i++) {
+    const p = outline[i];
+    for (let j = 0; j < M; j++) {
+      const q = prof[j], k = (i * M + j) * 3, c = Math.cos(q.phi), s = Math.sin(q.phi);
+      pos[k] = p.x - p.nx * q.ins; pos[k + 1] = p.y - p.ny * q.ins; pos[k + 2] = q.z;
+      nor[k] = p.nx * c; nor[k + 1] = p.ny * c; nor[k + 2] = s;
+    }
+  }
+  for (let i = 0; i < N; i++) {
+    const i2 = (i + 1) % N;
+    for (let j = 0; j < M - 1; j++) { const a = i * M + j, b = i2 * M + j, c = i2 * M + j + 1, d = i * M + j + 1; idx.push(a, b, c, a, c, d); }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); geo.setIndex(idx);
+  return geo;
+}
+function capGeo(pts2, z, up) {
+  const v = pts2.map(p => new THREE.Vector2(p[0], p[1]));
+  const faces = THREE.ShapeUtils.triangulateShape(v, []);
+  const pos = [], nor = [], idx = [];
+  v.forEach(p => { pos.push(p.x, p.y, z); nor.push(0, 0, up ? 1 : -1); });
+  for (const [a, b, c] of faces) {
+    const A = v[a], B = v[b], C = v[c], ccw = (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x) > 0;
+    if (ccw === up) idx.push(a, b, c); else idx.push(a, c, b);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); geo.setIndex(idx);
+  return geo;
+}
+const inset = (outline, d) => outline.map(p => [p.x - p.nx * d, p.y - p.ny * d]);
+
+const shell = [];  // laptop materials that go see-through
+const lapAlu = clippable(phys({ color: 0xc8cacd, metalness: 0.85, roughness: 0.38 }));
+const lapDark = clippable(phys({ color: 0x0c0d0f, roughness: 0.5 }));
+shell.push(lapAlu, lapDark);
+function addMesh(parent, geo, mat, opts = {}) {
+  const m = new THREE.Mesh(geo, mat); m.castShadow = opts.cast !== false; m.receiveShadow = true;
+  if (opts.name) m.userData.pick = opts.name;
+  parent.add(m); return m;
+}
+const lapPick = [];
+function buildLaptop() {
+  const { W, D, H, T, Rc, Rb, Rt, Re, Ew, Rd, Rr, Zr } = g;
+  const B = frames.base.content, L = frames.lid.content;
+  const full = rrectOutline(0, W, 0, D, Rc), notch = notchedOutline();
+  const base = new THREE.Group(); B.add(base);
+  addMesh(base, sweep(full, profile(0, H, Rb, Rt, 0, Zr + 0.05)), lapAlu);
+  addMesh(base, sweep(notch, profile(0, H, Rb, Rt, Zr, H)), lapAlu);
+  addMesh(base, capGeo(inset(full, Rb), 0, false), lapAlu);
+  addMesh(base, capGeo(inset(notch, Rt), H, true), lapAlu);
+  const ledge = [[W - Ew, D]]; const tmp = [];
+  arcPts(tmp, W - Ew - Rr, D - Rd + Rr, Rr, 0, -90, 6, true); arcPts(tmp, Ew + Rr, D - Rd + Rr, Rr, -90, -180, 6, true);
+  tmp.forEach(p => ledge.push([p.x, p.y])); ledge.push([Ew, D]);
+  addMesh(base, capGeo(ledge, Zr, true), lapAlu);
+  base.children.forEach(m => m.userData.pick = tr('body'));
+  lapPick.push(...base.children);
+
+  // keyboard well, keys, trackpad, speaker grilles
+  const kx0 = W / 2 - 138, kx1 = W / 2 + 138, ky1 = D - Rd - 14, ky0 = ky1 - 103;
+  const well = addMesh(B, capGeo(inset(rrectOutline(kx0 - 2, kx1 + 2, ky0 - 2, ky1 + 2, 3), 0), H + 0.01, true), lapDark, { cast: false });
+  const keyGeo = new THREE.RoundedBoxGeometry(1, 1, 1, 2, 0.12);
+  const rows = [[11, 14], [16.4, 14], [16.4, 14], [16.4, 13], [16.4, 12], [16.4, 9]];
+  const keys = []; let y = ky1;
+  rows.forEach(([h, n], r) => {
+    const widths = r === 0 ? Array(n).fill(1) : r === 1 ? [...Array(13).fill(1), 1.5] : r === 2 ? [1.5, ...Array(13).fill(1)] :
+      r === 3 ? [1.8, ...Array(11).fill(1), 1.8] : r === 4 ? [2.35, ...Array(10).fill(1), 2.35] : [1, 1, 1, 1.25, 5.1, 1.25, 1, 1, 1];
+    const tot = widths.reduce((a, b) => a + b, 0), unit = (kx1 - kx0 - (n - 1) * 1.8) / tot;
+    let x = kx0;
+    widths.forEach(w => { const kw = w * unit; keys.push([x + kw / 2, y - h / 2, kw, h]); x += kw + 1.8; });
+    y -= h + 1.8;
+  });
+  const keyMat = clippable(phys({ color: 0x141518, roughness: 0.55 })); shell.push(keyMat);
+  const inst = new THREE.InstancedMesh(keyGeo, keyMat, keys.length); const mtx = new THREE.Matrix4();
+  keys.forEach(([cx, cy, kw, kh], i) => { mtx.compose(new THREE.Vector3(cx, cy, H + 0.25), new THREE.Quaternion(), new THREE.Vector3(kw, kh, 0.6)); inst.setMatrixAt(i, mtx); });
+  inst.receiveShadow = true; B.add(inst);
+  const padMat = clippable(phys({ color: 0xbfc2c6, metalness: 0.4, roughness: 0.22, clearcoat: 0.6 })); shell.push(padMat);
+  addMesh(B, capGeo(inset(rrectOutline(W / 2 - 80, W / 2 + 80, 12, 112, 6), 0), H + 0.02, true), padMat, { cast: false });
+  const grill = document.createElement('canvas'); grill.width = 64; grill.height = 64; const gc = grill.getContext('2d');
+  gc.fillStyle = '#9a9da1'; gc.fillRect(0, 0, 64, 64); gc.fillStyle = '#2a2b2e';
+  for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { gc.beginPath(); gc.arc(4 + i * 8 + (j % 2) * 4, 4 + j * 8, 1.6, 0, 7); gc.fill(); }
+  const gtex = new THREE.CanvasTexture(grill); gtex.wrapS = gtex.wrapT = THREE.RepeatWrapping; gtex.repeat.set(4, 14); gtex.encoding = THREE.sRGBEncoding;
+  const grillMat = clippable(phys({ map: gtex, metalness: 0.6, roughness: 0.5 })); shell.push(grillMat);
+  for (const [a, b] of [[10, 34], [W - 34, W - 10]]) {
+    const q = new THREE.PlaneGeometry(b - a, ky1 - ky0); q.translate((a + b) / 2, (ky0 + ky1) / 2, H + 0.02);
+    addMesh(B, q, grillMat, { cast: false });
+  }
+  // ports on the left side (positions are estimates until the new model is measured)
+  const portMat = new THREE.MeshBasicMaterial({ color: 0x050506, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 });
+  for (const p of DS.ports_left || []) {
+    const s = new THREE.Shape(); const r = Math.min(p.w, p.h) / 2, w = p.w / 2, h = p.h / 2;
+    s.absarc(w - r, h - r, r, 0, Math.PI / 2); s.absarc(-w + r, h - r, r, Math.PI / 2, Math.PI);
+    s.absarc(-w + r, -h + r, r, Math.PI, 1.5 * Math.PI); s.absarc(w - r, -h + r, r, 1.5 * Math.PI, 2 * Math.PI);
+    const geo = new THREE.ShapeGeometry(s, 12);
+    geo.applyMatrix4(new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0)));
+    geo.translate(-0.03, p.y, p.z);
+    const m = addMesh(B, geo, portMat, { cast: false }); m.userData.pick = p.name + tr('port');
+    lapPick.push(m);
+  }
+  // rubber feet (approximate)
+  const footMat = clippable(phys({ color: 0x1e1f22, roughness: 0.95 }));
+  for (const [fx, fy] of DS.feet || [[24, 24], [W - 24, 24], [24, D - 26], [W - 24, D - 26]]) {
+    const f = new THREE.CylinderGeometry(5.5, 5.5, 1.6, 32); f.rotateX(Math.PI / 2); f.translate(fx, fy, -0.8);
+    addMesh(B, f, footMat);
+  }
+
+  // lid (closed-lid coordinates; the lid frame turns it about the hinge axis)
+  const lidOut = rrectOutline(0, W, 0, D, Rc);
+  const lid = new THREE.Group(); L.add(lid);
+  addMesh(lid, sweep(lidOut, profile(H, H + T, Re, Re)), lapAlu);
+  addMesh(lid, capGeo(inset(lidOut, Re), H + T, true), lapAlu);
+  const glassMat = clippable(phys({ color: 0x050506, roughness: 0.08, clearcoat: 1 })); shell.push(glassMat);
+  addMesh(lid, capGeo(inset(lidOut, Re), H, false), glassMat);
+  lid.children.forEach(m => m.userData.pick = tr('screen')); lapPick.push(...lid.children);
+  const scr = new THREE.BufferGeometry(), x0 = 4.5, x1 = W - 4.5, y0 = 5.5, y1 = D - 9.5, z = H - 0.12;
+  scr.setAttribute('position', new THREE.Float32BufferAttribute([x0, y0, z, x1, y0, z, x1, y1, z, x0, y1, z], 3));
+  scr.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 1, 1, 1, 0, 0, 0], 2));
+  scr.setIndex([0, 2, 1, 0, 3, 2]); scr.computeVertexNormals();
+  const scrMat = clippable(new THREE.MeshBasicMaterial({ map: screenTexture(), toneMapped: false, transparent: true, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }));
+  shell.push(scrMat);
+  const scrMesh = addMesh(lid, scr, scrMat, { cast: false }); scrMesh.userData.pick = tr('screen');
+  // the hinge axis itself, drawn as a dashed line
+  const ax = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-40, AY, AZ), new THREE.Vector3(70, AY, AZ)]);
+  axisLine = new THREE.Line(ax, new THREE.LineDashedMaterial({ color: 0xd9691f, dashSize: 2, gapSize: 1.4, depthTest: false, transparent: true, opacity: 0.9 }));
+  axisLine.computeLineDistances(); axisLine.renderOrder = 10; B.add(axisLine);
+}
+let axisLine;
+function screenTexture() {
+  const c = document.createElement('canvas'); c.width = 1600; c.height = 1040; const x = c.getContext('2d');
+  const gr = x.createLinearGradient(0, 0, 1600, 1040); gr.addColorStop(0, '#16324f'); gr.addColorStop(0.5, '#2c6e83'); gr.addColorStop(1, '#e2b07a');
+  x.fillStyle = gr; x.fillRect(0, 0, 1600, 1040);
+  x.globalAlpha = 0.35; x.fillStyle = '#f3d9a8'; x.beginPath(); x.ellipse(1150, 760, 520, 260, -0.4, 0, 7); x.fill();
+  x.fillStyle = '#0d2236'; x.beginPath(); x.ellipse(380, 240, 600, 220, 0.3, 0, 7); x.fill(); x.globalAlpha = 1;
+  x.fillStyle = 'rgba(255,255,255,0.22)'; x.fillRect(0, 0, 1600, 38);
+  x.fillStyle = 'rgba(255,255,255,0.85)'; x.font = '600 20px -apple-system, Helvetica, sans-serif'; x.fillText(tr('menubar'), 34, 26);
+  x.fillStyle = '#000'; const rr = (X, Y, w, h, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.fill(); };
+  rr(800 - 95, 7, 190, 42, 21);
+  x.fillStyle = 'rgba(255,255,255,0.28)'; rr(430, 950, 740, 74, 22);
+  const cols = ['#5ac8fa', '#34c759', '#ff9f0a', '#ff375f', '#bf5af2', '#64d2ff', '#ffd60a', '#30d158', '#0a84ff', '#ff6482', '#8e8e93'];
+  cols.forEach((col, i) => { x.fillStyle = col; rr(450 + i * 64, 962, 50, 50, 12); });
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
+}
+
+// ---------- device parts ----------
+// Shapes are written in the design's coordinates. "axis" says which axis a round or extruded shape runs along.
+const AXIS_BASIS = {
+  x: new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0)),
+  y: new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0)),
+  z: new THREE.Matrix4(),
+};
+const axisIdx = { x: 0, y: 1, z: 2 };
+function ringShape(r, ri, a0 = 0, a1 = 360) {
+  const s = new THREE.Shape(), full = Math.abs(a1 - a0) >= 360;
+  if (full) {
+    s.absarc(0, 0, r, 0, 2 * Math.PI, false);
+    if (ri > 0) { const h = new THREE.Path(); h.absarc(0, 0, ri, 0, 2 * Math.PI, true); s.holes.push(h); }
+  } else {
+    const A0 = a0 * DEG, A1 = a1 * DEG;
+    if (ri > 0) { s.moveTo(ri * Math.cos(A0), ri * Math.sin(A0)); s.absarc(0, 0, r, A0, A1, false); s.absarc(0, 0, ri, A1, A0, true); }
+    else { s.moveTo(0, 0); s.absarc(0, 0, r, A0, A1, false); s.lineTo(0, 0); }
+  }
+  return s;
+}
+function placeAlong(geo, axis, c, w0) {
+  geo.applyMatrix4(AXIS_BASIS[axis]);
+  const t = [c[0], c[1], c[2]]; t[axisIdx[axis]] = w0; geo.translate(t[0], t[1], t[2]); return geo;
+}
+function shapeGeo(s) {
+  switch (s.type) {
+    case 'cyl': {
+      const bevel = s.bevel || 0;
+      const geo = new THREE.ExtrudeGeometry(ringShape(s.r, s.ri || 0, s.a0 ?? 0, s.a1 ?? 360), {
+        depth: s.h - 2 * bevel, bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 2, curveSegments: 64 });
+      if (bevel) geo.translate(0, 0, bevel);
+      return placeAlong(geo, s.axis || 'x', s.c, s.c[axisIdx[s.axis || 'x']] - s.h / 2);
+    }
+    case 'prism': {
+      const sh = new THREE.Shape(s.poly.map(p => new THREE.Vector2(p[0], p[1])));
+      for (const hole of s.holes || []) sh.holes.push(new THREE.Path(hole.map(p => new THREE.Vector2(p[0], p[1]))));
+      const bevel = s.bevel || 0, w0 = s.w0 ?? s.x0, w1 = s.w1 ?? s.x1;
+      const geo = new THREE.ExtrudeGeometry(sh, { depth: Math.max(0.01, w1 - w0 - 2 * bevel), bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 2, curveSegments: 24 });
+      if (bevel) geo.translate(0, 0, bevel);
+      return placeAlong(geo, s.axis || 'x', [0, 0, 0], w0);
+    }
+    case 'box': {
+      const [sx, sy, sz] = s.s, r = Math.min(s.r || 0, sx / 2 - 1e-3, sy / 2 - 1e-3, sz / 2 - 1e-3);
+      const geo = r > 0 ? new THREE.RoundedBoxGeometry(sx, sy, sz, 3, r) : new THREE.BoxGeometry(sx, sy, sz);
+      const e = new THREE.Euler((s.rx || 0) * DEG, (s.ry || 0) * DEG, (s.rz || 0) * DEG);
+      geo.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(e)); geo.translate(s.c[0], s.c[1], s.c[2]); return geo;
+    }
+    case 'sphere': { const geo = new THREE.SphereGeometry(s.r, 32, 20); geo.translate(...s.c); return geo; }
+    case 'tube': {
+      const curve = new THREE.CatmullRomCurve3(s.pts.map(p => new THREE.Vector3(...p)));
+      return new THREE.TubeGeometry(curve, Math.max(24, s.pts.length * 16), s.r, 14, false);
+    }
+    case 'spring': {
+      const ax = s.axis || 'x', turns = s.turns, pitch = s.pitch, rm = s.rm, [tr, ta] = Array.isArray(s.wire) ? s.wire : [s.wire, s.wire];
+      const ph = (s.phase || 0) * DEG, hand = s.left ? -1 : 1, len = turns * pitch;
+      class Helix extends THREE.Curve {
+        getPoint(t, out = new THREE.Vector3()) { const a = ph + hand * 2 * Math.PI * turns * t; return out.set(rm * Math.cos(a), rm * Math.sin(a), len * t); }
+      }
+      const sec = new THREE.Shape(); sec.moveTo(-tr / 2, -ta / 2); sec.lineTo(tr / 2, -ta / 2); sec.lineTo(tr / 2, ta / 2); sec.lineTo(-tr / 2, ta / 2); sec.lineTo(-tr / 2, -ta / 2);
+      const geo = new THREE.ExtrudeGeometry(sec, { steps: Math.ceil(turns * 72), bevelEnabled: false, extrudePath: new Helix() });
+      return placeAlong(geo, ax, s.c, s.x0 ?? s.w0 ?? (s.c[axisIdx[ax]] - len / 2));
+    }
+    case 'torus': { const geo = new THREE.TorusGeometry(s.R, s.r, 16, 64); return placeAlong(geo, s.axis || 'x', s.c, s.c[axisIdx[s.axis || 'x']]); }
+  }
+  throw new Error('unknown shape ' + s.type);
+}
+
+const parts = [];   // {def, group, motion, inner, meshes, real, role}
+const pickables = [];
+function buildPart(def) {
+  const fr = frames[def.frame] || frames.base;
+  const group = new THREE.Group(), motion = new THREE.Group(), inner = new THREE.Group();
+  group.add(motion); motion.add(inner); fr.content.add(group);
+  const mv = def.motion;
+  if (mv && mv.type === 'rotate') { motion.position.set(...mv.c); inner.position.set(-mv.c[0], -mv.c[1], -mv.c[2]); }
+  const real = clippable(phys(Object.assign({}, FIN[def.mat] || FIN.steel)));
+  const role = clippable(phys({ color: roleColor(def.role), roughness: 0.42, metalness: 0.1 }));
+  const cap = new THREE.MeshBasicMaterial({ map: hatchTex(), toneMapped: false, side: THREE.DoubleSide, stencilWrite: true, stencilRef: 0,
+    stencilFunc: THREE.NotEqualStencilFunc, stencilFail: THREE.ReplaceStencilOp, stencilZFail: THREE.ReplaceStencilOp, stencilZPass: THREE.ReplaceStencilOp });
+  const order = 100 + 2 * parts.length, meshes = [];
+  for (const s of def.shapes) {
+    let geo; try { geo = shapeGeo(s); } catch (e) { console.warn(def.id, e); continue; }
+    const m = new THREE.Mesh(geo, role); m.castShadow = true; m.receiveShadow = true; m.userData.part = def.id;
+    inner.add(m); meshes.push(m); pickables.push(m);
+    if (s.type === 'tube') continue;   // open-ended, so it cannot be counted as a solid
+    for (const sm of STENCIL) { const c = new THREE.Mesh(geo, sm); c.visible = false; c.renderOrder = order; inner.add(c); capMeshes.push(c); }
+  }
+  const face = new THREE.Mesh(cutGeo, cap); face.visible = false; face.renderOrder = order + 1;
+  face.onAfterRender = r => r.clearStencil(); capGroup.add(face); capMeshes.push(face);
+  const p = { def, group, motion, inner, meshes, real, role, cap };
+  parts.push(p); return p;
+}
+
+// ---------- state ----------
+const state = { lid: 110, rotor: 110, lock: 0, explode: 0, shell: false, finish: false, labels: true, cut: false, wob: 0 };
+const MOTION_SCALE = DS.motion_scale || 1;
+function applyState() {
+  frames.lid.pivot.rotation.x = -(state.lid + state.wob) * DEG;
+  frames.rotor.pivot.rotation.x = -(state.rotor + (state.lock > 0.5 ? 0 : state.wob) + state.rotorWob) * DEG;
+  const t = state.explode;
+  for (const p of parts) {
+    const e = p.def.explode || [0, 0, 0]; p.group.position.set(e[0] * t, e[1] * t, e[2] * t);
+    // Lock motions are micrometres in reality; they are drawn MOTION_SCALE times larger so the eye can follow them.
+    // A part may set its own motion.scale (e.g. 1 for a cam that really travels a millimetre).
+    const mv = p.def.motion, k = state.lock * (mv && mv.scale != null ? mv.scale : MOTION_SCALE);
+    if (mv && mv.type === 'translate') p.motion.position.set(mv.d[0] * k, mv.d[1] * k, mv.d[2] * k);
+    if (mv && mv.type === 'rotate') p.motion.rotation.x = (mv.deg || 0) * DEG * k;
+  }
+  const locked = state.lock > 0.5;
+  $('#state').classList.toggle('locked', locked);
+  $('#stateT').textContent = locked ? tr('locked') : tr('free');
+  $('#stateD').textContent = locked ? (DS.lockedText || tr('lockedD')) : (DS.freeText || tr('freeD'));
+}
+state.rotorWob = 0;
+function setShell(on) {
+  state.shell = on; $('#tShell').setAttribute('aria-pressed', on);
+  for (const m of shell) { m.transparent = on || m === shell.find(x => x.map && x.map.image && x.map.image.width === 1600); m.opacity = on ? 0.16 : 1; m.depthWrite = !on; m.needsUpdate = true; }
+}
+function setFinish(real) {
+  state.finish = real; $('#tFinish').setAttribute('aria-pressed', real);
+  for (const p of parts) p.meshes.forEach(m => m.material = real ? p.real : p.role);
+  updateCaps(); highlight(selected);
+}
+// What a cut through each material looks like (black coatings are only skin deep).
+const CUT_RAW = { ti_black: 0x8e9096, alu_black: 0xb7babe, cfrp: 0x3b3e44, chip: 0x34363a, cable: 0x4a4d52, rubber: 0x3a3c40, glass: 0x2a2e33 };
+function updateCaps() {
+  for (const p of parts) {
+    const c = state.finish ? new THREE.Color(CUT_RAW[p.def.mat] ?? (FIN[p.def.mat] || FIN.steel).color) : roleColor(p.def.role);
+    p.cap.color = c.convertSRGBToLinear();   // caps are unlit, so show the colour as written
+  }
+}
+function setLabels(on) { state.labels = on; $('#tLabels').setAttribute('aria-pressed', on); $('#labels').hidden = !on; $('#leaders').style.display = on ? '' : 'none'; }
+
+// ---------- selection ----------
+let selected = null;
+function highlight(id) {
+  for (const p of parts) {
+    const on = p.def.id === id;
+    for (const m of [p.real, p.role]) { m.emissive = new THREE.Color(on ? css('--lock') : '#000'); m.emissiveIntensity = on ? 0.35 : 0; }
+  }
+}
+function select(id, fly) {
+  selected = id; highlight(id);
+  $$('ul.parts button').forEach(b => b.setAttribute('aria-current', b.dataset.id === id ? 'true' : 'false'));
+  $$('.balloon').forEach(b => b.classList.toggle('sel', b.dataset.id === id));
+  if (id && fly) {
+    const p = parts.find(q => q.def.id === id); if (!p) return;
+    const box = new THREE.Box3(); p.meshes.forEach(m => box.expandByObject(m));
+    const c = box.getCenter(new THREE.Vector3()), r = Math.max(6, box.getSize(new THREE.Vector3()).length());
+    const dir = camera.position.clone().sub(controls.target).normalize();
+    flyTo(c, c.clone().add(dir.multiplyScalar(r * 3.2 + 30)));
+  }
+}
+
+// ---------- camera moves ----------
+const VIEWS = Object.assign({
+  whole: { target: [178, 172, 92], cam: [-330, -400, 470], r: 245 },
+  corner: { target: [-2, 238, 9], cam: [-118, 336, 92], r: 34 },
+  inside: { target: [-2, 240, 8], cam: [-70, 268, 150], r: 26 },
+}, DS.views || {});
+$$('[data-view]').forEach(b => { if (!VIEWS[b.dataset.view]) b.hidden = true; });   // older designs have no "under" view
+// Camera position for a view: along the view's direction, far enough that a ball of radius r fits the stage.
+function viewPose(v) {
+  const t = m2t(...v.target), c = m2t(...v.cam), dir = c.clone().sub(t), d0 = dir.length(); dir.normalize();
+  if (!v.r) return [t, c];
+  const vf = camera.fov * DEG, hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect);
+  const d = Math.max(v.r / Math.sin(Math.min(vf, hf) / 2), 1);
+  return [t, t.clone().add(dir.multiplyScalar(d || d0))];
+}
+let fly = null;
+function flyTo(target, pos, ms = 1100) {
+  if (reduceMotion) { controls.target.copy(target); camera.position.copy(pos); return; }
+  fly = { t0: performance.now(), ms, a: controls.target.clone(), b: target.clone(), p: camera.position.clone(), q: pos.clone() };
+}
+function goView(name, ms) {
+  const v = VIEWS[name]; if (!v) return;
+  $$('[data-view]').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === name));
+  const [t, c] = viewPose(v); flyTo(t, c, ms);
+  state.cut = name === 'inside'; setClip(state.cut);
+}
+const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+// ---------- a finger and a push arrow for the demos (they ride on the lid) ----------
+const finger = new THREE.Group();
+{
+  const skin = phys({ color: 0xd9a58a, roughness: 0.65 });
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(7.5, 8, 60, 32), skin); body.rotation.x = Math.PI / 2; body.position.z = -34;
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(7.5, 32, 16), skin); tip.position.z = -4;
+  finger.add(body, tip); finger.visible = false; finger.traverse(o => o.castShadow = true);
+  frames.lid.content.add(finger);
+}
+const FINGER_AT = DS.finger_at || [70, 22];   // closed-lid x, y of the tap point (top-left of the screen)
+function placeFinger(gap) { finger.position.set(FINGER_AT[0], FINGER_AT[1], g.H - 3.5 - gap); finger.rotation.set(0, 0, 0); }
+const pushArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(g.W / 2, 4, g.H - 46), 40, 0xd9691f, 12, 8);
+pushArrow.visible = false; frames.lid.content.add(pushArrow);
+
+// ---------- wobble physics (for the demos) ----------
+const PH = Object.assign({ I: 0.012, k_hinge: 20, zeta: 0.08, k_locked: 150, zeta_locked: 0.12, tap_N: 1, tap_ms: 60, lever_m: 0.24, exaggerate: 10 }, DS.physics || {});
+let sim = null;   // {k, c, th, om, t, onDone}
+function startTap(locked, onDone) {
+  const k = locked ? PH.k_locked : PH.k_hinge, z = locked ? PH.zeta_locked : PH.zeta;
+  sim = { k, c: 2 * z * Math.sqrt(k * PH.I), th: 0, om: 0, t: 0, peak: 0, onDone, locked };
+}
+function stepSim(dt) {
+  if (!sim) return;
+  const h = 0.0005; let n = Math.ceil(dt / h);
+  while (n--) {
+    const tauT = sim.t < PH.tap_ms / 1000 ? PH.tap_N * PH.lever_m * Math.sin(Math.PI * sim.t / (PH.tap_ms / 1000)) : 0;
+    const acc = (tauT - sim.k * sim.th - sim.c * sim.om) / PH.I;
+    sim.om += acc * h; sim.th += sim.om * h; sim.t += h;
+    sim.peak = Math.max(sim.peak, sim.th);
+  }
+  const mm = sim.th * PH.lever_m * 1000;
+  state.wob = sim.th / DEG * PH.exaggerate;
+  $('#readout').textContent = tr('readout')(mm >= 0 ? tr('back') : tr('fwd'), Math.abs(mm).toFixed(2), (sim.peak * PH.lever_m * 1000).toFixed(2));
+  if (sim.t > 1.0) { state.wob = 0; const d = sim.onDone; sim = null; d && d(); }
+}
+
+// ---------- labels ----------
+const svg = $('#leaders'), labelLayer = $('#labels');
+const labelEls = new Map();
+function buildLabels() {
+  for (const p of parts) {
+    if (!p.def.anchor) continue;
+    const b = document.createElement('button'); b.className = 'balloon'; b.textContent = p.def.id; b.dataset.id = p.def.id;
+    b.title = p.def.name; b.setAttribute('aria-label', `${p.def.id} ${p.def.name}`);
+    b.addEventListener('click', () => { showTab('parts'); select(p.def.id, true); });
+    labelLayer.appendChild(b);
+    const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line'); svg.appendChild(ln);
+    labelEls.set(p.def.id, { b, ln, p });
+  }
+}
+const tmpV = new THREE.Vector3();
+function project(obj, pt) {
+  tmpV.set(pt[0], pt[1], pt[2]); obj.localToWorld(tmpV);
+  const cut = clipPlane.distanceToPoint(tmpV);   // mm behind the section plane (negative = on the side that is cut away)
+  tmpV.project(camera);
+  const r = stage.getBoundingClientRect();
+  return { x: (tmpV.x + 1) / 2 * r.width, y: (1 - tmpV.y) / 2 * r.height, vis: tmpV.z < 1 && Math.abs(tmpV.x) < 1.2 && Math.abs(tmpV.y) < 1.2, cut };
+}
+function updateLabels() {
+  if (!state.labels) return;
+  const near = camera.position.distanceTo(controls.target) < 420;
+  const placed = [], box = stage.getBoundingClientRect();
+  const order = [...labelEls.values()].sort((u, v) => (u.p.def.level || 1) - (v.p.def.level || 1));
+  for (const { b, ln, p } of order) {
+    const lvl = p.def.level || 1;
+    const wanted = lvl <= 1 || state.explode > 0.35 || selected === p.def.id;
+    const a = project(p.inner, p.def.anchor);
+    let l = project(p.inner, p.def.label || p.def.anchor);
+    // Close-up section view: the usual balloon spot is often off-screen, so park the balloon right next to the part.
+    if (state.cut && a.vis && !(l.vis && l.x > 24 && l.y > 24 && l.x < box.width - 24 && l.y < box.height - 24)) l = { x: a.x + 16, y: a.y - 16, vis: true };
+    let show = near && wanted && a.vis && l.vis;
+    // In the section view only label parts that sit at the cut; far-away parts would float over the cut faces.
+    if (show && state.cut && selected !== p.def.id && (a.cut < -2.5 || a.cut > 6)) show = false;
+    if (show && selected !== p.def.id && placed.some(q => Math.hypot(q.x - l.x, q.y - l.y) < 28)) show = false;
+    b.hidden = !show; ln.style.display = show ? '' : 'none';
+    if (!show) continue;
+    placed.push(l);
+    b.style.left = l.x + 'px'; b.style.top = l.y + 'px';
+    ln.setAttribute('x1', a.x); ln.setAttribute('y1', a.y); ln.setAttribute('x2', l.x); ln.setAttribute('y2', l.y);
+  }
+}
+
+// ---------- scale bar: how long 1 / 10 / 100 mm looks at the point we orbit around ----------
+const scaleBar = $('#scaleBar'), scaleT = $('#scaleT');
+function updateScale() {
+  const r = stage.getBoundingClientRect(), t = controls.target.clone(), right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+  const a = t.clone().project(camera), b = t.clone().add(right.multiplyScalar(10)).project(camera);
+  const px10 = Math.abs(b.x - a.x) / 2 * r.width;
+  let mm = 10; if (px10 < 24) mm = 100; else if (px10 > 220) mm = 1;
+  scaleBar.style.width = (px10 * mm / 10).toFixed(1) + 'px'; scaleT.textContent = mm + ' mm';
+}
+
+// ---------- force path glow ----------
+const flow = { on: false, dots: [] };
+function buildFlow() {
+  const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(css('--lock')), depthTest: false, transparent: true });
+  for (let i = 0; i < 14; i++) { const d = new THREE.Mesh(new THREE.SphereGeometry(0.55, 12, 8), mat); d.renderOrder = 20; d.visible = false; scene.add(d); flow.dots.push(d); }
+  flow.mat = mat;
+}
+function flowPoints() {
+  return (DS.force_path || []).map(q => { const fr = frames[q.frame] || frames.base; const v = new THREE.Vector3(...q.p); fr.content.localToWorld(v); return v; });
+}
+function updateFlow(time) {
+  const pts = flow.on ? flowPoints() : [];
+  if (pts.length < 2) { flow.dots.forEach(d => d.visible = false); return; }
+  const seg = []; let tot = 0;
+  for (let i = 0; i < pts.length - 1; i++) { const l = pts[i].distanceTo(pts[i + 1]); seg.push(l); tot += l; }
+  flow.dots.forEach((d, i) => {
+    let s = ((time / 1600 + i / flow.dots.length) % 1) * tot, k = 0;
+    while (k < seg.length - 1 && s > seg[k]) { s -= seg[k]; k++; }
+    d.position.lerpVectors(pts[k], pts[k + 1], Math.min(1, s / seg[k])); d.visible = true;
+  });
+}
+
+// ---------- story ----------
+const STEPS = DS.steps && DS.steps.length ? DS.steps : [
+  { title: '它装在哪', text: '在电脑左后角，紧挨着屏幕的转轴。', view: 'whole', lid: 110 },
+  { title: '平时：松开', text: '它跟着屏幕一起转，你开合屏幕时感觉不到它。', view: 'corner', lid: 110, play: 'swing' },
+  { title: '没装的时候点屏幕', text: '屏幕被推开，再来回晃几下。动作放大 10 倍。', view: 'whole', lid: 110, play: 'tapFree' },
+  { title: '装了以后点屏幕', text: '它提前锁住，屏幕几乎不动。', view: 'whole', lid: 110, lock: 1, play: 'tapLocked' },
+  { title: '力是怎么走的', text: '手指的力从屏幕传进它，再传回机身。', view: 'corner', lid: 110, lock: 1, play: 'flow' },
+  { title: '想调角度：自动松开', text: '它感觉到你在推屏幕、而手指不在屏幕上，就马上松开。', view: 'corner', lid: 110, play: 'pushRelease' },
+  { title: '拆开看', text: '每个零件都拉开一点，点零件看说明。', view: 'corner', lid: 110, explode: 1 },
+  { title: '剖开看', text: '沿转轴切开，看看里面。', view: 'inside', lid: 110 },
+];
+let curStep = -1, playToken = 0;
+function buildSteps() {
+  const ol = $('#steps'); ol.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const li = document.createElement('li'), b = document.createElement('button');
+    b.innerHTML = `<span class="n">${i + 1}</span><span><span class="t"></span><span class="d"></span></span>`;
+    b.querySelector('.t').textContent = s.title; b.querySelector('.d').textContent = s.text;
+    b.addEventListener('click', () => runStep(i)); li.appendChild(b); ol.appendChild(li);
+  });
+}
+const tw = [];   // simple value tweens
+function tweenTo(key, to, ms = 900) {
+  if (reduceMotion || ms === 0) { state[key] = to; syncInputs(); return; }
+  for (let i = tw.length - 1; i >= 0; i--) if (tw[i].key === key) tw.splice(i, 1);
+  tw.push({ key, from: state[key], to, t0: performance.now(), ms });
+}
+const wait = ms => new Promise(r => setTimeout(r, reduceMotion ? Math.min(ms, 200) : ms));
+async function runStep(i) {
+  const s = STEPS[i], token = ++playToken; curStep = i;
+  $$('ol.steps button').forEach((b, k) => { if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+  sim = null; state.wob = 0; state.rotorWob = 0; flow.on = false; $('#readout').textContent = '';
+  finger.visible = false; pushArrow.visible = false;
+  $('#caption').innerHTML = ''; const cap = document.createElement('span'); cap.textContent = s.text; $('#caption').appendChild(cap);
+  if (s.view) goView(s.view);
+  tweenTo('lid', s.lid ?? state.lid); tweenTo('rotor', s.lid ?? state.lid);
+  tweenTo('explode', s.explode ?? 0, 900);
+  tweenTo('lock', s.lock ?? 0, 250);
+  if (s.shell !== undefined) setShell(s.shell);
+  if (s.select) select(s.select, false);
+  await wait(1200); if (token !== playToken) return;
+  await play(s.play, token);
+}
+async function play(kind, token) {
+  const alive = () => token === playToken;
+  if (kind === 'tapFree' || kind === 'tapLocked') {
+    finger.visible = true;
+    for (let n = 0; n < 2 && alive(); n++) {
+      fingerGap = 30; tweenFinger(0, 220); await wait(230); if (!alive()) break;
+      const done = new Promise(r => startTap(kind === 'tapLocked', r));
+      await wait(PH.tap_ms + 40); tweenFinger(30, 300);
+      await done; await wait(500);
+    }
+    finger.visible = false;
+  } else if (kind === 'swing') {
+    for (const a of [92, 125, 110]) { if (!alive()) return; tweenTo('lid', a, 1300); tweenTo('rotor', a, 1300); await wait(1500); }
+  } else if (kind === 'flow') {
+    flow.on = true;
+  } else if (kind === 'pushRelease') {
+    tweenTo('lock', 1, 200); await wait(900); if (!alive()) return;
+    pushArrow.visible = true;
+    setCaption(DS.pushText || tr('push'));
+    await wait(1300); if (!alive()) { pushArrow.visible = false; return; }
+    tweenTo('lock', 0, 150); setCaption(DS.releaseText || tr('release'));
+    tweenTo('lid', 124, 1400); tweenTo('rotor', 124, 1400); await wait(1500);
+    pushArrow.visible = false; await wait(300); if (!alive()) return;
+    tweenTo('lock', 1, 200); setCaption(DS.relockText || tr('relock'));
+  } else if (kind === 'close') {
+    tweenTo('lock', 0, 150); tweenTo('lid', 0, 2200); tweenTo('rotor', 0, 2200); await wait(2600); if (!alive()) return;
+    tweenTo('lid', 110, 2200); tweenTo('rotor', 110, 2200);
+  }
+}
+function setCaption(t) { $('#caption').textContent = t; }
+let fingerGap = 30, fingerTw = null;
+function tweenFinger(to, ms) { fingerTw = { from: fingerGap, to, t0: performance.now(), ms }; }
+
+// ---------- panel ----------
+function showTab(name) {
+  for (const t of ['how', 'parts', 'nums']) {
+    $('#tab-' + t).setAttribute('aria-selected', t === name); $('#body-' + t).hidden = t !== name;
+  }
+}
+function buildPanel() {
+  $('#legend').innerHTML = '';
+  const used = new Set(DS.parts.map(p => p.role || 'base'));
+  for (const [k, [label, v]] of Object.entries(ROLES)) {
+    if (!used.has(k)) continue;
+    const s = document.createElement('span'); s.innerHTML = `<i style="background:var(${v})"></i>`; s.appendChild(document.createTextNode(label)); $('#legend').appendChild(s);
+  }
+  const ul = $('#parts'); ul.innerHTML = '';
+  let lastGroup = null;
+  const FRAME_GROUP = { lid: tr('g_lid'), rotor: tr('g_rotor'), base: tr('g_base') };
+  for (const p of DS.parts) {
+    const grp = p.group || FRAME_GROUP[p.frame] || tr('g_part');
+    if (grp !== lastGroup) {
+      lastGroup = grp;
+      const h = document.createElement('li'); h.className = 'grp'; h.textContent = grp; ul.appendChild(h);
+    }
+    const li = document.createElement('li'), b = document.createElement('button'); b.dataset.id = p.id;
+    b.innerHTML = `<span class="num"></span><span><span class="nm"></span><i class="sw"></i><span class="kid"></span><span class="more"><dl></dl></span></span>`;
+    b.querySelector('.num').textContent = p.id; b.querySelector('.nm').textContent = p.name;
+    b.querySelector('.sw').style.background = `var(${(ROLES[p.role] || ROLES.base)[1]})`;
+    b.querySelector('.kid').textContent = p.kid || '';
+    const dl = b.querySelector('dl');
+    for (const [k, v] of [[tr('k_detail'), p.detail], [tr('k_material'), p.material || p.mat_zh], [tr('k_size'), p.size], [tr('k_moves'), p.moves], [tr('k_joins'), p.joins]]) {
+      if (!v) continue; const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = k; dd.textContent = v; dl.append(dt, dd);
+    }
+    b.addEventListener('click', () => select(selected === p.id ? null : p.id, selected !== p.id));
+    li.appendChild(b); ul.appendChild(li);
+  }
+  const dl = $('#nums'); dl.innerHTML = '';
+  for (const n of DS.numbers || []) {
+    const row = document.createElement('div'); row.className = 'row';
+    const k = document.createElement('dt'), v = document.createElement('dd');
+    k.textContent = n.k; v.textContent = n.v; v.className = 'v'; row.append(k, v);
+    if (n.note) { const c = document.createElement('dd'); c.className = 'note'; c.textContent = n.note; row.append(c); }
+    dl.appendChild(row);
+  }
+  $('#caveat').textContent = DS.caveat || tr('caveat');
+}
+
+// ---------- inputs ----------
+function syncInputs() {
+  $('#lid').value = Math.round(state.lid); $('#lidO').textContent = Math.round(state.lid) + '°';
+  $('#explode').value = Math.round(state.explode * 100); $('#explodeO').textContent = Math.round(state.explode * 100) + '%';
+}
+$('#lid').addEventListener('input', e => { playToken++; state.lid = +e.target.value; if (state.lock < 0.5) state.rotor = state.lid; syncInputs(); });
+$('#explode').addEventListener('input', e => { state.explode = +e.target.value / 100; syncInputs(); });
+$$('[data-view]').forEach(b => b.addEventListener('click', () => goView(b.dataset.view)));
+$('#tShell').addEventListener('click', () => setShell(!state.shell));
+$('#tFinish').addEventListener('click', () => setFinish(!state.finish));
+$('#tLabels').addEventListener('click', () => setLabels(!state.labels));
+for (const t of ['how', 'parts', 'nums']) $('#tab-' + t).addEventListener('click', () => showTab(t));
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+let downAt = null;
+canvas.addEventListener('pointerdown', e => downAt = [e.clientX, e.clientY]);
+canvas.addEventListener('pointerup', e => {
+  if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 5) return;
+  const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hits = ray.intersectObjects(pickables.concat(lapPick), false).filter(h => !state.cut || clipPlane.distanceToPoint(h.point) >= 0);
+  const h = hits[0];
+  if (h && h.object.userData.part) { showTab('parts'); select(h.object.userData.part, false); }
+  else { select(null); if (h && h.object.userData.pick) setCaption(h.object.userData.pick); }
+});
+
+// ---------- theme ----------
+function applyTheme() {
+  scene.background = new THREE.Color(css('--stage'));
+  for (const p of parts) p.role.color = roleColor(p.def.role);
+  updateCaps();
+  if (flow.mat) flow.mat.color = new THREE.Color(css('--lock'));
+  highlight(selected);
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+// ---------- build & run ----------
+buildLaptop();
+DS.parts.forEach(buildPart);
+buildLabels(); buildPanel(); buildSteps(); buildFlow(); applyTheme();
+setShell(false); setFinish(false); setLabels(true);
+state.lid = state.rotor = 110; syncInputs(); applyState();
+resize(); { const [t, c] = viewPose(VIEWS.corner); controls.target.copy(t); camera.position.copy(c); }
+setClip(false);
+function resize() {
+  const r = stage.getBoundingClientRect(); renderer.setSize(r.width, r.height, false);
+  camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+let last = performance.now();
+function frame(now) {
+  requestAnimationFrame(frame);   // first, so one bad frame cannot stop the loop
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  for (let i = tw.length - 1; i >= 0; i--) {
+    const t = tw[i], u = Math.min(1, (now - t.t0) / t.ms); state[t.key] = t.from + (t.to - t.from) * ease(u);
+    if (u >= 1) tw.splice(i, 1);
+  }
+  if (fly) { const u = Math.min(1, (now - fly.t0) / fly.ms), k = ease(u); controls.target.lerpVectors(fly.a, fly.b, k); camera.position.lerpVectors(fly.p, fly.q, k); if (u >= 1) fly = null; }
+  if (fingerTw) { const u = Math.min(1, (now - fingerTw.t0) / fingerTw.ms); fingerGap = fingerTw.from + (fingerTw.to - fingerTw.from) * ease(u); if (u >= 1) fingerTw = null; }
+  if (finger.visible) placeFinger(fingerGap);
+  stepSim(dt); syncInputs(); applyState(); controls.update(); updateFlow(now);
+  const near = Math.min(20, Math.max(0.3, camera.position.distanceTo(controls.target) * 0.015));
+  if (Math.abs(near - camera.near) > 0.05) { camera.near = near; camera.updateProjectionMatrix(); }
+  renderer.render(scene, camera); updateLabels(); updateScale();
+}
+requestAnimationFrame(frame);
+window.__viewer = { state, parts, DS, goView, runStep, camera, controls, project, renderer, scene };
+})().catch(e => { console.error(e); const c = document.getElementById('caption'); if (c) c.textContent = (document.documentElement.lang === 'en' ? 'The model failed to load: ' : '模型没能加载：') + e.message; });
+</script>
+
+</body></html>
