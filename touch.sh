@@ -29,7 +29,7 @@ fi
 t() { if [ "$PROBE_LANG" = zh ]; then printf '%s' "$1"; else printf '%s' "$2"; fi; }   # t "中文" "English"
 
 PROBE_URL="https://lidworks.github.io/touch/touchprobe"
-PROBE_SHA256="f5facac0f6954f439f023a704edf56ab6092adbebccad9ba0829b114e471d737"   # set by the build
+PROBE_SHA256="f3cef53fda09149c95c71a0b5d77af79a0612081256925a94ab33f9d32bd9fa3"   # set by the build
 CONTACT="lidworks@proton.me"
 CONTACT_X="@Lidworks312"
 YES=0
