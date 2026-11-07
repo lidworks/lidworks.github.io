@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lidkeys — a control strip for the new MacBook Pro</title>
+  <meta name="description" content="A glass control strip at the bottom of your screen. It follows the front app, presses its own menu commands, and never steals focus. Built for the touchscreen MacBook Pro; works with mouse and trackpad on any Apple silicon Mac running macOS 27. 7-day free trial, $19.99 one-time (launch price $13.99 for the first two weeks).">
+  <link rel="canonical" href="https://lidworks.github.io/lidkeys/">
+  <meta property="og:title" content="Lidkeys — a control strip for the new MacBook Pro">
+  <meta property="og:description" content="Summon it, tap a key, keep typing. App-aware keys, brightness, volume and media in one quiet bar at the bottom of your screen.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lidworks.github.io/lidkeys/">
+  <meta property="og:image" content="https://lidworks.github.io/assets/lidkeys-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://lidworks.github.io/assets/lidkeys-card.png">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1b1f'/%3E%3Crect x='10' y='25' width='44' height='14' rx='7' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .ld-hero { text-align: center; padding: 48px 0 8px; }
+    .ld-hero h1 { font-size: clamp(34px, 6vw, 58px); line-height: 1.05; margin: 10px 0 16px; }
+    .ld-hero p.lead { max-width: 680px; margin: 0 auto; }
+    .ld-icon { width: 96px; height: 96px; margin: 0 auto 8px; filter: drop-shadow(0 12px 28px rgba(0, 0, 0, .6)); }
+    .ld-bar { width: min(680px, 86vw); margin: 34px auto 8px; border-radius: 22px; padding: 10px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+      background: linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.07)); border: 1px solid rgba(255,255,255,.20);
+      box-shadow: 0 24px 70px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.35); backdrop-filter: blur(18px) saturate(1.2); }
+    .ld-bar .k { height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 7px;
+      background: rgba(255,255,255,.92); color: #1b1d23; font-weight: 650; font-size: 13px; letter-spacing: -.1px; white-space: nowrap; }
+    .ld-bar .k small { font-weight: 500; opacity: .62; }
+    .ld-bar .faint { background: rgba(255,255,255,.52); }
+    .ld-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 26px 0 6px; }
+    .ld-note { color: var(--muted, #9aa0a6); font-size: 13px; margin-top: 10px; }
+    .ld-note strong { color: var(--text, #f5f5f7); }
+    .ld-section { padding: 58px 0 6px; }
+    .ld-section h2 { font-size: clamp(24px, 3.4vw, 34px); margin-bottom: 14px; }
+    .ld-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .ld-card { border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 20px; background: rgba(255,255,255,.035); }
+    .ld-card h3 { margin: 0 0 8px; font-size: 17px; }
+    .ld-card p { margin: 0; color: var(--muted, #9aa0a6); font-size: 14px; line-height: 1.55; }
+    .ld-tablewrap { overflow-x: auto; }
+    .ld-table { width: 100%; min-width: 560px; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+    .ld-table th, .ld-table td { text-align: left; padding: 11px 10px; border-bottom: 1px solid rgba(255,255,255,.10); vertical-align: top; }
+    .ld-table th { color: var(--muted, #9aa0a6); font-weight: 600; }
+    .ld-table td.pro { color: #cfe3ff; }
+    .ld-pro { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(143,182,255,.35); color: var(--accent, #8fb6ff); vertical-align: 1px; }
+    .ld-price { display: flex; gap: 22px; align-items: baseline; flex-wrap: wrap; margin-top: 8px; }
+    .ld-price .big { font-size: 40px; font-weight: 750; }
+    .ld-faq details { border-bottom: 1px solid rgba(255,255,255,.10); padding: 13px 0; }
+    .ld-faq summary { cursor: pointer; font-weight: 600; }
+    .ld-faq p { color: var(--muted, #9aa0a6); line-height: 1.6; }
+    .launch-banner { margin: 18px auto 0; max-width: 760px; padding: 12px 18px; border-radius: 14px; font-size: 14px;
+      background: rgba(143,182,255,.10); border: 1px solid rgba(143,182,255,.28); color: var(--text, #f5f5f7); }
+    .launch-banner strong { color: var(--accent, #8fb6ff); }
+    /* 预发布态：按钮看起来不能点、也不假装能点 */
+    .button.is-pending, .button[aria-disabled="true"] { background: rgba(255,255,255,.10); color: var(--muted, #9aa0a6);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); cursor: default; pointer-events: none; }
+    .ld-req { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; color: var(--muted, #9aa0a6); font-size: 14px; }
+    .ld-req li { position: relative; padding-left: 24px; }
+    .ld-req li::before { content: "·"; position: absolute; left: 8px; color: var(--accent, #8fb6ff); font-weight: 700; }
+    .ld-steps { counter-reset: step; list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 12px; }
+    .ld-steps li { position: relative; padding-left: 40px; color: var(--muted, #9aa0a6); font-size: 15px; line-height: 1.55; }
+    .ld-steps li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: -1px;
+      width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700;
+      color: var(--text, #f5f5f7); background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14); }
+    .ld-steps code { color: var(--glow, #d6e6ff); font-size: .92em; }
+    @media (max-width: 760px) {
+      .ld-grid { grid-template-columns: 1fr; }
+      .ld-bar { grid-template-columns: repeat(4, 1fr); }
+      .ld-bar .k:nth-child(5) { display: none; }
+      .ld-hero { padding-top: 36px; }
+    }
+  </style>
+</head>
+<body data-launch-state="prelaunch">
+
+  <!-- ==========================================================================
+       LAUNCH CONFIG — 上线前只改这一段（页面其它地方不要写死链接/邮箱/日期）
+       state:            "prelaunch"（默认，Buy/Download 是灰色不可点）
+                         "live"（把下面对应的 URL 填好、支持邮箱填好后再改）
+       checkoutUrl:      普通 checkout 链接（$19），格式一般是 https://buy.polar.sh/polar_cl_…
+       earlyBirdCheckoutUrl: 早鸟 checkout 链接（$12，预设折扣），留空则一直用 checkoutUrl
+       earlyBirdEnds:    早鸟截止的 ISO 时间；到点后自动改用 checkoutUrl
+       downloadUrl:      GitHub Release 资产直链，例如
+                         https://github.com/lidworks/strip/releases/latest/download/Lidkeys.dmg
+                         （repo 需由用户/Lead 先创建，见 02-商业化/04-发布包与Release.md）
+       supportEmail:     真实可用的支持邮箱（当前 hello@lidworks.app 域名不解析，必须换）
+       version:          展示用版本号
+       ========================================================================== -->
+  <script id="launch-config" type="application/json">
+  {
+    "state": "prelaunch",
+    "checkoutUrl": "https://buy.polar.sh/polar_cl_m1u5t5Cu21VZKla2buqplPBCnVcncIGFlVhd52Ce0xG",
+    "earlyBirdCheckoutUrl": "https://buy.polar.sh/polar_cl_lAZibZkmPuGC1XiGo5Z8kr16W8ZQH5LNpklIn4M2Nfi",
+    "earlyBirdEnds": "2026-11-21T04:59:00Z",
+    "downloadUrl": "",
+    "supportEmail": "",
+    "supportFallbackUrl": "https://x.com/Lidworks312",
+    "version": "0.3.0"
+  }
+  </script>
+
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../wipemode/">WipeMode</a>
+        <a href="../steady/">Steady</a>
+        <a href="../hop/">Hop</a>
+        <a href="../stayput/">StayPut</a>
+        <a href="../newhere/">NewHere</a>
+        <a href="../lidlight/">Lidlight</a>
+        <a href="./" aria-current="page">Lidkeys</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero ld-hero">
+      <div class="wrap">
+        <div class="launch-banner" data-launch-only="prelaunch" role="status">
+          <strong>Pre-launch preview.</strong> Lidkeys isn’t on sale yet and there is nothing to download today.
+          Checkout and the free trial open at launch — <a href="#download">here’s what you’ll get</a>.
+        </div>
+        <img class="ld-icon" src="../assets/lidkeys-icon.png" alt="Lidkeys app icon" width="96" height="96">
+        <span class="eyebrow">For the new MacBook Pro · macOS 27</span>
+        <h1>Your app’s menus,<br>within finger reach.</h1>
+        <p class="lead">A glass control strip at the bottom of your screen. It follows the front app, presses that app’s own menu commands for you, and never steals focus — so you can tap a key and keep typing. Keep it out of the way, or tuck it into a tiny corner ball.</p>
+
+        <div class="ld-bar" aria-hidden="true">
+          <span class="k"><small>Finder</small>New Folder</span>
+          <span class="k">◆ Undo</span>
+          <span class="k">▶</span>
+          <span class="k faint">◐</span>
+          <span class="k faint">🔊</span>
+        </div>
+
+        <div class="ld-actions">
+          <!-- 预发布态：这是不可点的 span，不是假链接；填好 launch-config 后脚本会把它换成真链接 -->
+          <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
+                data-cta="checkout" data-checkout="pending"
+                data-label="Buy Lidkeys — $19.99" data-label-early="Buy Lidkeys — $13.99 launch">Buy Lidkeys — $19.99</span>
+          <a class="button secondary" href="#features">See what it does</a>
+        </div>
+        <p class="ld-note"><strong>One-time purchase</strong> · 7-day free trial · macOS 27 on Apple silicon · touch on the MacBook Pro with PROLED XDR, mouse or trackpad on any Apple silicon Mac running macOS 27</p>
+      </div>
+    </section>
+
+    <section class="ld-section" id="features">
+      <div class="wrap">
+        <h2>It follows the app you’re in</h2>
+        <div class="ld-grid">
+          <div class="ld-card">
+            <h3>250+ app packs, one bar</h3>
+            <p>Finder, Safari, Chrome, Mail, Notes, Calendar, Music, Photos, Preview, Pages, VS Code, terminal, Office, Adobe and more. The bar knows each app’s real menu commands; 900+ apps have hand-picked keys.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Presses the real menu command</h3>
+            <p>Lidkeys uses the Accessibility API to press the app’s own menu item — not a synthetic shortcut. On our test Macs, the median from mouse-up to the button responding was 2–5 ms, with focus still in the document.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Never steals focus</h3>
+            <p>The bar is a non-activating panel. You can type in the document, reach down, tap Undo, and the next keystroke still lands in your app.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Glass, not a black strip</h3>
+            <p>System glass with real refraction. It follows Reduce Transparency and Reduce Motion, and the labels are designed to stay readable on light wallpapers.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Brightness, volume, media</h3>
+            <p>Press and slide to change brightness or volume. Play/pause and previous/next for whatever is playing — Music, Spotify, browser video and more. <span class="ld-pro">Pro</span> adds a media card with ±10 s, speed and multiple sources.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Gets out of the way</h3>
+            <p>Tuck the bar into a tiny corner ball when you want the screen to yourself. <span class="ld-pro">Pro</span> adds: hide the Dock until you touch the bottom edge, let windows yield to the bar, tuck it away in full screen, and follow the mouse across screens.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ld-section" id="pricing">
+      <div class="wrap">
+        <h2>Free is useful. Pro is for the heavy lifting.</h2>
+        <div class="ld-tablewrap">
+          <table class="ld-table">
+            <thead>
+              <tr><th>What you get</th><th>Free</th><th>Pro</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Summon / tuck the bar. Never steals focus.</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>App-aware keys (250+ app packs · 900+ apps) and auto-generated keys</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Brightness, volume, system keys</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Basic media: play/pause, previous, next</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Choose which screen shows the bar</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Custom keys, five job presets, import/export</td><td>—</td><td class="pro">Yes</td></tr>
+              <tr><td>Media detail card: ±10 s, speed, multiple sources</td><td>—</td><td class="pro">Yes</td></tr>
+              <tr><td>Hide the Dock until you touch the bottom edge</td><td>—</td><td class="pro">Yes</td></tr>
+              <tr><td>Window yield, full-screen tuck, multi-screen follow</td><td>—</td><td class="pro">Yes</td></tr>
+              <tr><td>Unread badge mirroring, emoji while typing</td><td>—</td><td class="pro">Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ld-price">
+          <span class="big">$19.99</span>
+          <span>one-time · personal license · all the Macs you own</span>
+        </div>
+        <p class="ld-note"><!-- TODO(user): 早鸟截止日二选一（11/27 或 11/30）拍板后，这里、UpgradeWindow、设置页三处一起改；当前按 11/30 口径。 -->
+          Launch offer: <strong>$13.99</strong> for the first two weeks from launch (until <strong data-earlybird-end-label>Nov 21</strong>) — the launch discount is applied automatically at checkout. Then $19.99. No subscription. No account. A 7-day full trial before you decide.</p>
+        <p class="ld-note">1.x updates included; when a new version ships, download it from this page.</p>
+        <p class="ld-note">Optional and off by default: an experimental AI quota pill. See <a href="#privacy">privacy</a> for exactly what it reads.</p>
+
+        <div class="ld-actions">
+          <!-- 预发布态：不可点的 span；上线时脚本替换为真 checkout 链接 -->
+          <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
+                data-cta="checkout" data-checkout="pending"
+                data-label="Buy Lidkeys — $19.99" data-label-early="Buy Lidkeys — $13.99 launch">Buy Lidkeys — $19.99</span>
+        </div>
+        <p class="ld-note" id="checkout-note">Checkout opens at launch. Until then there is nothing to buy — the 7-day trial will be available on the same day.</p>
+      </div>
+    </section>
+
+    <section class="ld-section" id="download">
+      <div class="wrap">
+        <h2>Download the free trial</h2>
+        <p class="lead" style="font-size: 17px">Seven days of everything, including Pro features. No account and no email needed — the trial starts when you first open the app.</p>
+        <div class="ld-actions" style="justify-content: flex-start; margin-top: 20px">
+          <!-- TODO(launch): 填好 launch-config 的 downloadUrl（GitHub Release 资产直链）后，
+               "state": "live" 会把下面这个 span 换成下载链接。发布包命名见 04-发布包与Release.md。 -->
+          <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
+                data-cta="download" data-download="pending"
+                data-label="Download Lidkeys for macOS 27">Download — at launch</span>
+        </div>
+        <ul class="ld-req">
+          <li>macOS 27 (Golden Gate) on Apple silicon. Touch features need the MacBook Pro with PROLED XDR display; on any other supported Mac the bar works with the mouse and trackpad.</li>
+          <li>Version <span data-version>0.3.0</span> · small download · installs as <strong>Strip.app</strong> (the name in your menu bar; Lidkeys is the product name on this page).</li>
+          <li>No account, no subscription, no analytics. Network: one license check when you activate Pro — see <a href="#privacy">privacy</a>.</li>
+          <!-- TODO(launch-gate): 只有工程线公证通过（spctl = Notarized Developer ID）后，才能把下面这句从
+               "will be signed" 改成 "is signed"。没公证之前不要在公开页面写 "notarized by Apple"。 -->
+          <li>The release build will be signed with a Developer ID and notarized by Apple before it is offered here.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="ld-section">
+      <div class="wrap">
+        <h2>Works with what you already have</h2>
+        <div class="ld-grid">
+          <div class="ld-card">
+            <h3>Touch on the MacBook Pro</h3>
+            <p>Built for the bottom edge of the touchscreen MacBook Pro: finger-sized keys and press-and-slide sliders. On a Mac without touch, the identical bar works with the mouse and trackpad.</p>
+          </div>
+          <div class="ld-card" id="privacy">
+            <h3>Privacy, plainly</h3>
+            <p>No telemetry, no analytics, no account. The app makes one network request: validating your license when you activate Pro. Nothing else leaves your Mac unless you turn on the experimental AI quota pill (off by default): it reads local usage logs from Claude Code, Codex and OpenCode on your Mac, and can look up a DeepSeek balance only if you add your own DeepSeek API key. The event log stays on your Mac and records timing, coordinates and decisions — never window titles or app content.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Honest about permissions</h3>
+            <p>Reading another app’s menus needs Accessibility permission. We explain it once, in plain language, and the bar keeps working without it — minus app-specific keys. Nothing is uploaded.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ld-section" id="thanks">
+      <div class="wrap">
+        <h2>After you buy</h2>
+        <ol class="ld-steps">
+          <li>Checkout opens on Polar, our store. Your license key arrives by email a moment after payment — keep that email.</li>
+          <li>Install the app, then click the Lidkeys menu bar icon and choose <code>Activate Pro…</code>.</li>
+          <li>Paste the license key and press <code>Activate</code>. Pro unlocks immediately; the app checks the key online once and then works offline.</li>
+        </ol>
+        <p class="ld-note">Lost the email, or activation fails? Contact <span data-support>support</span> — we answer and refund within 14 days if it isn’t for you.</p>
+      </div>
+    </section>
+
+    <section class="ld-section ld-faq" id="faq">
+      <div class="wrap">
+        <h2>Questions</h2>
+        <details><summary>Which Macs does it support?</summary><p>macOS 27 (Golden Gate) on Apple silicon. Touch features are built for the MacBook Pro with the PROLED XDR display; on any other Apple silicon Mac running macOS 27 the same bar works with the mouse and trackpad (including MacBook Air, Mac mini, Mac Studio and iMac).</p></details>
+        <details><summary>Is this an App Store app?</summary><p>No. The core feature — reading and pressing another app’s menu — is not allowed inside the App Store sandbox. Lidkeys is sold directly from this site. The release build will be signed with a Developer ID and notarized by Apple before launch. Updates are downloaded from this page (1.x updates are free).</p></details>
+        <details><summary>Why does it need Accessibility permission?</summary><p>To read the front app’s menu and press the item you tapped. It is used only on your Mac and never uploaded. Without it, brightness, volume, media, system keys and app switching still work.</p></details>
+        <details><summary>What happens after the 7-day trial?</summary><p>The app does not disappear. Pro features are tucked away and the free features keep working. Your custom keys stay, read-only. You can buy whenever you’re ready — there’s no timer pressure inside the app.</p></details>
+        <details><summary>Do you collect data?</summary><p>No telemetry, no analytics, no account. The only network request is a one-time license validation when you activate Pro. The optional AI quota pill is off by default: when you turn it on it reads local usage logs from Claude Code, Codex and OpenCode, and a DeepSeek balance lookup only happens if you add your own DeepSeek API key. The event log stays on your Mac and can be exported redacted.</p></details>
+        <details><summary>How do updates work?</summary><p>1.x updates are free. The app checks by opening this page when you choose “Check for updates…” — it doesn’t run a background updater or download anything by itself. Install the newer version over the old one; your license and settings carry over.</p></details>
+        <details><summary>What does the license cover?</summary><p>One purchase, one person, all the Macs you personally use. No device activation limit, no account. Paste the same key on each Mac.</p></details>
+        <details><summary>Refunds?</summary><p>Yes — email us within 14 days of purchase and we’ll refund it, no questions asked. That’s also our commitment to the early-bird price: if it stops being useful, get your money back.</p></details>
+        <details><summary>Is Lidkeys the same app as Strip?</summary><p>Yes. “Lidkeys” is the product name on this site; the app installs as <strong>Strip.app</strong>, and that’s the name you’ll see in the menu bar and in System Settings → Privacy &amp; Security → Accessibility.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>© 2026 Lidworks · <a href="../">All apps</a> · Support: <span data-support>available at launch</span> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+      <p>Lidkeys is an independent product, not affiliated with Apple Inc. Apple, Mac, MacBook Pro and Touch Bar are trademarks of Apple Inc.</p>
+    </div>
+  </footer>
+
+  <noscript><p class="ld-note" style="text-align:center;padding:0 24px 32px">The checkout and download buttons need JavaScript. If this page is past launch and the buttons still don’t work, please contact us.</p></noscript>
+
+  <script>
+  // 只做一件事：把 launch-config 里的 URL/邮箱填进页面上预留的占位元素。
+  // 配置为空或 state=prelaunch 时页面保持"不可点"的预发布态，不会出现假链接。
+  (function () {
+    var node = document.getElementById("launch-config");
+    if (!node) return;
+    var cfg;
+    try { cfg = JSON.parse(node.textContent || "{}"); } catch (e) { return; }
+    var live = cfg.state === "live";
+    document.body.setAttribute("data-launch-state", live ? "live" : "prelaunch");
+
+    // 预发布横幅：只在 prelaunch 时显示（state=live 时隐藏）
+    document.querySelectorAll('[data-launch-only="prelaunch"]').forEach(function (el) {
+      el.hidden = live;
+    });
+
+    // 早鸟是否还在窗口期
+    var earlyActive = false;
+    if (cfg.earlyBirdCheckoutUrl && cfg.earlyBirdEnds) {
+      var ends = Date.parse(cfg.earlyBirdEnds);
+      earlyActive = !isNaN(ends) && Date.now() < ends;
+    }
+
+    function checkoutUrl() {
+      return earlyActive ? cfg.earlyBirdCheckoutUrl : (cfg.checkoutUrl || "");
+    }
+
+    function upgrade(el, url, label) {
+      if (!live || !url) return;
+      var a = document.createElement("a");
+      a.className = el.className.replace(/\bis-pending\b/, "").trim();
+      a.setAttribute("href", url);
+      a.setAttribute("data-cta", el.getAttribute("data-cta") || "");
+      var kind = el.getAttribute("data-checkout") ? "data-checkout" : "data-download";
+      a.setAttribute(kind, "live");
+      a.textContent = label;
+      el.parentNode.replaceChild(a, el);
+    }
+
+    document.querySelectorAll('[data-cta="checkout"]').forEach(function (el) {
+      var label = earlyActive && el.getAttribute("data-label-early")
+        ? el.getAttribute("data-label-early")
+        : (el.getAttribute("data-label") || "Buy Lidkeys");
+      upgrade(el, checkoutUrl(), label);
+    });
+
+    document.querySelectorAll('[data-cta="download"]').forEach(function (el) {
+      var label = el.getAttribute("data-label") || "Download";
+      upgrade(el, cfg.downloadUrl || "", cfg.version ? label + " " + cfg.version : label);
+    });
+
+    // 版本号
+    if (cfg.version) {
+      document.querySelectorAll("[data-version]").forEach(function (el) { el.textContent = cfg.version; });
+    }
+
+    // 支持邮箱：有真邮箱就用 mailto，没有就显示 fallback（X），绝不显示不解析的域名邮箱
+    var supportNodes = document.querySelectorAll("[data-support]");
+    if (cfg.supportEmail) {
+      supportNodes.forEach(function (el) {
+        var a = document.createElement("a");
+        a.href = "mailto:" + cfg.supportEmail;
+        a.textContent = cfg.supportEmail;
+        el.replaceWith(a);
+      });
+    } else if (cfg.supportFallbackUrl) {
+      supportNodes.forEach(function (el) {
+        var a = document.createElement("a");
+        a.href = cfg.supportFallbackUrl;
+        a.textContent = "@Lidworks312 on X (email published at launch)";
+        el.replaceWith(a);
+      });
+    }
+  })();
+  </script>
+</body>
+</html>
