@@ -91,11 +91,11 @@
        ========================================================================== -->
   <script id="launch-config" type="application/json">
   {
-    "state": "prelaunch",
+    "state": "live",
     "checkoutUrl": "https://buy.polar.sh/polar_cl_m1u5t5Cu21VZKla2buqplPBCnVcncIGFlVhd52Ce0xG",
     "earlyBirdCheckoutUrl": "https://buy.polar.sh/polar_cl_lAZibZkmPuGC1XiGo5Z8kr16W8ZQH5LNpklIn4M2Nfi",
     "earlyBirdEnds": "2027-12-31T23:59:59Z",
-    "downloadUrl": "",
+    "downloadUrl": "https://github.com/lidworks/strip/releases/latest/download/Lidkeys-0.3.0.dmg",
     "supportEmail": "shukun312@hotmail.com",
     "supportFallbackUrl": "https://x.com/Lidworks312",
     "version": "0.3.0"
@@ -218,7 +218,7 @@
                 data-cta="checkout" data-checkout="pending"
                 data-label="Buy Lidkeys — $19.99" data-label-early="Buy Lidkeys — $13.99 launch">Buy Lidkeys — $19.99</span>
         </div>
-        <p class="ld-note" id="checkout-note">Checkout opens at launch. Until then there is nothing to buy — the 7-day trial will be available on the same day.</p>
+        <p class="ld-note" id="checkout-note">7-day full trial, then $19.99 one-time (launch price $13.99 for the first 100 licenses). No subscription, no account.</p>
       </div>
     </section>
 
@@ -233,13 +233,14 @@
                 data-cta="download" data-download="pending"
                 data-label="Download Lidkeys for macOS 27">Download — at launch</span>
         </div>
+        <p class="ld-note" style="margin-top:14px"><strong>Unsigned build notice:</strong> this release is not notarized by Apple. On first launch, right-click <strong>Strip.app</strong> → <strong>Open</strong> → <strong>Open</strong>, or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet — <a href="https://github.com/lidworks/strip/releases/latest">release notes</a>.</p>
         <ul class="ld-req">
           <li>macOS 27 (Golden Gate) on Apple silicon. Touch features need the MacBook Pro with PROLED XDR display; on any other supported Mac the bar works with the mouse and trackpad.</li>
           <li>Version <span data-version>0.3.0</span> · small download · installs as <strong>Strip.app</strong> (the name in your menu bar; Lidkeys is the product name on this page).</li>
           <li>No account, no subscription, no analytics. Network: one license check when you activate Pro — see <a href="#privacy">privacy</a>.</li>
           <!-- TODO(launch-gate): 只有工程线公证通过（spctl = Notarized Developer ID）后，才能把下面这句从
                "will be signed" 改成 "is signed"。没公证之前不要在公开页面写 "notarized by Apple"。 -->
-          <li>The release build will be signed with a Developer ID and notarized by Apple before it is offered here.</li>
+          <li><strong>Unsigned build:</strong> this release is not notarized by Apple. On first launch macOS shows a warning — right-click <strong>Strip.app</strong> → <strong>Open</strong> → <strong>Open</strong>, or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. The developer accepts this trade-off explicitly; do not buy if you require an Apple-notarized build.</li>
         </ul>
       </div>
     </section>
@@ -280,7 +281,7 @@
       <div class="wrap">
         <h2>Questions</h2>
         <details><summary>Which Macs does it support?</summary><p>macOS 27 (Golden Gate) on Apple silicon. Touch features are built for the MacBook Pro with the PROLED XDR display; on any other Apple silicon Mac running macOS 27 the same bar works with the mouse and trackpad (including MacBook Air, Mac mini, Mac Studio and iMac).</p></details>
-        <details><summary>Is this an App Store app?</summary><p>No. The core feature — reading and pressing another app’s menu — is not allowed inside the App Store sandbox. Lidkeys is sold directly from this site. The release build will be signed with a Developer ID and notarized by Apple before launch. Updates are downloaded from this page (1.x updates are free).</p></details>
+        <details><summary>Is this an App Store app?</summary><p>No. The core feature — reading and pressing another app’s menu — is not allowed inside the App Store sandbox. Lidkeys is sold directly from this site. This build is <strong>unsigned / not notarized</strong> (the developer is not in the Apple Developer Program): on first launch, right-click Strip.app → Open, or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet. Updates are downloaded from this page (1.x updates are free).</p></details>
         <details><summary>Why does it need Accessibility permission?</summary><p>To read the front app’s menu and press the item you tapped. It is used only on your Mac and never uploaded. Without it, brightness, volume, media, system keys and app switching still work.</p></details>
         <details><summary>What happens after the 7-day trial?</summary><p>The app does not disappear. Pro features are tucked away and the free features keep working. Your custom keys stay, read-only. You can buy whenever you’re ready — there’s no timer pressure inside the app.</p></details>
         <details><summary>Do you collect data?</summary><p>No telemetry, no analytics, no account. The only network request is a one-time license validation when you activate Pro. The optional AI quota pill is off by default: when you turn it on it reads local usage logs from Claude Code, Codex and OpenCode, and a DeepSeek balance lookup only happens if you add your own DeepSeek API key. The event log stays on your Mac and can be exported redacted.</p></details>
