@@ -54,7 +54,7 @@
     .launch-banner { margin: 18px auto 0; max-width: 760px; padding: 12px 18px; border-radius: 14px; font-size: 14px;
       background: rgba(143,182,255,.10); border: 1px solid rgba(143,182,255,.28); color: var(--text, #f5f5f7); }
     .launch-banner strong { color: var(--accent, #8fb6ff); }
-    /* 预发布态：按钮看起来不能点、也不假装能点 */
+    /* prelaunch state: buttons look disabled and are not links */
     .button.is-pending, .button[aria-disabled="true"] { background: rgba(255,255,255,.10); color: var(--muted, #9aa0a6);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); cursor: default; pointer-events: none; }
     .ld-req { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; color: var(--muted, #9aa0a6); font-size: 14px; }
@@ -76,19 +76,6 @@
 </head>
 <body data-launch-state="prelaunch">
 
-  <!-- ==========================================================================
-       LAUNCH CONFIG — 上线前只改这一段（页面其它地方不要写死链接/邮箱/日期）
-       state:            "prelaunch"（默认，Buy/Download 是灰色不可点）
-                         "live"（把下面对应的 URL 填好、支持邮箱填好后再改）
-       checkoutUrl:      普通 checkout 链接（$19），格式一般是 https://buy.polar.sh/polar_cl_…
-       earlyBirdCheckoutUrl: 早鸟 checkout 链接（$12，预设折扣），留空则一直用 checkoutUrl
-       earlyBirdEnds:    早鸟截止的 ISO 时间；到点后自动改用 checkoutUrl
-       downloadUrl:      GitHub Release 资产直链，例如
-                         https://github.com/lidworks/strip/releases/latest/download/Lidkeys.dmg
-                         （repo 需由用户/Lead 先创建，见 02-商业化/04-发布包与Release.md）
-       supportEmail:     真实可用的支持邮箱（当前 hello@lidworks.app 域名不解析，必须换）
-       version:          展示用版本号
-       ========================================================================== -->
   <script id="launch-config" type="application/json">
   {
     "state": "live",
@@ -96,10 +83,10 @@
     "gumroadUrl": "",
     "earlyBirdCheckoutUrl": "",
     "earlyBirdEnds": "2027-12-31T23:59:59Z",
-    "downloadUrl": "https://github.com/lidworks/strip/releases/latest/download/Lidkeys-0.3.0.dmg",
+    "downloadUrl": "https://github.com/lidworks/strip/releases/latest/download/Lidkeys-0.3.1.dmg",
     "supportEmail": "lidworks@proton.me",
     "supportFallbackUrl": "https://x.com/Lidworks312",
-    "version": "0.3.0"
+    "version": "0.3.1"
   }
   </script>
 
@@ -139,7 +126,6 @@
         </div>
 
         <div class="ld-actions">
-          <!-- 预发布态：这是不可点的 span，不是假链接；填好 launch-config 后脚本会把它换成真链接 -->
           <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
                 data-cta="checkout" data-checkout="pending"
                 data-label="Buy Lidkeys — $19.99" data-label-early="Buy Lidkeys — $13.99 launch">Buy Lidkeys — $19.99</span>
@@ -208,13 +194,11 @@
           <span class="big">$19.99</span>
           <span>one-time · personal license · all the Macs you own</span>
         </div>
-        <p class="ld-note"><!-- TODO(user): 早鸟截止日二选一（11/27 或 11/30）拍板后，这里、UpgradeWindow、设置页三处一起改；当前按 11/30 口径。 -->
-          Launch offer: <strong>$13.99</strong> for the first 100 licenses — the launch discount is applied automatically at checkout. Then $19.99. No subscription. No account. A 7-day full trial before you decide.</p>
+        <p class="ld-note">          Launch offer: <strong>$13.99</strong> for the first 100 licenses — the launch discount is applied automatically at checkout. Then $19.99. No subscription. No account. A 7-day full trial before you decide.</p>
         <p class="ld-note">1.x updates included; when a new version ships, download it from this page.</p>
         <p class="ld-note">Optional: an experimental AI quota pill. It appears on its own only when Strip finds AI coding tools (Claude Code, Codex, OpenCode) on your Mac, and you can turn it off in Settings. See <a href="#privacy">privacy</a> for exactly what it reads.</p>
 
         <div class="ld-actions">
-          <!-- 预发布态：不可点的 span；上线时脚本替换为真 checkout 链接 -->
           <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
                 data-cta="checkout" data-checkout="pending"
                 data-label="Buy Lidkeys — $19.99" data-label-early="Buy Lidkeys — $13.99 launch">Buy Lidkeys — $19.99</span>
@@ -228,8 +212,6 @@
         <h2>Download the free trial</h2>
         <p class="lead" style="font-size: 17px">Seven days of everything, including Pro features. No account and no email needed — the trial starts when you first open the app.</p>
         <div class="ld-actions" style="justify-content: flex-start; margin-top: 20px">
-          <!-- TODO(launch): 填好 launch-config 的 downloadUrl（GitHub Release 资产直链）后，
-               "state": "live" 会把下面这个 span 换成下载链接。发布包命名见 04-发布包与Release.md。 -->
           <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
                 data-cta="download" data-download="pending"
                 data-label="Download Lidkeys for macOS 27">Download — at launch</span>
@@ -239,8 +221,6 @@
           <li>macOS 27 (Golden Gate) on Apple silicon. Touch features need the MacBook Pro with PROLED XDR display; on any other supported Mac the bar works with the mouse and trackpad.</li>
           <li>Version <span data-version>0.3.0</span> · small download · installs as <strong>Strip.app</strong> (the name in your menu bar; Lidkeys is the product name on this page).</li>
           <li>No account, no subscription, no analytics. Network: one license check when you activate Pro — see <a href="#privacy">privacy</a>.</li>
-          <!-- TODO(launch-gate): 只有工程线公证通过（spctl = Notarized Developer ID）后，才能把下面这句从
-               "will be signed" 改成 "is signed"。没公证之前不要在公开页面写 "notarized by Apple"。 -->
           <li><strong>Unsigned build:</strong> this release is not notarized by Apple. On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. The developer accepts this trade-off explicitly; do not buy if you require an Apple-notarized build.</li>
         </ul>
       </div>
@@ -304,8 +284,8 @@
   <noscript><p class="ld-note" style="text-align:center;padding:0 24px 32px">The checkout and download buttons need JavaScript. If this page is past launch and the buttons still don’t work, please contact us.</p></noscript>
 
   <script>
-  // 只做一件事：把 launch-config 里的 URL/邮箱填进页面上预留的占位元素。
-  // 配置为空或 state=prelaunch 时页面保持"不可点"的预发布态，不会出现假链接。
+  // Fill the placeholders on the page from launch-config.
+  // Empty config or state=prelaunch keeps the disabled prelaunch state (no fake links).
   (function () {
     var node = document.getElementById("launch-config");
     if (!node) return;
@@ -314,12 +294,12 @@
     var live = cfg.state === "live";
     document.body.setAttribute("data-launch-state", live ? "live" : "prelaunch");
 
-    // 预发布横幅：只在 prelaunch 时显示（state=live 时隐藏）
+    // Prelaunch banner: shown only when state=prelaunch.
     document.querySelectorAll('[data-launch-only="prelaunch"]').forEach(function (el) {
       el.hidden = live;
     });
 
-    // 早鸟是否还在窗口期
+    // Is the launch offer still running?
     var earlyActive = false;
     if (cfg.earlyBirdCheckoutUrl && cfg.earlyBirdEnds) {
       var ends = Date.parse(cfg.earlyBirdEnds);
@@ -355,12 +335,12 @@
       upgrade(el, cfg.downloadUrl || "", cfg.version ? label + " " + cfg.version : label);
     });
 
-    // 版本号
+    // Version
     if (cfg.version) {
       document.querySelectorAll("[data-version]").forEach(function (el) { el.textContent = cfg.version; });
     }
 
-    // 支持邮箱：有真邮箱就用 mailto，没有就显示 fallback（X），绝不显示不解析的域名邮箱
+    // Support: mailto when an address is set, otherwise the X fallback.
     var supportNodes = document.querySelectorAll("[data-support]");
     if (cfg.supportEmail) {
       supportNodes.forEach(function (el) {
