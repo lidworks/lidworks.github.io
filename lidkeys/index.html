@@ -93,6 +93,7 @@
   {
     "state": "live",
     "checkoutUrl": "",
+    "gumroadUrl": "",
     "earlyBirdCheckoutUrl": "",
     "earlyBirdEnds": "2027-12-31T23:59:59Z",
     "downloadUrl": "https://github.com/lidworks/strip/releases/latest/download/Lidkeys-0.3.0.dmg",
@@ -210,7 +211,7 @@
         <p class="ld-note"><!-- TODO(user): 早鸟截止日二选一（11/27 或 11/30）拍板后，这里、UpgradeWindow、设置页三处一起改；当前按 11/30 口径。 -->
           Launch offer: <strong>$13.99</strong> for the first 100 licenses — the launch discount is applied automatically at checkout. Then $19.99. No subscription. No account. A 7-day full trial before you decide.</p>
         <p class="ld-note">1.x updates included; when a new version ships, download it from this page.</p>
-        <p class="ld-note">Optional and off by default: an experimental AI quota pill. See <a href="#privacy">privacy</a> for exactly what it reads.</p>
+        <p class="ld-note">Optional: an experimental AI quota pill. It appears on its own only when Strip finds AI coding tools (Claude Code, Codex, OpenCode) on your Mac, and you can turn it off in Settings. See <a href="#privacy">privacy</a> for exactly what it reads.</p>
 
         <div class="ld-actions">
           <!-- 预发布态：不可点的 span；上线时脚本替换为真 checkout 链接 -->
@@ -218,7 +219,7 @@
                 data-cta="checkout" data-checkout="pending"
                 data-label="Buy Lidkeys — $19.99" data-label-early="Buy Lidkeys — $13.99 launch">Buy Lidkeys — $19.99</span>
         </div>
-        <p class="ld-note" id="checkout-note"><strong>Checkout setup in progress.</strong> Download the 7-day free trial below; buying opens as soon as the payment account is connected. Price when it opens: $19.99 one-time (launch $13.99 for first 100 licenses).</p>
+        <p class="ld-note" id="checkout-note">7-day fully-featured trial first. One-time purchase: <strong>$19.99</strong>, launch price <strong>$13.99</strong> for the first 100 licenses. Secure checkout on Gumroad.</p>
       </div>
     </section>
 
@@ -233,14 +234,14 @@
                 data-cta="download" data-download="pending"
                 data-label="Download Lidkeys for macOS 27">Download — at launch</span>
         </div>
-        <p class="ld-note" style="margin-top:14px"><strong>Unsigned build notice:</strong> this release is not notarized by Apple. On first launch, right-click <strong>Strip.app</strong> → <strong>Open</strong> → <strong>Open</strong>, or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet — <a href="https://github.com/lidworks/strip/releases/latest">release notes</a>.</p>
+        <p class="ld-note" style="margin-top:14px"><strong>Unsigned build notice:</strong> this release is not notarized by Apple. On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet — <a href="https://github.com/lidworks/strip/releases/latest">release notes</a>.</p>
         <ul class="ld-req">
           <li>macOS 27 (Golden Gate) on Apple silicon. Touch features need the MacBook Pro with PROLED XDR display; on any other supported Mac the bar works with the mouse and trackpad.</li>
           <li>Version <span data-version>0.3.0</span> · small download · installs as <strong>Strip.app</strong> (the name in your menu bar; Lidkeys is the product name on this page).</li>
           <li>No account, no subscription, no analytics. Network: one license check when you activate Pro — see <a href="#privacy">privacy</a>.</li>
           <!-- TODO(launch-gate): 只有工程线公证通过（spctl = Notarized Developer ID）后，才能把下面这句从
                "will be signed" 改成 "is signed"。没公证之前不要在公开页面写 "notarized by Apple"。 -->
-          <li><strong>Unsigned build:</strong> this release is not notarized by Apple. On first launch macOS shows a warning — right-click <strong>Strip.app</strong> → <strong>Open</strong> → <strong>Open</strong>, or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. The developer accepts this trade-off explicitly; do not buy if you require an Apple-notarized build.</li>
+          <li><strong>Unsigned build:</strong> this release is not notarized by Apple. On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. The developer accepts this trade-off explicitly; do not buy if you require an Apple-notarized build.</li>
         </ul>
       </div>
     </section>
@@ -255,7 +256,7 @@
           </div>
           <div class="ld-card" id="privacy">
             <h3>Privacy, plainly</h3>
-            <p>No telemetry, no analytics, no account. The app makes one network request: validating your license when you activate Pro. Nothing else leaves your Mac unless you turn on the experimental AI quota pill (off by default): it reads local usage logs from Claude Code, Codex and OpenCode on your Mac, and can look up a DeepSeek balance only if you add your own DeepSeek API key. The event log stays on your Mac and records timing, coordinates and decisions — never window titles or app content.</p>
+            <p>No telemetry, no analytics, no account. The app makes one kind of network request: validating your license when you activate Pro (and once more if you update from version 0.3.0). The experimental AI quota pill turns on by itself only when Strip finds AI coding tools on your Mac, and you can switch it off in Settings: it reads local usage logs from Claude Code, Codex and OpenCode on your Mac, and nothing from them leaves your Mac. It looks up a DeepSeek balance only if you add your own DeepSeek API key and click <em>Check balance</em>. The event log stays on your Mac and records timing, coordinates and decisions — never window titles or app content.</p>
           </div>
           <div class="ld-card">
             <h3>Honest about permissions</h3>
@@ -281,10 +282,10 @@
       <div class="wrap">
         <h2>Questions</h2>
         <details><summary>Which Macs does it support?</summary><p>macOS 27 (Golden Gate) on Apple silicon. Touch features are built for the MacBook Pro with the PROLED XDR display; on any other Apple silicon Mac running macOS 27 the same bar works with the mouse and trackpad (including MacBook Air, Mac mini, Mac Studio and iMac).</p></details>
-        <details><summary>Is this an App Store app?</summary><p>No. The core feature — reading and pressing another app’s menu — is not allowed inside the App Store sandbox. Lidkeys is sold directly from this site. This build is <strong>unsigned / not notarized</strong> (the developer is not in the Apple Developer Program): on first launch, right-click Strip.app → Open, or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet. Updates are downloaded from this page (1.x updates are free).</p></details>
+        <details><summary>Is this an App Store app?</summary><p>No. The core feature — reading and pressing another app’s menu — is not allowed inside the App Store sandbox. Lidkeys is sold directly from this site. This build is <strong>unsigned / not notarized</strong> (the developer is not in the Apple Developer Program): on first launch macOS blocks it: click Done (not Move to Trash), then System Settings → Privacy &amp; Security → Open Anyway. Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet. Updates are downloaded from this page (1.x updates are free).</p></details>
         <details><summary>Why does it need Accessibility permission?</summary><p>To read the front app’s menu and press the item you tapped. It is used only on your Mac and never uploaded. Without it, brightness, volume, media, system keys and app switching still work.</p></details>
         <details><summary>What happens after the 7-day trial?</summary><p>The app does not disappear. Pro features are tucked away and the free features keep working. Your custom keys stay, read-only. You can buy whenever you’re ready — there’s no timer pressure inside the app.</p></details>
-        <details><summary>Do you collect data?</summary><p>No telemetry, no analytics, no account. The only network request is a one-time license validation when you activate Pro. The optional AI quota pill is off by default: when you turn it on it reads local usage logs from Claude Code, Codex and OpenCode, and a DeepSeek balance lookup only happens if you add your own DeepSeek API key. The event log stays on your Mac and can be exported redacted.</p></details>
+        <details><summary>Do you collect data?</summary><p>No telemetry, no analytics, no account. The only network request is license validation when you activate Pro. The optional AI quota pill appears on its own only when Strip finds AI coding tools on your Mac (you can turn it off in Settings); it reads local usage logs from Claude Code, Codex and OpenCode without sending them anywhere, and a DeepSeek balance lookup only happens if you add your own DeepSeek API key and click Check balance. The event log stays on your Mac and can be exported redacted.</p></details>
         <details><summary>How do updates work?</summary><p>1.x updates are free. The app checks by opening this page when you choose “Check for updates…” — it doesn’t run a background updater or download anything by itself. Install the newer version over the old one; your license and settings carry over.</p></details>
         <details><summary>What does the license cover?</summary><p>One purchase, one person, all the Macs you personally use. No device activation limit, no account. Paste the same key on each Mac.</p></details>
         <details><summary>Refunds?</summary><p>Yes — email us within 14 days of purchase and we’ll refund it, no questions asked. That’s also our commitment to the early-bird price: if it stops being useful, get your money back.</p></details>
@@ -326,6 +327,7 @@
     }
 
     function checkoutUrl() {
+      if (cfg.gumroadUrl) return cfg.gumroadUrl;
       return earlyActive ? cfg.earlyBirdCheckoutUrl : (cfg.checkoutUrl || "");
     }
 
@@ -342,7 +344,7 @@
     }
 
     document.querySelectorAll('[data-cta="checkout"]').forEach(function (el) {
-      var label = earlyActive && el.getAttribute("data-label-early")
+      var label = (cfg.gumroadUrl || earlyActive) && el.getAttribute("data-label-early")
         ? el.getAttribute("data-label-early")
         : (el.getAttribute("data-label") || "Buy Lidkeys");
       upgrade(el, checkoutUrl(), label);
