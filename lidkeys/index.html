@@ -18,11 +18,14 @@
   <meta name="theme-color" content="#000000">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1b1f'/%3E%3Crect x='10' y='25' width='44' height='14' rx='7' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="guides/guides.css">
+  <script src="guides/guides.js" defer></script>
   <style>
     .ld-hero { text-align: center; padding: 48px 0 8px; }
     .ld-hero h1 { font-size: clamp(34px, 6vw, 58px); line-height: 1.05; margin: 10px 0 16px; }
     .ld-hero p.lead { max-width: 680px; margin: 0 auto; }
     .ld-icon { width: 96px; height: 96px; margin: 0 auto 8px; filter: drop-shadow(0 12px 28px rgba(0, 0, 0, .6)); }
+    .ld-hero-clip { max-width: 1040px; margin: 34px auto 8px; text-align: left; }
     .ld-bar { width: min(680px, 86vw); margin: 34px auto 8px; border-radius: 22px; padding: 10px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
       background: linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.07)); border: 1px solid rgba(255,255,255,.20);
       box-shadow: 0 24px 70px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.35); backdrop-filter: blur(18px) saturate(1.2); }
@@ -66,7 +69,15 @@
       width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700;
       color: var(--text, #f5f5f7); background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14); }
     .ld-steps code { color: var(--glow, #d6e6ff); font-size: .92em; }
+    /* one guide clip beside a sentence (sections where only one clip is ready) */
+    .ld-split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 36px; align-items: center; margin: 22px 0 30px; }
+    .ld-split-text p { margin: 0; color: var(--muted, #9aa0a6); font-size: clamp(17px, 2vw, 20px); line-height: 1.5; }
+    .ld-split--flip { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
+    .ld-split--flip .ld-split-text { order: 2; }
+    .ld-clip-more { margin-top: 30px; }
     @media (max-width: 760px) {
+      .ld-split { grid-template-columns: minmax(0, 1fr); gap: 18px; margin-bottom: 24px; }
+      .ld-split--flip .ld-split-text { order: 0; }
       .ld-grid { grid-template-columns: 1fr; }
       .ld-bar { grid-template-columns: repeat(4, 1fr); }
       .ld-bar .k:nth-child(5) { display: none; }
@@ -83,10 +94,10 @@
     "gumroadUrl": "",
     "earlyBirdCheckoutUrl": "",
     "earlyBirdEnds": "2027-12-31T23:59:59Z",
-    "downloadUrl": "https://github.com/lidworks/strip/releases/latest/download/Lidkeys-0.3.1.dmg",
+    "downloadUrl": "https://github.com/lidworks/strip/releases/latest/download/Lidkeys-0.3.2.dmg",
     "supportEmail": "lidworks@proton.me",
     "supportFallbackUrl": "https://x.com/Lidworks312",
-    "version": "0.3.1"
+    "version": "0.3.2"
   }
   </script>
 
@@ -117,13 +128,17 @@
         <h1>Your app’s menus,<br>within finger reach.</h1>
         <p class="lead">A glass control strip at the bottom of your screen. It follows the front app, presses that app’s own menu commands for you, and never steals focus — so you can tap a key and keep typing. Keep it out of the way, or tuck it into a tiny corner ball.</p>
 
-        <div class="ld-bar" aria-hidden="true">
-          <span class="k"><small>Finder</small>New Folder</span>
-          <span class="k">◆ Undo</span>
-          <span class="k">▶</span>
-          <span class="k faint">◐</span>
-          <span class="k faint">🔊</span>
-        </div>
+        <figure class="ld-clip ld-clip--big ld-hero-clip" id="a01-hero" data-clip="a01-hero" style="--ar-d: 1984 / 496; --ar-m: 960 / 480">
+          <div class="ld-clip-stage">
+            <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                   poster="guides/a01-hero.en.D.jpg" data-poster-m="guides/a01-hero.en.M.jpg"
+                   width="1984" height="496" aria-label="Lidkeys in use: the bar follows the app, a tap presses a menu command, and × tucks it into the corner ball">
+              <source media="(max-width: 760px)" src="guides/a01-hero.en.M.mp4" type="video/mp4">
+              <source src="guides/a01-hero.en.D.mp4" type="video/mp4">
+            </video>
+            <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+          </div>
+        </figure>
 
         <div class="ld-actions">
           <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
@@ -138,6 +153,22 @@
     <section class="ld-section" id="features">
       <div class="wrap">
         <h2>It follows the app you’re in</h2>
+        <div class="ld-split">
+          <div class="ld-split-text">
+            <p>Switch apps and the keys switch with you. Tap one and keep typing.</p>
+          </div>
+          <figure class="ld-clip" id="a04-focus" data-clip="a04-focus" style="--ar-d: 960 / 720; --ar-m: 960 / 720">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/a04-focus.en.M.jpg"
+                     width="960" height="720" aria-label="Tap, keep typing" aria-describedby="cap-a04-focus">
+                <source src="guides/a04-focus.en.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-a04-focus"><strong>Tap, keep typing.</strong> Keys press the app’s own menu commands. Your cursor stays put, so you keep typing. <span class="ld-clip-detail">Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+        </div>
         <div class="ld-grid">
           <div class="ld-card">
             <h3>250+ app packs, one bar</h3>
@@ -167,6 +198,50 @@
       </div>
     </section>
 
+    <section class="ld-section" id="apps">
+      <div class="wrap">
+        <h2>Apps at your fingertips</h2>
+        <p class="ld-clips-lead">Swipe through your running apps, tap the Apps button at the left for everything else, and keep four favourites pinned next to ×.</p>
+        <div class="ld-clips">
+          <figure class="ld-clip ld-clip--big" id="d01-scroll" data-clip="d01-scroll" style="--ar-d: 1984 / 496; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/d01-scroll.xx.D.jpg" data-poster-m="guides/d01-scroll.xx.M.jpg"
+                     width="1984" height="496" aria-label="Swipe through apps" aria-describedby="cap-d01-scroll">
+                <source media="(max-width: 760px)" src="guides/d01-scroll.xx.M.mp4" type="video/mp4">
+                <source src="guides/d01-scroll.xx.D.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-d01-scroll"><strong>Swipe through apps.</strong> More apps than fit? Swipe the app area — flick to glide, with a soft bounce at the end.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="ld-section" id="files">
+      <div class="wrap">
+        <h2>Drop files where they belong</h2>
+        <div class="ld-split ld-split--flip">
+          <div class="ld-split-text">
+            <p>Drop on an app ball to open, hold for the Dock, or drop on × to trash.</p>
+          </div>
+          <figure class="ld-clip" id="e01-drop-ball" data-clip="e01-drop-ball" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/e01-drop-ball.xx.M.jpg"
+                     width="960" height="480" aria-label="Drop to open" aria-describedby="cap-e01-drop-ball">
+                <source src="guides/e01-drop-ball.xx.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-e01-drop-ball"><strong>Drop to open.</strong> Drop a file on an app ball to open it with that app. <span class="ld-clip-detail">Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+        </div>
+        <p class="ld-clip-more"><a class="button secondary" href="guide/">See every gesture →</a></p>
+      </div>
+    </section>
+
     <section class="ld-section" id="pricing">
       <div class="wrap">
         <h2>Free is useful. Pro is for the heavy lifting.</h2>
@@ -188,6 +263,34 @@
               <tr><td>Unread badge mirroring, emoji while typing</td><td>—</td><td class="pro">Yes</td></tr>
             </tbody>
           </table>
+        </div>
+
+        <div class="ld-pro-clips">
+          <h3>What Pro adds</h3>
+          <div class="ld-clips ld-clips-2">
+            <figure class="ld-clip" id="b06-typing" data-clip="b06-typing" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+              <div class="ld-clip-stage">
+                <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                       poster="guides/b06-typing.en.M.jpg"
+                       width="960" height="480" aria-label="While you type" aria-describedby="cap-b06-typing">
+                  <source src="guides/b06-typing.en.M.mp4" type="video/mp4">
+                </video>
+                <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+              </div>
+              <figcaption id="cap-b06-typing"><span class="ld-pro">Pro</span> <strong>While you type.</strong> While you type, the bar offers Copy, Paste, Undo and your favourite emoji. Swipe for more; tap to insert. <span class="ld-clip-detail">Copy, Paste, Cut and Undo are free; emoji is Pro. Windows and files in this clip are demo props.</span></figcaption>
+            </figure>
+            <figure class="ld-clip" id="h01-ai" data-clip="h01-ai" style="--ar-d: 960 / 720; --ar-m: 960 / 720">
+              <div class="ld-clip-stage">
+                <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                       poster="guides/h01-ai.en.M.jpg"
+                       width="960" height="720" aria-label="AI at a glance" aria-describedby="cap-h01-ai">
+                  <source src="guides/h01-ai.en.M.mp4" type="video/mp4">
+                </video>
+                <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+              </div>
+              <figcaption id="cap-h01-ai"><span class="ld-pro">Pro</span> <strong>AI at a glance.</strong> Using AI coding tools like Claude Code or Codex? A pill shows how much quota is used and whether a task is running. Tap for details. <span class="ld-clip-detail">Numbers are illustrative.</span></figcaption>
+            </figure>
+          </div>
         </div>
 
         <div class="ld-price">
@@ -219,7 +322,7 @@
         <p class="ld-note" style="margin-top:14px"><strong>Unsigned build notice:</strong> this release is not notarized by Apple. On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet — <a href="https://github.com/lidworks/strip/releases/latest">release notes</a>.</p>
         <ul class="ld-req">
           <li>macOS 27 (Golden Gate) on Apple silicon. Touch features need the MacBook Pro with PROLED XDR display; on any other supported Mac the bar works with the mouse and trackpad.</li>
-          <li>Version <span data-version>0.3.0</span> · small download · installs as <strong>Strip.app</strong> (the name in your menu bar; Lidkeys is the product name on this page).</li>
+          <li>Version <span data-version>0.3.2</span> · small download · installs as <strong>Strip.app</strong> (the name in your menu bar; Lidkeys is the product name on this page).</li>
           <li>No account, no subscription, no analytics. Network: one license check when you activate Pro — see <a href="#privacy">privacy</a>.</li>
           <li><strong>Unsigned build:</strong> this release is not notarized by Apple. On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. The developer accepts this trade-off explicitly; do not buy if you require an Apple-notarized build.</li>
         </ul>
