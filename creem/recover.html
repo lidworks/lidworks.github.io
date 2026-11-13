@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find your Lidkeys license — Lidworks</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1b1f'/%3E%3Crect x='10' y='25' width='44' height='14' rx='7' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="license.css">
+</head>
+<body data-page="recover" data-license-state="form">
+
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+      <nav class="nav-links" aria-label="Products">
+        <a href="../lidkeys/" aria-current="page">Lidkeys</a>
+        <a href="../wipemode/">WipeMode</a>
+        <a href="../steady/">Steady</a>
+        <a href="../hop/">Hop</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="lk-main">
+    <div class="wrap lk-wrap">
+      <section class="lk-card" id="license-card" data-state="form" aria-live="polite">
+        <div class="lk-top">
+          <span class="eyebrow" id="license-eyebrow">Lost your key?</span>
+          <button class="lk-lang" id="lang-toggle" type="button" aria-label="Language / 语言">中文</button>
+        </div>
+        <h1 class="lk-title" id="license-title">Find your license key</h1>
+        <p class="lk-lead" id="license-lead">Enter the order ID and the email you paid with. Both must match the order.</p>
+
+        <!-- 1) Form -->
+        <div id="state-form">
+          <form class="lk-form" id="recover-form" novalidate>
+            <label class="lk-field">
+              <span><span data-l="en">Order ID</span><span data-l="zh">订单号</span></span>
+              <input id="order-input" name="order_id" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ord_…" maxlength="128" required>
+            </label>
+            <p class="lk-hint">
+              <span data-l="en">It starts with <code>ord_</code> and was shown on the page right after you paid. Can’t find it? Email us from the address you paid with.</span>
+              <span data-l="zh">以 <code>ord_</code> 开头，付款后跳转的页面上显示过。找不到就用付款邮箱给我们写信。</span>
+            </p>
+            <label class="lk-field">
+              <span><span data-l="en">Email used at checkout</span><span data-l="zh">付款时用的邮箱</span></span>
+              <input id="email-input" name="email" type="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com" maxlength="320" required>
+            </label>
+            <p class="lk-form-message" id="form-message" role="alert" hidden></p>
+            <button class="button" id="recover-submit" type="submit"><span data-l="en">Find my key</span><span data-l="zh">找回激活码</span></button>
+          </form>
+        </div>
+
+        <!-- 2) Working -->
+        <div id="state-loading" hidden>
+          <div class="lk-spinner" aria-hidden="true"></div>
+          <p class="lk-loading-text" id="loading-text">Looking up your order…</p>
+        </div>
+
+        <!-- 3) Success -->
+        <div id="state-success" hidden>
+          <div class="lk-meta">
+            <span class="lk-chip" id="product-chip">Lidkeys Pro · Lifetime</span>
+            <span class="lk-chip muted" id="email-chip" hidden></span>
+            <span class="lk-chip warn" id="mode-chip" hidden></span>
+          </div>
+          <div class="lk-key-wrap">
+            <code class="lk-key" id="license-key" tabindex="0" spellcheck="false" aria-label="License key / 激活码"></code>
+          </div>
+          <div class="lk-actions">
+            <button class="button" id="copy-key" type="button"><span data-l="en">Copy license key</span><span data-l="zh">复制激活码</span></button>
+            <button class="button secondary" id="copy-order" type="button"><span data-l="en">Copy order ID</span><span data-l="zh">复制订单号</span></button>
+            <span class="lk-copy-status" id="copy-status" role="status" aria-live="polite"></span>
+          </div>
+          <p class="lk-save">
+            <span data-l="en"><strong>Save this key now</strong> — paste it into your password manager or notes. It’s the same key as before; it never changes.</span>
+            <span data-l="zh"><strong>这次把激活码存好</strong>：粘进密码管理器或备忘录。它和之前的是同一个码，永远不变。</span>
+          </p>
+          <ol class="lk-steps">
+            <li>
+              <span data-l="en">Open <strong>Strip.app</strong> (Lidkeys) and click its icon in the menu bar.</span>
+              <span data-l="zh">打开 <strong>Strip.app</strong>（Lidkeys），点菜单栏里它的图标。</span>
+            </li>
+            <li>
+              <span data-l="en">Choose <strong>Activate Pro…</strong></span>
+              <span data-l="zh">选 <strong>激活 Pro…</strong></span>
+            </li>
+            <li>
+              <span data-l="en">Paste the key and click <strong>Activate</strong>. Pro unlocks right away and keeps working offline.</span>
+              <span data-l="zh">粘贴激活码，点 <strong>激活</strong>。Pro 立即解锁，之后不联网也能用。</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- 4) Error (only when the page itself isn't set up) -->
+        <div id="state-error" hidden>
+          <p class="lk-error-body" id="error-body"></p>
+          <div class="lk-actions">
+            <button class="button" id="retry" type="button" hidden><span data-l="en">Try again</span><span data-l="zh">重试</span></button>
+          </div>
+        </div>
+
+        <p class="lk-support">
+          <span data-l="en">Still stuck? Email <a href="mailto:lidworks@proton.me" data-support-email>lidworks@proton.me</a> from the address you paid with, and include your order ID.</span>
+          <span data-l="zh">还是找不到？用付款邮箱给 <a href="mailto:lidworks@proton.me" data-support-email>lidworks@proton.me</a> 写信，附上订单号。</span>
+        </p>
+
+        <noscript><p class="lk-noscript">This page needs JavaScript. Email lidworks@proton.me with your Creem order ID instead. / 这个页面需要 JavaScript。请改为把 Creem 订单号发到 lidworks@proton.me。</p></noscript>
+      </section>
+
+      <p class="lk-footer-note"><a href="../lidkeys/">Lidkeys</a> · <a href="../">All apps</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>© 2026 Lidworks · <a href="../">All apps</a> · Support: <a href="mailto:lidworks@proton.me" data-support-email>lidworks@proton.me</a></p>
+      <p>Lidkeys is an independent product, not affiliated with Apple Inc. Apple, Mac and MacBook Pro are trademarks of Apple Inc.</p>
+    </div>
+  </footer>
+
+  <script src="license-page.js"></script>
+</body>
+</html>

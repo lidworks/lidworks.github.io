@@ -1,0 +1,66 @@
+/* Lidkeys — Creem license pages (success + recover). Builds on ../assets/style.css. */
+[hidden] { display: none !important; }
+/* Bilingual static text: <span data-l="en">…</span><span data-l="zh">…</span> */
+html[data-lang="zh"] [data-l="en"], html:not([data-lang="zh"]) [data-l="zh"] { display: none !important; }
+
+.lk-main { padding: 52px 0 64px; }
+.lk-wrap { max-width: 760px; }
+.lk-card { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 50% -10%, rgba(143, 182, 255, .10), transparent 60%), var(--surface);
+  border: 1px solid var(--line); border-radius: 24px; padding: clamp(24px, 5vw, 46px); box-shadow: 0 30px 90px rgba(0, 0, 0, .55); }
+.lk-card::after { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(214, 230, 255, .45), transparent); }
+.lk-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lk-lang { flex-shrink: 0; white-space: nowrap; font: 500 13px/1 var(--font); color: var(--muted); background: rgba(255, 255, 255, .05); border: 1px solid var(--line);
+  border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+.lk-lang:hover { color: var(--text); }
+.lk-title { font-size: clamp(30px, 5vw, 46px); line-height: 1.06; letter-spacing: -.03em; margin: 12px 0 12px; font-weight: 700; }
+.lk-lead { font-size: 17px; color: var(--muted); max-width: 560px; margin: 0; }
+.lk-spinner { width: 30px; height: 30px; margin: 22px 0 18px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .14); border-top-color: var(--accent); animation: lk-spin .9s linear infinite; }
+@keyframes lk-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .lk-spinner { animation-duration: 2.6s; } }
+.lk-loading-text { margin: 0; color: var(--muted); font-size: 15px; }
+.lk-loading-text code { color: var(--glow); }
+.lk-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 16px; }
+.lk-chip { font-size: 13px; color: var(--glow); background: rgba(143, 182, 255, .10);
+  border: 1px solid rgba(143, 182, 255, .28); border-radius: 999px; padding: 5px 12px; }
+.lk-chip.muted { color: var(--muted); background: rgba(255, 255, 255, .04); border-color: var(--line); }
+.lk-chip.warn { color: #ffd28a; background: rgba(255, 196, 102, .10); border-color: rgba(255, 196, 102, .35); }
+.lk-key-wrap { background: #050507; border: 1px solid rgba(143, 182, 255, .26); border-radius: 16px; padding: 18px 18px 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 0 44px rgba(143, 182, 255, .08); }
+.lk-key { display: block; font: 600 clamp(14px, 2.4vw, 19px)/1.5 ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: .01em; color: var(--glow); word-break: break-all; user-select: all; -webkit-user-select: all; cursor: copy; outline: none; }
+.lk-key:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 4px; }
+.lk-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 18px 0 8px; }
+button.button { border: 0; }
+.lk-actions .button { cursor: pointer; font-family: var(--font); }
+.lk-actions .button:disabled { opacity: .5; cursor: default; }
+.lk-copy-status { font-size: 14px; color: var(--accent); min-height: 1.25em; }
+.lk-save { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; font-size: 14px; color: #ffe2b0;
+  background: rgba(255, 196, 102, .08); border: 1px solid rgba(255, 196, 102, .28); }
+.lk-save strong { color: #ffd28a; }
+.lk-steps { counter-reset: lk-step; list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 12px; }
+.lk-steps li { position: relative; padding-left: 40px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+.lk-steps li::before { counter-increment: lk-step; content: counter(lk-step); position: absolute; left: 0; top: -1px;
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  color: var(--text); background: rgba(255, 255, 255, .10); border: 1px solid rgba(255, 255, 255, .14); }
+.lk-steps strong { color: var(--text); font-weight: 600; }
+.lk-support { margin: 24px 0 0; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--faint); }
+.lk-error-title { font-size: clamp(22px, 3.6vw, 30px); letter-spacing: -.02em; margin: 18px 0 10px; }
+.lk-error-body { margin: 18px 0 18px; color: var(--muted); font-size: 16px; }
+.lk-form { display: grid; gap: 14px; margin: 24px 0 0; }
+.lk-field { display: grid; gap: 6px; }
+.lk-field span { font-size: 14px; color: var(--muted); }
+.lk-field input { font: 16px/1.4 var(--font); color: var(--text); background: #050507; border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px 14px; min-width: 0; width: 100%; }
+.lk-field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.lk-hint { font-size: 13px; color: var(--faint); margin: 0; }
+.lk-form-message { margin: 0; font-size: 14px; color: #ffb4a8; }
+.lk-form .button { justify-self: start; cursor: pointer; font-family: var(--font); }
+.lk-form .button:disabled { opacity: .5; cursor: default; }
+.lk-footer-note { margin: 18px 0 0; text-align: center; color: var(--faint); font-size: 13px; }
+.lk-noscript { margin: 20px 0 0; color: var(--muted); font-size: 15px; }
+@media (max-width: 600px) {
+  .lk-main { padding: 28px 0 44px; }
+  .lk-card { border-radius: 18px; }
+  .lk-actions .button, .lk-form .button { width: 100%; justify-content: center; }
+}
