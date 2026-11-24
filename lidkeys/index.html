@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lidkeys — a control strip for the new MacBook Pro</title>
-  <meta name="description" content="A glass control strip at the bottom of your screen. It follows the front app, presses its own menu commands, and never steals focus. Built for the touchscreen MacBook Pro; works with mouse and trackpad on any Apple silicon Mac running macOS 27. 7-day free trial, $19.99 one-time (launch price $13.99 for the first 100 licenses).">
+  <meta name="description" content="A glass control strip at the bottom of your screen. It follows the front app, presses its own menu commands, and never steals focus. Built for the touchscreen MacBook Pro; works with mouse and trackpad on any Apple silicon Mac running macOS 27. Free while in beta — everything unlocked.">
   <link rel="canonical" href="https://lidworks.github.io/lidkeys/">
   <meta property="og:title" content="Lidkeys — a control strip for the new MacBook Pro">
   <meta property="og:description" content="Summon it, tap a key, keep typing. App-aware keys, brightness, volume and media in one quiet bar at the bottom of your screen.">
@@ -75,10 +75,16 @@
     .ld-split--flip { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
     .ld-split--flip .ld-split-text { order: 2; }
     .ld-clip-more { margin-top: 30px; }
+    .ld-shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin: 26px 0 8px; }
+    .ld-shot { margin: 0; }
+    .ld-shot img { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid rgba(255,255,255,.10); }
+    .ld-shot figcaption { margin-top: 10px; color: var(--muted, #9aa0a6); font-size: 14px; line-height: 1.55; }
+    .ld-shot figcaption strong { color: var(--text, #f5f5f7); }
     @media (max-width: 760px) {
       .ld-split { grid-template-columns: minmax(0, 1fr); gap: 18px; margin-bottom: 24px; }
       .ld-split--flip .ld-split-text { order: 0; }
       .ld-grid { grid-template-columns: 1fr; }
+      .ld-shots { grid-template-columns: minmax(0, 1fr); }
       .ld-bar { grid-template-columns: repeat(4, 1fr); }
       .ld-bar .k:nth-child(5) { display: none; }
       .ld-hero { padding-top: 36px; }
@@ -94,10 +100,10 @@
     "gumroadUrl": "",
     "earlyBirdCheckoutUrl": "",
     "earlyBirdEnds": "2027-12-31T23:59:59Z",
-    "downloadUrl": "https://github.com/lidworks/strip/releases/latest/download/Lidkeys-0.3.2.dmg",
+    "downloadUrl": "https://github.com/lidworks/strip/releases/download/v0.4.1/Lidkeys-0.4.1.dmg",
     "supportEmail": "lidworks@proton.me",
     "supportFallbackUrl": "https://x.com/Lidworks312",
-    "version": "0.3.2"
+    "version": "0.4.1"
   }
   </script>
 
@@ -119,10 +125,6 @@
   <main>
     <section class="hero ld-hero">
       <div class="wrap">
-        <div class="launch-banner" data-launch-only="prelaunch" role="status">
-          <strong>Pre-launch preview.</strong> Lidkeys isn’t on sale yet and there is nothing to download today.
-          Checkout and the free trial open at launch — <a href="#download">here’s what you’ll get</a>.
-        </div>
         <img class="ld-icon" src="../assets/lidkeys-icon.png" alt="Lidkeys app icon" width="96" height="96">
         <span class="eyebrow">For the new MacBook Pro · macOS 27</span>
         <h1>Your app’s menus,<br>within finger reach.</h1>
@@ -142,11 +144,11 @@
 
         <div class="ld-actions">
           <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
-                data-cta="checkout" data-checkout="pending"
-                data-label="Buy Lidkeys — $19.99" data-label-early="Buy Lidkeys — $13.99 launch">Buy Lidkeys — $19.99</span>
+                data-cta="download" data-download="pending"
+                data-label="Download Lidkeys">Download Lidkeys</span>
           <a class="button secondary" href="#features">See what it does</a>
         </div>
-        <p class="ld-note"><strong>One-time purchase</strong> · 7-day free trial · macOS 27 on Apple silicon · touch on the MacBook Pro with PROLED XDR, mouse or trackpad on any Apple silicon Mac running macOS 27</p>
+        <p class="ld-note"><strong>Free while in beta — everything unlocked.</strong> · macOS 27 on Apple silicon · touch on the MacBook Pro with PROLED XDR, mouse or trackpad on any Apple silicon Mac running macOS 27</p>
       </div>
     </section>
 
@@ -188,11 +190,11 @@
           </div>
           <div class="ld-card">
             <h3>Brightness, volume, media</h3>
-            <p>Press and slide to change brightness or volume. Play/pause and previous/next for whatever is playing — Music, Spotify, browser video and more. <span class="ld-pro">Pro</span> adds a media card with ±10 s, speed and multiple sources.</p>
+            <p>Press and slide to change brightness or volume. Play/pause and previous/next for whatever is playing — Music, Spotify, browser video and more. A media card adds ±10 s, speed and switching between sources.</p>
           </div>
           <div class="ld-card">
             <h3>Gets out of the way</h3>
-            <p>Tuck the bar into a tiny corner ball when you want the screen to yourself. <span class="ld-pro">Pro</span> adds: hide the Dock until you touch the bottom edge, let windows yield to the bar, tuck it away in full screen, and follow the mouse across screens.</p>
+            <p>Tuck the bar into a tiny corner ball when you want the screen to yourself. You can also hide the Dock until you touch the bottom edge, let windows yield to the bar, tuck it away in full screen, and follow the mouse across screens.</p>
           </div>
         </div>
       </div>
@@ -242,8 +244,177 @@
       </div>
     </section>
 
+    <section class="ld-section" id="new-041">
+      <div class="wrap">
+        <h2>New in 0.4.1</h2>
+        <p class="ld-clips-lead">Snap windows from the bar, scrub with a preview, keep things on the Shelf, send emoji and stickers in chats, and see a word count as you type.</p>
+        <div class="ld-shots">
+          <figure class="ld-shot">
+            <img src="shots/snap-fan.jpg" width="760" height="380" loading="lazy" alt="The window button on the bar opened into a half circle of six layouts; pointing at Right two-thirds outlines where the window will go">
+            <figcaption><strong>Snap fan.</strong> Point at the window button and a half circle of six layouts opens: left or right half, left or right two-thirds, centered, or full. Pick one and the front window moves there; pick a side and you can choose which app takes the other side. <span class="ld-clip-detail">Works with windows that macOS lets other apps move. Recorded from the app’s demo mode.</span></figcaption>
+          </figure>
+          <figure class="ld-shot">
+            <img src="shots/scrub-card.jpg" width="760" height="380" loading="lazy" alt="Dragging the progress bar on the bar shows a card above it with the target time, the total length and how far you are jumping">
+            <figcaption><strong>Scrub with a preview.</strong> Drag the progress bar and a card above your finger shows where you’ll land, how long the video is and how far you’re jumping — and, for some local files, a frame from the video. Tap the speed pill to change playback speed. <span class="ld-clip-detail">In supported players. Players that don’t let other apps move playback show a thin locked line instead of a handle. Recorded from the app’s demo mode with a demo video.</span></figcaption>
+          </figure>
+        </div>
+        <div class="ld-clips" style="max-width: 600px">
+          <figure class="ld-clip" id="k43-word-count" data-clip="k43-word-count" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/k43-word-count.en.M.jpg"
+                     width="960" height="480" aria-label="Word count" aria-describedby="cap-k43-word-count">
+                <source src="guides/k43-word-count.en.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-k43-word-count"><strong>Word count.</strong> While you type, the bar shows the word count. Select some text to count just that; click the number for details. <span class="ld-clip-detail">Off until you turn it on in Settings › Keys. Counted in memory and never saved; password fields are never read. Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+        </div>
+        <div class="ld-clips" style="max-width: 600px">
+          <figure class="ld-clip" id="k42-screenshots" data-clip="k42-screenshots" style="--ar-d: 960 / 660; --ar-m: 960 / 660">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/k42-screenshots.xx.M.jpg"
+                     width="960" height="660" aria-label="Screenshots" aria-describedby="cap-k42-screenshots">
+                <source src="guides/k42-screenshots.xx.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-k42-screenshots"><strong>Screenshots.</strong> Take a screenshot and it shrinks straight into the circle beside the bar, next to your downloads, ready to drag into a chat or an email. <span class="ld-clip-detail">Off until you turn it on. While it is on, the macOS floating thumbnail stays off so screenshots are saved right away; it comes back when you turn this off or quit. The window in this clip is a demo prop.</span></figcaption>
+          </figure>
+        </div>
+        <div class="ld-grid">
+          <div class="ld-card">
+            <h3>Downloads</h3>
+            <p>A circle beside the bar catches files the moment they finish downloading. Drag one out, click to preview, or right-click to show it in Finder. Off until you turn it on.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Button size</h3>
+            <p>Choose Standard or Large, or let Auto pick Large on a touch screen. Press a key with a finger and a magnified copy floats above it; slide to the next key before you lift if you missed.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Easy to find</h3>
+            <p>After an update, a short What’s New window shows each new thing with a switch right next to it. Settings › Little Surprises names every hidden touch, and lets you play six of them now.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Shelf, anywhere</h3>
+            <p>Let go of a file anywhere on the bar and it lands on the Shelf. To open it in an app instead, hold it over that app’s icon for a moment first. Point at an item and click its × to take it off.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Emoji and stickers in chats</h3>
+            <p>Start typing in a chat app and your most-used emoji and stickers appear on the bar, sorted for that app. Add your own stickers: copy a picture and click +, import a folder, or take a screenshot of a sticker panel and let Lidkeys slice it into separate stickers.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ld-section" id="new">
+      <div class="wrap">
+        <h2>New in 0.4: fewer trips to the menu bar</h2>
+        <p class="ld-clips-lead">The things you do over and over — park a file, undo a few steps, run the same command again, keep the screen on — now sit right on the bar.</p>
+        <div class="ld-clips ld-clips-2">
+          <figure class="ld-clip" id="s06-shelf-roundtrip" data-clip="s06-shelf-roundtrip" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/s06-shelf-roundtrip.xx.M.jpg"
+                     width="960" height="480" aria-label="Shelf" aria-describedby="cap-s06-shelf-roundtrip">
+                <source src="guides/s06-shelf-roundtrip.xx.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-s06-shelf-roundtrip"><strong>Shelf.</strong> Drop a file, a link or a bit of text on the bar to park it. Switch apps, then drag it back out where you need it — no hunting through Finder or Downloads. <span class="ld-clip-detail">Keep as many items as you like. Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+          <figure class="ld-clip" id="r01-slide-undo" data-clip="r01-slide-undo" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/r01-slide-undo.en.M.jpg"
+                     width="960" height="480" aria-label="Hold to undo" aria-describedby="cap-r01-slide-undo">
+                <source src="guides/r01-slide-undo.en.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-r01-slide-undo"><strong>Hold to undo.</strong> Hold Undo and slide left to step back one change at a time; slide right to bring changes back. One gesture instead of pressing ⌘Z over and over. <span class="ld-clip-detail">Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+          <figure class="ld-clip" id="n01-again-series" data-clip="n01-again-series" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/n01-again-series.en.M.jpg"
+                     width="960" height="480" aria-label="Again" aria-describedby="cap-n01-again-series">
+                <source src="guides/n01-again-series.en.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-n01-again-series"><strong>Again.</strong> Just picked a command from the menu bar? Tap Again and it happens once more, without opening the menu. It can also replay a whole run of commands in one tap. <span class="ld-clip-detail">Turn on Command Captions to see each command as it happens. Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+          <figure class="ld-clip" id="t01-timer-set" data-clip="t01-timer-set" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/t01-timer-set.xx.M.jpg"
+                     width="960" height="480" aria-label="Timer" aria-describedby="cap-t01-timer-set">
+                <source src="guides/t01-timer-set.xx.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-t01-timer-set"><strong>Timer.</strong> Hold the timer and slide to pick a length; let go and it starts. The ring shows what’s left, and right-click gives you pause, cancel and the usual lengths. <span class="ld-clip-detail">Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+          <figure class="ld-clip" id="q02-switch-awake" data-clip="q02-switch-awake" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/q02-switch-awake.xx.M.jpg"
+                     width="960" height="480" aria-label="Keep awake" aria-describedby="cap-q02-switch-awake">
+                <source src="guides/q02-switch-awake.xx.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-q02-switch-awake"><strong>Keep awake.</strong> Reading, presenting or waiting on a download? Tap the cup and the screen stays on for as long as you chose, then it switches itself off. <span class="ld-clip-detail">Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+          <figure class="ld-clip" id="u01-custom-text" data-clip="u01-custom-text" style="--ar-d: 960 / 480; --ar-m: 960 / 480">
+            <div class="ld-clip-stage">
+              <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback"
+                     poster="guides/u01-custom-text.en.M.jpg"
+                     width="960" height="480" aria-label="Saved text keys" aria-describedby="cap-u01-custom-text">
+                <source src="guides/u01-custom-text.en.M.mp4" type="video/mp4">
+              </video>
+              <button class="ld-clip-toggle" type="button" aria-label="Pause" hidden><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.8v10.4a.6.6 0 0 0 .9.5l8.2-5.2a.6.6 0 0 0 0-1L5.9 2.3a.6.6 0 0 0-.9.5z"/></svg></button>
+            </div>
+            <figcaption id="cap-u01-custom-text"><strong>Saved text keys.</strong> Save a line you type often — an address, a sign-off, a code snippet — as a key, and tap to insert it. Links, folders and a few menu steps in a row work too. <span class="ld-clip-detail">Windows and files in this clip are demo props.</span></figcaption>
+          </figure>
+        </div>
+        <div class="ld-grid">
+          <div class="ld-card">
+            <h3>Keys that grow</h3>
+            <p>Keep picking the same command from the menu bar and it becomes a key on the bar by itself. Swipe it up if you don’t want it.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Watch</h3>
+            <p>Start an export or a big copy and switch away. A ring on that app’s ball keeps track and lights up when it’s done, so you don’t keep checking.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Stats</h3>
+            <p>Settings › Stats counts your presses day by day, hands out a few badges, and makes a small card you can save or drag out.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Feels like a button</h3>
+            <p>A light tap through the Force Touch trackpad when a key lands, plus soft sounds you can turn on in Settings › Haptics &amp; Sound.</p>
+          </div>
+          <div class="ld-card">
+            <h3>Small surprises</h3>
+            <p>Step away and the corner ball breathes like an old MacBook’s sleep light. Keys you press a lot slowly take on a polish. In winter, a little snow settles on the bar.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="ld-section" id="pricing">
       <div class="wrap">
+        <h2>Free while in beta — everything unlocked.</h2>
+        <p class="lead" style="font-size: 17px">Every feature on this page is free while Lidkeys is in beta. No trial timer, no account, no license key — download it and use all of it.</p>
+        <p class="ld-note">Optional: an experimental AI quota pill. It appears on its own only when Strip finds AI coding tools (Claude Code, Codex, OpenCode) on your Mac, and you can turn it off in Settings. See <a href="#privacy">privacy</a> for exactly what it reads.</p>
+        <div class="ld-actions" style="justify-content: flex-start; margin-top: 20px">
+          <a class="button secondary" href="#download">How to install</a>
+        </div>
+        <!-- Paid plan, kept for later. Hidden during the free beta (the app's StripFreeBeta switch is on).
         <h2>Free is useful. Pro is for the heavy lifting.</h2>
         <div class="ld-tablewrap">
           <table class="ld-table">
@@ -256,7 +427,17 @@
               <tr><td>Brightness, volume, system keys</td><td>Yes</td><td class="pro">Yes</td></tr>
               <tr><td>Basic media: play/pause, previous, next</td><td>Yes</td><td class="pro">Yes</td></tr>
               <tr><td>Choose which screen shows the bar</td><td>Yes</td><td class="pro">Yes</td></tr>
-              <tr><td>Custom keys, five job presets, import/export</td><td>—</td><td class="pro">Yes</td></tr>
+              <tr><td>Timer, Keep awake, Stats</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Again (repeat your last command) and hold Undo to slide through changes</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Shelf: park files, links and text on the bar</td><td>1 item</td><td class="pro">Unlimited, kept after quitting</td></tr>
+              <tr><td>Downloads: new files appear beside the bar</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Screenshots: new screenshots land beside the bar</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Button size: Standard, Large or Auto</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Haptics, sounds and small surprises</td><td>Yes</td><td class="pro">Yes</td></tr>
+              <tr><td>Custom keys: menu commands, saved text, links, files, multi-step keys; five job presets, import/export</td><td>—</td><td class="pro">Yes</td></tr>
+              <tr><td>Again for a whole run of commands; keys that grow from your habits</td><td>—</td><td class="pro">Yes</td></tr>
+              <tr><td>Press and slide: zoom, back and forward, previous and next</td><td>—</td><td class="pro">Yes</td></tr>
+              <tr><td>Watch: a nudge when an export or copy finishes</td><td>—</td><td class="pro">Yes</td></tr>
               <tr><td>Media detail card: ±10 s, speed, multiple sources</td><td>—</td><td class="pro">Yes</td></tr>
               <tr><td>Hide the Dock until you touch the bottom edge</td><td>—</td><td class="pro">Yes</td></tr>
               <tr><td>Window yield, full-screen tuck, multi-screen follow</td><td>—</td><td class="pro">Yes</td></tr>
@@ -299,7 +480,6 @@
         </div>
         <p class="ld-note">          Launch offer: <strong>$13.99</strong> for the first 100 licenses — the launch discount is applied automatically at checkout. Then $19.99. No subscription. No account. A 7-day full trial before you decide.</p>
         <p class="ld-note">1.x updates included; when a new version ships, download it from this page.</p>
-        <p class="ld-note">Optional: an experimental AI quota pill. It appears on its own only when Strip finds AI coding tools (Claude Code, Codex, OpenCode) on your Mac, and you can turn it off in Settings. See <a href="#privacy">privacy</a> for exactly what it reads.</p>
 
         <div class="ld-actions">
           <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
@@ -307,24 +487,31 @@
                 data-label="Buy Lidkeys — $19.99" data-label-early="Buy Lidkeys — $13.99 launch">Buy Lidkeys — $19.99</span>
         </div>
         <p class="ld-note" id="checkout-note">7-day fully-featured trial first. One-time purchase: <strong>$19.99</strong>, launch price <strong>$13.99</strong> for the first 100 licenses. Secure checkout by Creem, our reseller. <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a></p>
+        end of the paid plan -->
       </div>
     </section>
 
     <section class="ld-section" id="download">
       <div class="wrap">
-        <h2>Download the free trial</h2>
-        <p class="lead" style="font-size: 17px">Seven days of everything, including Pro features. No account and no email needed — the trial starts when you first open the app.</p>
+        <h2>Download Lidkeys</h2>
+        <p class="lead" style="font-size: 17px">Free while in beta — everything unlocked. No account and no email needed.</p>
         <div class="ld-actions" style="justify-content: flex-start; margin-top: 20px">
           <span class="button is-pending" role="link" aria-disabled="true" tabindex="-1"
                 data-cta="download" data-download="pending"
                 data-label="Download Lidkeys for macOS 27">Download — at launch</span>
         </div>
-        <p class="ld-note" style="margin-top:14px"><strong>Unsigned build notice:</strong> this release is not notarized by Apple. On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet — <a href="https://github.com/lidworks/strip/releases/latest">release notes</a>.</p>
+        <p class="ld-note" style="margin-top:14px"><strong>Not notarized:</strong> this release is signed with the Lidworks certificate but not notarized by Apple. On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, don’t install it yet — <a href="https://github.com/lidworks/strip/releases/latest">release notes</a>.</p>
+        <ol class="ld-steps">
+          <li>Open the downloaded <code>Lidkeys-0.4.1.dmg</code> and drag <strong>Strip</strong> to <strong>Applications</strong>.</li>
+          <li>Open Strip from Applications. macOS says it can’t check it for malicious software: click <strong>Done</strong> (not <em>Move to Trash</em>).</li>
+          <li>Open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>.</li>
+          <li>Strip shows a short welcome and asks for Accessibility permission, so it can read and press the front app’s menu commands.</li>
+        </ol>
         <ul class="ld-req">
           <li>macOS 27 (Golden Gate) on Apple silicon. Touch features need the MacBook Pro with PROLED XDR display; on any other supported Mac the bar works with the mouse and trackpad.</li>
-          <li>Version <span data-version>0.3.2</span> · small download · installs as <strong>Strip.app</strong> (the name in your menu bar; Lidkeys is the product name on this page).</li>
-          <li>No account, no subscription, no analytics. Network: one license check when you activate Pro — see <a href="#privacy">privacy</a>.</li>
-          <li><strong>Unsigned build:</strong> this release is not notarized by Apple. On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. The developer accepts this trade-off explicitly; do not buy if you require an Apple-notarized build.</li>
+          <li>Version <span data-version>0.4.1</span> · small download · installs as <strong>Strip.app</strong> (the name in your menu bar; Lidkeys is the product name on this page).</li>
+          <li>No account, no subscription, no analytics. It doesn’t contact any server on its own — see <a href="#privacy">privacy</a>.</li>
+          <li><strong>Not notarized:</strong> this release is signed with the Lidworks certificate but not notarized by Apple. Updates keep the Accessibility permission from 0.4.1 on (coming from 0.4.0 or earlier, macOS asks once more). On first launch macOS blocks it: click <strong>Done</strong> (not <em>Move to Trash</em>), then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. The developer accepts this trade-off explicitly; don’t install it if you require an Apple-notarized build.</li>
         </ul>
       </div>
     </section>
@@ -339,16 +526,17 @@
           </div>
           <div class="ld-card" id="privacy">
             <h3>Privacy, plainly</h3>
-            <p>No telemetry, no analytics, no account. The app makes one kind of network request: validating your license when you activate Pro (and once more if you update from version 0.3.0). The experimental AI quota pill turns on by itself only when Strip finds AI coding tools on your Mac, and you can switch it off in Settings: it reads local usage logs from Claude Code, Codex and OpenCode on your Mac, and nothing from them leaves your Mac. It looks up a DeepSeek balance only if you add your own DeepSeek API key and click <em>Check balance</em>. The event log stays on your Mac and records timing, coordinates and decisions — never window titles or app content.</p>
+            <p>No telemetry, no analytics, no account. During the free beta the app doesn’t contact any server on its own. The experimental AI quota pill turns on by itself only when Strip finds AI coding tools on your Mac, and you can switch it off in Settings: it reads local usage logs from Claude Code, Codex and OpenCode on your Mac, and nothing from them leaves your Mac. It looks up a DeepSeek balance only if you add your own DeepSeek API key and click <em>Check balance</em>. The event log stays on your Mac and records timing, coordinates and decisions — never window titles or app content.</p>
           </div>
           <div class="ld-card">
             <h3>Honest about permissions</h3>
-            <p>Reading another app’s menus needs Accessibility permission. We explain it once, in plain language, and the bar keeps working without it — minus app-specific keys. Nothing is uploaded.</p>
+            <p>Reading another app’s menus needs Accessibility permission. We explain it once, in plain language, and the bar keeps working without it — minus app-specific keys. Emoji and the word count while typing also need Input Monitoring; Lidkeys asks only when you first go to type in a chat app. Nothing is uploaded. See the <a href="privacy.html">privacy policy</a>.</p>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- "After you buy" steps, kept for the paid version. Hidden during the free beta.
     <section class="ld-section" id="thanks">
       <div class="wrap">
         <h2>After you buy</h2>
@@ -360,18 +548,21 @@
         <p class="ld-note">Lost your key, or activation fails? Contact <span data-support>support</span> — we answer and refund within 14 days if it isn’t for you.</p>
       </div>
     </section>
+    end of "After you buy" -->
 
     <section class="ld-section ld-faq" id="faq">
       <div class="wrap">
         <h2>Questions</h2>
         <details><summary>Which Macs does it support?</summary><p>macOS 27 (Golden Gate) on Apple silicon. Touch features are built for the MacBook Pro with the PROLED XDR display; on any other Apple silicon Mac running macOS 27 the same bar works with the mouse and trackpad (including MacBook Air, Mac mini, Mac Studio and iMac).</p></details>
-        <details><summary>Is this an App Store app?</summary><p>No. The core feature — reading and pressing another app’s menu — is not allowed inside the App Store sandbox. Lidkeys is sold directly from this site. This build is <strong>unsigned / not notarized</strong> (the developer is not in the Apple Developer Program): on first launch macOS blocks it: click Done (not Move to Trash), then System Settings → Privacy &amp; Security → Open Anyway. Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, do not buy yet. Updates are downloaded from this page (1.x updates are free).</p></details>
+        <details><summary>Is this an App Store app?</summary><p>No. The core feature — reading and pressing another app’s menu — is not allowed inside the App Store sandbox. Lidkeys is available directly from this site. This build is signed with the Lidworks certificate but <strong>not notarized</strong> (the developer is not in the Apple Developer Program): on first launch macOS blocks it: click Done (not Move to Trash), then System Settings → Privacy &amp; Security → Open Anyway. Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code>. If you require an Apple-notarized build, don’t install it yet. Updates are downloaded from this page.</p></details>
         <details><summary>Why does it need Accessibility permission?</summary><p>To read the front app’s menu and press the item you tapped. It is used only on your Mac and never uploaded. Without it, brightness, volume, media, system keys and app switching still work.</p></details>
-        <details><summary>What happens after the 7-day trial?</summary><p>The app does not disappear. Pro features are tucked away and the free features keep working. Your custom keys stay, read-only. You can buy whenever you’re ready — there’s no timer pressure inside the app.</p></details>
-        <details><summary>Do you collect data?</summary><p>No telemetry, no analytics, no account. The only network request is license validation when you activate Pro. The optional AI quota pill appears on its own only when Strip finds AI coding tools on your Mac (you can turn it off in Settings); it reads local usage logs from Claude Code, Codex and OpenCode without sending them anywhere, and a DeepSeek balance lookup only happens if you add your own DeepSeek API key and click Check balance. The event log stays on your Mac and can be exported redacted.</p></details>
-        <details><summary>How do updates work?</summary><p>1.x updates are free. The app checks by opening this page when you choose “Check for updates…” — it doesn’t run a background updater or download anything by itself. Install the newer version over the old one; your license and settings carry over.</p></details>
-        <details><summary>What does the license cover?</summary><p>One purchase, one person, all the Macs you personally use. No device activation limit, no account. Paste the same key on each Mac.</p></details>
-        <details><summary>Refunds?</summary><p>Yes — email us within 14 days of purchase and we’ll refund it, no questions asked. That’s also our commitment to the early-bird price: if it stops being useful, get your money back.</p></details>
+        <details><summary>Is it really free?</summary><p>Yes. While Lidkeys is in beta, every feature is unlocked for everyone — no trial timer, no license key and nothing to buy. If a paid version comes later, it will be announced on this page first.</p></details>
+        <details><summary>macOS keeps asking before Lidkeys can control an app</summary><p>macOS 27.3 asks before Lidkeys can control another app. Choose Allow. To stop being asked for an app, open System Settings › Privacy &amp; Security › System &amp; App Protection Override, pick Strip (the app’s name on your Mac), and set that app to At Any Time.</p></details>
+        <details><summary>Why does it ask for Input Monitoring?</summary><p>Only for the things that react to typing: emoji while typing and the word count. Lidkeys needs to notice that a key was pressed to know you’re typing; it never records, saves or sends what you type. It asks the first time you go to type in a chat app, and everything else works without it.</p></details>
+        <details><summary>Do you collect data?</summary><p>No telemetry, no analytics, no account. During the free beta the app doesn’t contact any server on its own. The optional AI quota pill appears on its own only when Strip finds AI coding tools on your Mac (you can turn it off in Settings); it reads local usage logs from Claude Code, Codex and OpenCode without sending them anywhere, and a DeepSeek balance lookup only happens if you add your own DeepSeek API key and click Check balance. The event log stays on your Mac and can be exported redacted.</p></details>
+        <details><summary>How do updates work?</summary><p>Updates are free. The app checks by opening this page when you choose “Check for updates…” — it doesn’t run a background updater or download anything by itself. Install the newer version over the old one; your settings carry over.</p></details>
+        <!-- paid version only: <details><summary>What does the license cover?</summary><p>One purchase, one person, all the Macs you personally use. No device activation limit, no account. Paste the same key on each Mac.</p></details> -->
+        <!-- paid version only: <details><summary>Refunds?</summary><p>Yes — email us within 14 days of purchase and we’ll refund it, no questions asked. That’s also our commitment to the early-bird price: if it stops being useful, get your money back.</p></details> -->
         <details><summary>Is Lidkeys the same app as Strip?</summary><p>Yes. “Lidkeys” is the product name on this site; the app installs as <strong>Strip.app</strong>, and that’s the name you’ll see in the menu bar and in System Settings → Privacy &amp; Security → Accessibility.</p></details>
       </div>
     </section>
@@ -384,7 +575,7 @@
     </div>
   </footer>
 
-  <noscript><p class="ld-note" style="text-align:center;padding:0 24px 32px">The checkout and download buttons need JavaScript. If this page is past launch and the buttons still don’t work, please contact us.</p></noscript>
+  <noscript><p class="ld-note" style="text-align:center;padding:0 24px 32px">The download buttons need JavaScript. You can also download Lidkeys from <a href="https://github.com/lidworks/strip/releases/tag/v0.4.1">GitHub</a>.</p></noscript>
 
   <script>
   // Fill the placeholders on the page from launch-config.
