@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lidkeys — tester invite</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../assets/lidkeys-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .t-box { margin-top: 26px; padding: 22px; border-radius: 18px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.035); }
+    .t-box h2 { margin: 0 0 8px; font-size: 22px; }
+    .t-box p { margin: 0 0 10px; color: var(--muted, #9aa0a6); line-height: 1.55; }
+    .t-facts { color: var(--muted, #9aa0a6); font-size: 14px; }
+    .t-facts strong { color: var(--text, #f5f5f7); }
+    .t-steps { counter-reset: step; list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 12px; }
+    .t-steps li { position: relative; padding-left: 40px; color: var(--muted, #9aa0a6); font-size: 15px; line-height: 1.55; }
+    .t-steps li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: -1px;
+      width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700;
+      color: var(--text, #f5f5f7); background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14); }
+    .t-steps strong { color: var(--text, #f5f5f7); }
+    .t-steps code { color: var(--glow, #d6e6ff); font-size: .92em; word-break: break-all; }
+    .t-actions { margin: 18px 0 4px; display: flex; gap: 12px; flex-wrap: wrap; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Lidworks</a>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="wrap prose">
+        <span class="eyebrow">Lidkeys · Tester invite</span>
+        <h1>You’re invited to try Lidkeys.</h1>
+        <p class="lead">Someone gave you a personal link to the test build. It works a few times and expires after a while, so please don’t pass it on.</p>
+
+        <div class="t-box" id="t-checking" role="status" aria-live="polite">
+          <p>Checking your link…</p>
+        </div>
+
+        <div class="t-box" id="t-bad" hidden>
+          <h2>This link has been used up or has expired.</h2>
+          <p>Ask the person who gave it to you for a new one.</p>
+          <p class="t-facts" id="t-bad-why"></p>
+        </div>
+
+        <div class="t-box" id="t-error" hidden>
+          <h2>Couldn’t check the link right now.</h2>
+          <p>Please try again in a minute. If it keeps happening, tell the person who gave you the link.</p>
+        </div>
+
+        <div class="t-box" id="t-ok" hidden>
+          <h2>Your link works.</h2>
+          <p class="t-facts">Downloads left: <strong id="t-left"></strong> · Expires: <strong id="t-exp"></strong><span id="t-ver-wrap"> · Version <strong id="t-ver"></strong></span></p>
+          <p id="t-notready" hidden>The test build isn’t up yet. Try again a little later.</p>
+          <div class="t-actions">
+            <a class="button" id="t-dl" href="#" rel="nofollow">Download Lidkeys</a>
+          </div>
+          <p class="t-facts">Each download uses up one. Mac with Apple silicon and macOS 27 needed.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" hidden>
+      <div class="wrap prose">
+        <span class="eyebrow">Install</span>
+        <h2>Four steps.</h2>
+        <ol class="t-steps">
+          <li>Open the downloaded <code>.dmg</code> and drag <strong>Strip</strong> to <strong>Applications</strong>. (Strip is the app’s name on your Mac; Lidkeys is the product name.)</li>
+          <li>Open Strip from Applications. macOS says it can’t check it for malicious software: click <strong>Done</strong> — not <em>Move to Trash</em>. This build is signed with the Lidworks certificate but not notarized by Apple.</li>
+          <li>Open <strong>System Settings → Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>. (Right-click → Open no longer works on current macOS.) Or run <code>xattr -dr com.apple.quarantine /Applications/Strip.app</code> in Terminal.</li>
+          <li>Strip shows a short welcome and asks for <strong>Accessibility</strong> permission, so it can read and press the front app’s menu commands. Emoji and the word count while typing also need <strong>Input Monitoring</strong>; it asks the first time you type in a chat app.</li>
+        </ol>
+        <p>On macOS 27.3, macOS also asks before Strip can control each app. Choose Allow. To stop being asked for an app: System Settings › Privacy &amp; Security › System &amp; App Protection Override › Strip, and set that app to <em>At Any Time</em>.</p>
+        <p>Found a problem? Email <a href="mailto:lidworks@proton.me">lidworks@proton.me</a> or reply to whoever sent you the link. What the app does with your data: <a href="../privacy.html">privacy</a>.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <p>© 2026 Lidworks · <a href="../">Lidkeys</a> · <a href="../privacy.html">Privacy</a> · <a href="https://x.com/Lidworks312">@Lidworks312</a></p>
+      <p>Not affiliated with Apple Inc., Anthropic, OpenAI or xAI.</p>
+    </div>
+  </footer>
+  <script>
+  (function () {
+    var GATE = "https://lidkeys-gate.lidworks-lab-server.workers.dev";
+    var $ = function (id) { return document.getElementById(id); };
+    function show(id) {
+      ["t-checking", "t-bad", "t-error", "t-ok"].forEach(function (x) { $(x).hidden = x !== id; });
+      $("install").hidden = id !== "t-ok";
+    }
+    function fmt(iso) {
+      var d = new Date(iso);
+      if (isNaN(d)) return iso;
+      return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+    }
+    var code = (location.hash || "").replace(/^#/, "").trim().toUpperCase();
+    if (!/^[A-Z0-9]{10}$/.test(code)) { $("t-bad-why").textContent = "There’s no invite code in this link."; show("t-bad"); return; }
+
+    function check() {
+      return fetch(GATE + "/invite/" + encodeURIComponent(code), { cache: "no-store" })
+        .then(function (r) { return r.json().then(function (b) { return { status: r.status, body: b }; }); })
+        .then(function (res) {
+          var b = res.body || {};
+          if (b.ok) {
+            $("t-left").textContent = b.remaining;
+            $("t-exp").textContent = fmt(b.expires);
+            $("t-ver-wrap").hidden = !b.version;
+            $("t-ver").textContent = b.version || "";
+            $("t-notready").hidden = !!b.ready;
+            $("t-dl").hidden = !b.ready;
+            $("t-dl").href = GATE + "/invite/" + encodeURIComponent(code) + "/download";
+            show("t-ok");
+          } else if (res.status === 404 || res.status === 410) {
+            var why = { not_found: "This code isn’t one of ours.", expired: "The link has expired.", used_up: "All its downloads have been used.", revoked: "The link was turned off." }[b.state];
+            $("t-bad-why").textContent = why || "";
+            show("t-bad");
+          } else {
+            show("t-error");
+          }
+        })
+        .catch(function () { show("t-error"); });
+    }
+    $("t-dl").addEventListener("click", function () { setTimeout(check, 4000); });
+    window.addEventListener("hashchange", function () { location.reload(); });
+    check();
+  })();
+  </script>
+</body>
+</html>
